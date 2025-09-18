@@ -16,6 +16,6 @@ $hash_ejemplo = '$2y$10$Q9QwQwQwQwQwQwQwQwQwQOQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw
 if (password_verify($password_admin, $hash_ejemplo)) {
     echo "La contraseña admin123 coincide con el hash.<br>";
 } else {
-    echo "La contraseña admin123 NO coincide con el hash.<br>";
+    echo "La contraseña admin123 NO coincide con el hash n.<br>";
 }
 ?>
