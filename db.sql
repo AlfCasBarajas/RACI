@@ -8,6 +8,13 @@ CREATE TABLE rol (
     nombre VARCHAR(50) NOT NULL
 );
 
+-- Insertar roles iniciales
+INSERT INTO rol (id_Rol, nombre) VALUES
+(1, 'admin'),
+(2, 'supervisor'),
+(3, 'coordinador'),
+(4, 'trabajador');
+
 -- Tabla user
 CREATE TABLE user (
     num_doc INT PRIMARY KEY,
@@ -15,10 +22,17 @@ CREATE TABLE user (
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     rol INT NOT NULL,
-    contraseña VARCHAR(255) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
     telefono INT,
     FOREIGN KEY (rol) REFERENCES rol(id_Rol)
 );
+
+-- Insertar usuarios iniciales
+INSERT INTO user (num_doc, tipo_doc, nombres, apellidos, rol, contrasena, telefono) VALUES
+(1, 'CC', 'admin', 'Administrador', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
+(2, 'CC', 'super', 'Supervisor', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
+(3, 'CC', 'coord', 'Coordinador', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
+(4, 'CC', 'traba', 'Trabajador', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
 
 -- Tabla empleado
 CREATE TABLE empleado (
