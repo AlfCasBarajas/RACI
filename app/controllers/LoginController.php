@@ -1,10 +1,10 @@
 <?php
-require_once '../app/core/Controller.php';
-require_once '../app/core/Database.php';
+require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/Database.php';
 
 class LoginController extends Controller {
     public function index() {
-        include '../app/views/login.php';
+    include __DIR__ . '/../views/login.php';
     }
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -16,15 +16,18 @@ class LoginController extends Controller {
             $stmt->bindParam(':username', $username);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($user && password_verify($password, $user['contraseña'])) {
+            if ($user && password_verify($password, $user['contrasena'])) {
                 session_start();
                 $_SESSION['user'] = $user;
-                header('Location: ../app/views/dashboard.php');
+                header('Location: /raci/?url=LoginController/dashboard');
                 exit;
             } else {
                 $error = 'Usuario o contraseña incorrectos';
-                include '../app/views/login.php';
+                include __DIR__ . '/../views/login.php';
             }
         }
+    }
+    public function dashboard() {
+        include __DIR__ . '/../views/dashboard.php';
     }
 }
