@@ -54,8 +54,22 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="card roles-card p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="roles-title mb-0"><i class="bi bi-person-badge me-2"></i>Gestión de Roles</h2>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                        <div class="w-100 text-center mb-2 mb-md-0">
+                            <h2 class="roles-title mb-0"><i class="bi bi-person-badge me-2"></i>Gestión de Roles</h2>
+                        </div>
+                        <form class="d-flex align-items-center gap-2" method="get" action="">
+                            <input type="hidden" name="controller" value="roles">
+                            <input type="hidden" name="action" value="index">
+                            <input type="text" class="form-control" name="filtro_nombre" placeholder="Filtrar por nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 200px;">
+                            <select class="form-select" name="orden" style="max-width: 180px;">
+                                <option value="">Ordenar por</option>
+                                <option value="asc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'asc') ? 'selected' : '' ?>>A-Z</option>
+                                <option value="desc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'desc') ? 'selected' : '' ?>>Z-A</option>
+                            </select>
+                            <button type="submit" class="btn btn-roles-outline"><i class="bi bi-funnel"></i> Filtrar</button>
+                            <a href="?controller=roles&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
+                        </form>
                         <a href="?controller=roles&action=create" class="btn btn-roles"><i class="bi bi-plus-circle me-1"></i>Nuevo Rol</a>
                     </div>
                     <div class="table-responsive">

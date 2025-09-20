@@ -13,7 +13,9 @@ class RolesController extends Controller {
 
     public function index() {
         $this->onlyLogged();
-        $roles = Rol::getAll();
+        $filtro = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
+        $orden = isset($_GET['orden']) && in_array($_GET['orden'], ['asc','desc']) ? $_GET['orden'] : '';
+        $roles = Rol::getFiltered($filtro, $orden);
         include __DIR__ . '/../views/roles/index.php';
     }
 
