@@ -121,16 +121,10 @@ CREATE TABLE accidente (
     persona_informo VARCHAR(100)
 );
 
--- Tabla reporte
-CREATE TABLE reporte (
-    id_reporte INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL
-);
 
 -- Tabla inspeccion_locativa
 CREATE TABLE inspeccion_locativa (
     id_insp_loc INT PRIMARY KEY AUTO_INCREMENT,
-    razon_social VARCHAR(100) NOT NULL,
     tipo_inspeccion VARCHAR(50),
     fecha_hora DATETIME,
     act_economica VARCHAR(100),
@@ -142,10 +136,16 @@ CREATE TABLE inspeccion_locativa (
     incidente_id_incidente INT,
     accidente_id_accidente INT,
     riesgo_id_riesgo INT,
-    reporte_id_reporte INT,
     FOREIGN KEY (categoria_id_categoria) REFERENCES categoria(id_categoria),
     FOREIGN KEY (incidente_id_incidente) REFERENCES incidente(id_incidente),
     FOREIGN KEY (accidente_id_accidente) REFERENCES accidente(id_accidente),
-    FOREIGN KEY (riesgo_id_riesgo) REFERENCES riesgo(id_riesgo),
-    FOREIGN KEY (reporte_id_reporte) REFERENCES reporte(id_reporte)
+    FOREIGN KEY (riesgo_id_riesgo) REFERENCES riesgo(id_riesgo)
+);
+
+-- Tabla reporte
+CREATE TABLE reporte (
+    id_reporte INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    inspeccion_locativa_id_insp_loc INT,
+    FOREIGN KEY (inspeccion_locativa_id_insp_loc) REFERENCES inspeccion_locativa(id_insp_loc)
 );

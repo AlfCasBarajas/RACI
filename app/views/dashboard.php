@@ -72,17 +72,17 @@ $user = $_SESSION['user'];
         <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100 position-fixed" style="z-index: 100;">
             <div class="sidebar-sticky pt-4">
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="#"><i class="bi bi-clipboard-check me-2"></i>Inspección Locativa</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=inspeccionlocativa&action=index"><i class="bi bi-clipboard-check me-2"></i>Inspección Locativa</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open me-2"></i>Categorías</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle me-2"></i>Incidente</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="#"><i class="bi bi-activity me-2"></i>Accidente</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity me-2"></i>Accidente</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=riesgos&action=index"><i class="bi bi-shield-check me-2"></i>Riesgo</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=roles&action=index"><i class="bi bi-person-badge me-2"></i>Roles</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=users&action=index"><i class="bi bi-people me-2"></i>Usuarios</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=areas&action=index"><i class="bi bi-building me-2"></i>Áreas</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill me-2"></i>Empleados</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond me-2"></i>Condición Insegura</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="#"><i class="bi bi-file-earmark-text me-2"></i>Reporte</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=reportes&action=index"><i class="bi bi-file-earmark-text me-2"></i>Reporte</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-danger" href="../../index.php"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
                 </ul>
             </div>
@@ -215,10 +215,7 @@ $user = $_SESSION['user'];
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-file-earmark-text fs-2 mb-1 text-primary"></i>
-                        <span>Reporte</span>
-                    </a>
+                    
                 </div>
             </div>
     </div>
