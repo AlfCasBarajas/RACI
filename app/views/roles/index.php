@@ -1,4 +1,6 @@
 <?php include __DIR__ . '/../header.php'; ?>
+<a href="app/views/dashboard.php" class="btn btn-secondary mb-3">Volver a inicio</a>
+
 <style>
     .roles-bg {
         background: linear-gradient(135deg, #e3eafc 0%, #f5f7fa 100%);
@@ -49,6 +51,7 @@
         color: #fff;
     }
 </style>
+
 <div class="roles-bg">
     <div class="container">
         <div class="row justify-content-center">

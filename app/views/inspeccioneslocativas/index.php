@@ -1,4 +1,5 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
+<a href="app/views/dashboard.php" class="btn btn-secondary mb-3">Volver a inicio</a>
 <style>
   .inspecciones-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%); min-height: 100vh; padding-top: 40px; padding-bottom: 40px; }
   .inspecciones-card { border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; }
