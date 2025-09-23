@@ -48,8 +48,13 @@ class Reporte {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO reporte (nombre) VALUES (?)');
-        $stmt->execute([$data['nombre']]);
+        $stmt = $db->prepare('INSERT INTO reporte (nombre, fecha_hora, descripcion, inspeccion_locativa_id_insp_loc) VALUES (?, ?, ?, ?)');
+        $stmt->execute([
+            $data['nombre'],
+            $data['fecha_hora'],
+            $data['descripcion'],
+            isset($data['inspeccion_locativa_id_insp_loc']) ? $data['inspeccion_locativa_id_insp_loc'] : null
+        ]);
     }
     public static function update($id, $data) {
         $db = Database::getConnection();

@@ -146,6 +146,8 @@ CREATE TABLE inspeccion_locativa (
 CREATE TABLE reporte (
     id_reporte INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
+    fecha_hora DATETIME,
+    descripcion TEXT,
     inspeccion_locativa_id_insp_loc INT,
     FOREIGN KEY (inspeccion_locativa_id_insp_loc) REFERENCES inspeccion_locativa(id_insp_loc)
 );

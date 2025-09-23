@@ -14,7 +14,6 @@
       <div class="col-md-4 mb-2"><label>ID Incidente</label><input type="number" name="incidente_id_incidente" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>ID Accidente</label><input type="number" name="accidente_id_accidente" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>ID Riesgo</label><input type="number" name="riesgo_id_riesgo" class="form-control"></div>
-      <div class="col-md-4 mb-2"><label>ID Reporte</label><input type="number" name="reporte_id_reporte" class="form-control"></div>
       <div class="col-12 mt-3">
         <button type="submit" class="btn btn-primary">Guardar</button>
         <a href="?controller=inspeccionlocativa&action=index" class="btn btn-secondary">Cancelar</a>

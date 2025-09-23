@@ -38,22 +38,53 @@
           </div>
           <div class="table-responsive">
             <?php if (!empty($reportes)): ?>
-              <?php foreach ($reportes as $rep): ?>
-                <div class="card mb-3">
+              <hr>
+              <h4>Reportes generados:</h4>
+              <?php foreach ($reportes as $reporte): ?>
+                <div class="card mb-2">
                   <div class="card-body">
-                    <div class="row g-2">
-                      <div class="col-md-6"><strong>ID:</strong></div><div class="col-md-6"><?= htmlspecialchars($rep['id_reporte']) ?></div>
-                      <div class="col-md-6"><strong>Nombre:</strong></div><div class="col-md-6"><?= htmlspecialchars($rep['nombre']) ?></div>
-                    </div>
-                    <div class="mt-3 text-end">
-                      <a href="?controller=reportes&action=edit&id=<?= $rep['id_reporte'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Editar</a>
-                      <a href="?controller=reportes&action=delete&id=<?= $rep['id_reporte'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro de eliminar?')"><i class="bi bi-trash"></i> Eliminar</a>
-                    </div>
+                    <div><strong>ID Reporte:</strong> <?= htmlspecialchars($reporte['id_reporte']) ?></div>
+                    <div><strong>Nombre:</strong> <?= htmlspecialchars($reporte['nombre']) ?></div>
+                    <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['fecha_hora']) ?></div>
+                    <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['descripcion']) ?></div>
+                    <div><strong>Inspección locativa:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa_id_insp_loc']) ?></div>
+                    <?php if (isset($reporte['incidentes']) || isset($reporte['accidentes'])): ?>
+                      <hr>
+                      <h5>Incidentes</h5>
+                      <?php if (!empty($reporte['incidentes'])): ?>
+                        <?php foreach ($reporte['incidentes'] as $inc): ?>
+                          <div class="card mb-2">
+                            <div class="card-body">
+                              <div><strong>ID Incidente:</strong> <?= htmlspecialchars($inc['id_incidente']) ?></div>
+                              <div><strong>Tipo:</strong> <?= htmlspecialchars($inc['tipo']) ?></div>
+                              <div><strong>Fecha:</strong> <?= htmlspecialchars($inc['fecha_hora']) ?></div>
+                            </div>
+                          </div>
+                        <?php endforeach; ?>
+                      <?php else: ?>
+                        <div class="alert alert-info">No hay incidentes registrados.</div>
+                      <?php endif; ?>
+                      <h5>Accidentes</h5>
+                      <?php if (!empty($reporte['accidentes'])): ?>
+                        <?php foreach ($reporte['accidentes'] as $acc): ?>
+                          <div class="card mb-2">
+                            <div class="card-body">
+                              <div><strong>ID Accidente:</strong> <?= htmlspecialchars($acc['id_accidente']) ?></div>
+                              <div><strong>Tipo:</strong> <?= htmlspecialchars($acc['tipo']) ?></div>
+                              <div><strong>Fecha:</strong> <?= htmlspecialchars($acc['fecha_hora']) ?></div>
+                            </div>
+                          </div>
+                        <?php endforeach; ?>
+                      <?php else: ?>
+                        <div class="alert alert-info">No hay accidentes registrados.</div>
+                      <?php endif; ?>
+                    <?php endif; ?>
                   </div>
                 </div>
               <?php endforeach; ?>
-            <?php else: ?>
-              <div class="alert alert-info text-center">No hay reportes registrados.</div>
+              <?php if (empty($reportes)): ?>
+                <div class="alert alert-info">No hay reportes para mostrar.</div>
+              <?php endif; ?>
             <?php endif; ?>
           </div>
         </div>
