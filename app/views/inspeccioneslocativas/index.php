@@ -60,7 +60,6 @@
                       <div class="col-md-6"><strong>ID Incidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['incidente_id_incidente']) ?></div>
                       <div class="col-md-6"><strong>ID Accidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['accidente_id_accidente']) ?></div>
                       <div class="col-md-6"><strong>ID Riesgo:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['riesgo_id_riesgo']) ?></div>
-                      <div class="col-md-6"><strong>ID Reporte:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['reporte_id_reporte']) ?></div>
                     </div>
                     <div class="mt-3 text-end">
                       <a href="?controller=inspeccionlocativa&action=edit&id=<?= $insp['id_insp_loc'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Editar</a>

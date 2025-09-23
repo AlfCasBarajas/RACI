@@ -1,13 +1,21 @@
-<?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
+<?php
+// Función auxiliar para obtener el empleado relacionado a una categoría
+function getEmpleadoByCategoria($catId) {
+  try {
+    $pdo = new PDO('mysql:host=localhost;dbname=raci_db', 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $pdo->prepare('SELECT e.* FROM categoria c JOIN empleado e ON c.empleado_id_empleado = e.id_empleado WHERE c.id_categoria = ?');
+    $stmt->execute([$catId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  } catch (Exception $ex) {
+    return null;
+  }
+}
+if (isset($data) && is_array($data)) extract($data);
+include __DIR__ . '/../header.php';
+// ...aquí termina el bloque PHP, el resto es HTML y CSS...
+?>
 <a href="app/views/dashboard.php" class="btn btn-secondary mb-3">Volver a inicio</a>
-<style>
-  .reportes-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%); min-height: 100vh; padding-top: 40px; padding-bottom: 40px; }
-  .reportes-card { border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; }
-  .reportes-title { color: #37474f; font-weight: 700; letter-spacing: 1px; }
-  .btn-reportes { background: #37474f; color: #fff; border-radius: 2rem; font-weight: 500; transition: background 0.2s; }
-  .btn-reportes:hover { background: #263238; color: #fff; }
-  .btn-reportes-outline { border: 2px solid #37474f; color: #37474f; background: #fff; border-radius: 2rem; font-weight: 500; transition: background 0.2s, color 0.2s; }
-  .btn-reportes-outline:hover { background: #37474f; color: #fff; }
 </style>
 <div class="reportes-bg">
   <div class="container">
@@ -47,7 +55,96 @@
                     <div><strong>Nombre:</strong> <?= htmlspecialchars($reporte['nombre']) ?></div>
                     <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['fecha_hora']) ?></div>
                     <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['descripcion']) ?></div>
-                    <div><strong>Inspección locativa:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa_id_insp_loc']) ?></div>
+                    <?php if (!empty($reporte['inspeccion_locativa'])): ?>
+                      <?php if (!empty($reporte['inspeccion_locativa']['categoria_id_categoria'])): ?>
+                        <?php
+                        // Obtener datos del empleado relacionado a la categoría
+                        $catId = $reporte['inspeccion_locativa']['categoria_id_categoria'];
+                        $empleado = null;
+                        if (function_exists('getEmpleadoByCategoria')) {
+                          $empleado = getEmpleadoByCategoria($catId);
+                        }
+                        ?>
+                        <?php if (!empty($empleado)): ?>
+                          <hr>
+                          <h5>Empleado relacionado</h5>
+                          <div><strong>ID:</strong> <?= htmlspecialchars($empleado['id_empleado']) ?></div>
+                          <div><strong>Nombres:</strong> <?= htmlspecialchars($empleado['nombres']) ?></div>
+                          <div><strong>Apellidos:</strong> <?= htmlspecialchars($empleado['apellidos']) ?></div>
+                          <div><strong>Teléfono:</strong> <?= htmlspecialchars($empleado['telefono']) ?></div>
+                          <div><strong>Cargo/Función:</strong> <?= htmlspecialchars($empleado['cargo_funcion']) ?></div>
+                          <hr>
+                          <h5>Incidentes asociados al empleado</h5>
+                          <?php
+                          // Consultar incidentes asociados al empleado
+                          try {
+                            $pdo = new PDO('mysql:host=localhost;dbname=raci_db', 'root', '');
+                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            $stmt = $pdo->prepare('SELECT * FROM incidente WHERE id_incidente IN (SELECT il.incidente_id_incidente FROM inspeccion_locativa il JOIN categoria c ON il.categoria_id_categoria = c.id_categoria WHERE c.empleado_id_empleado = ?)');
+                            $stmt->execute([$empleado['id_empleado']]);
+                            $incidentesEmpleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                          } catch (Exception $ex) {
+                            $incidentesEmpleado = [];
+                          }
+                          ?>
+                          <?php if (!empty($incidentesEmpleado)): ?>
+                            <?php foreach ($incidentesEmpleado as $inc): ?>
+                              <div class="card mb-2">
+                                <div class="card-body">
+                                  <div><strong>ID Incidente:</strong> <?= htmlspecialchars($inc['id_incidente']) ?></div>
+                                  <div><strong>Tipo:</strong> <?= htmlspecialchars($inc['tipo']) ?></div>
+                                  <div><strong>Fecha:</strong> <?= htmlspecialchars($inc['fecha_hora']) ?></div>
+                                  <div><strong>Descripción:</strong> <?= htmlspecialchars($inc['descripcion']) ?></div>
+                                  <div><strong>Lugar:</strong> <?= htmlspecialchars($inc['lugar']) ?></div>
+                                  <!-- Puedes agregar más campos si lo deseas -->
+                                </div>
+                              </div>
+                            <?php endforeach; ?>
+                          <?php else: ?>
+                            <div class="alert alert-info">No hay incidentes asociados al empleado.</div>
+                          <?php endif; ?>
+                          <h5>Accidentes asociados al empleado</h5>
+                          <?php
+                          // Consultar accidentes asociados al empleado
+                          try {
+                            $stmt = $pdo->prepare('SELECT * FROM accidente WHERE id_accidente IN (SELECT il.accidente_id_accidente FROM inspeccion_locativa il JOIN categoria c ON il.categoria_id_categoria = c.id_categoria WHERE c.empleado_id_empleado = ?)');
+                            $stmt->execute([$empleado['id_empleado']]);
+                            $accidentesEmpleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                          } catch (Exception $ex) {
+                            $accidentesEmpleado = [];
+                          }
+                          ?>
+                          <?php if (!empty($accidentesEmpleado)): ?>
+                            <?php foreach ($accidentesEmpleado as $acc): ?>
+                              <div class="card mb-2">
+                                <div class="card-body">
+                                  <div><strong>ID Accidente:</strong> <?= htmlspecialchars($acc['id_accidente']) ?></div>
+                                  <div><strong>Tipo:</strong> <?= htmlspecialchars($acc['tipo']) ?></div>
+                                  <div><strong>Fecha:</strong> <?= htmlspecialchars($acc['fecha_hora']) ?></div>
+                                  <div><strong>Descripción:</strong> <?= htmlspecialchars($acc['descripcion']) ?></div>
+                                  <div><strong>Lugar:</strong> <?= htmlspecialchars($acc['lugar']) ?></div>
+                                  <!-- Puedes agregar más campos si lo deseas -->
+                                </div>
+                              </div>
+                            <?php endforeach; ?>
+                          <?php else: ?>
+                            <div class="alert alert-info">No hay accidentes asociados al empleado.</div>
+                          <?php endif; ?>
+                        <?php endif; ?>
+                      <?php endif; ?>
+                      <hr>
+                      <h5>Inspección locativa relacionada</h5>
+                      <div><strong>ID:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['id_insp_loc']) ?></div>
+                      <div><strong>Tipo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['tipo_inspeccion']) ?></div>
+                      <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['fecha_hora']) ?></div>
+                      <div><strong>Actividad económica:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['act_economica']) ?></div>
+                      <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['descripcion']) ?></div>
+                      <div><strong>Estado:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['estado_inspeccion']) ?></div>
+                      <div><strong>Elementos de trabajo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['element_trab']) ?></div>
+                      <div><strong>Observaciones:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['observaciones']) ?></div>
+                    <?php else: ?>
+                      <div><strong>Inspección locativa:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa_id_insp_loc']) ?></div>
+                    <?php endif; ?>
                     <?php if (isset($reporte['incidentes']) || isset($reporte['accidentes'])): ?>
                       <hr>
                       <h5>Incidentes</h5>
@@ -79,6 +176,10 @@
                         <div class="alert alert-info">No hay accidentes registrados.</div>
                       <?php endif; ?>
                     <?php endif; ?>
+                    <div class="text-end mt-2">
+                      <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
+                      <a href="?controller=reportes&action=delete&id=<?= $reporte['id_reporte'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este reporte?');"><i class="bi bi-trash"></i> Eliminar</a>
+                    </div>
                   </div>
                 </div>
               <?php endforeach; ?>

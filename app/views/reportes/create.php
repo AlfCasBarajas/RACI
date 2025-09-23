@@ -19,10 +19,12 @@
         <label for="inspeccion_locativa_id_insp_loc">Inspección locativa:</label>
         <select name="inspeccion_locativa_id_insp_loc" id="inspeccion_locativa_id_insp_loc" class="form-select" required>
           <option value="">-- Selecciona inspección --</option>
-          <?php if (isset($inspecciones) && is_array($inspecciones)): ?>
+          <?php if (isset($inspecciones) && is_array($inspecciones) && count($inspecciones) > 0): ?>
             <?php foreach ($inspecciones as $insp): ?>
-              <option value="<?= $insp['id_insp_loc'] ?>">ID <?= $insp['id_insp_loc'] ?> - <?= htmlspecialchars($insp['razon_social']) ?></option>
+              <option value="<?= $insp['id_insp_loc'] ?>"><?= $insp['id_insp_loc'] ?> - <?= htmlspecialchars($insp['tipo_inspeccion']) ?></option>
             <?php endforeach; ?>
+          <?php else: ?>
+            <option disabled>No hay inspecciones locativas registradas</option>
           <?php endif; ?>
         </select>
       </div>
@@ -63,6 +65,22 @@
     </div>
   </form>
   <?php if (!empty($reporteEmpleado)): ?>
+    <?php if (!empty($inspeccionSeleccionada)): ?>
+      <hr>
+      <h4>Inspección Locativa Seleccionada</h4>
+      <div class="card mb-2">
+        <div class="card-body">
+          <div><strong>ID Inspección:</strong> <?= htmlspecialchars($inspeccionSeleccionada['id_insp_loc']) ?></div>
+          <div><strong>Tipo Inspección:</strong> <?= htmlspecialchars($inspeccionSeleccionada['tipo_inspeccion']) ?></div>
+          <div><strong>Fecha y Hora:</strong> <?= htmlspecialchars($inspeccionSeleccionada['fecha_hora']) ?></div>
+          <div><strong>Actividad Económica:</strong> <?= htmlspecialchars($inspeccionSeleccionada['act_economica']) ?></div>
+          <div><strong>Descripción:</strong> <?= htmlspecialchars($inspeccionSeleccionada['descripcion']) ?></div>
+          <div><strong>Estado Inspección:</strong> <?= htmlspecialchars($inspeccionSeleccionada['estado_inspeccion']) ?></div>
+          <div><strong>Elementos de Trabajo:</strong> <?= htmlspecialchars($inspeccionSeleccionada['element_trab']) ?></div>
+          <div><strong>Observaciones:</strong> <?= htmlspecialchars($inspeccionSeleccionada['observaciones']) ?></div>
+        </div>
+      </div>
+    <?php endif; ?>
     <?php if (!empty($empleado) && !empty($nombre)): ?>
       <div class="alert alert-success">El reporte ha sido guardado correctamente.</div>
     <?php endif; ?>

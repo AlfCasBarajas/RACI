@@ -72,16 +72,16 @@ class InspeccionLocativa {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO inspeccion_locativa (razon_social, tipo_inspeccion, fecha_hora, act_economica, descripcion, estado_inspeccion, element_trab, observaciones, categoria_id_categoria, incidente_id_incidente, accidente_id_accidente, riesgo_id_riesgo, reporte_id_reporte) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, act_economica, descripcion, estado_inspeccion, element_trab, observaciones, categoria_id_categoria, incidente_id_incidente, accidente_id_accidente, riesgo_id_riesgo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([
-            $data['razon_social'], $data['tipo_inspeccion'], $data['fecha_hora'], $data['act_economica'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo'], $data['reporte_id_reporte']
+            $data['tipo_inspeccion'], $data['fecha_hora'], $data['act_economica'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo']
         ]);
     }
     public static function update($id, $data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE inspeccion_locativa SET razon_social=?, tipo_inspeccion=?, fecha_hora=?, act_economica=?, descripcion=?, estado_inspeccion=?, element_trab=?, observaciones=?, categoria_id_categoria=?, incidente_id_incidente=?, accidente_id_accidente=?, riesgo_id_riesgo=?, reporte_id_reporte=? WHERE id_insp_loc=?');
+        $stmt = $db->prepare('UPDATE inspeccion_locativa SET tipo_inspeccion=?, fecha_hora=?, act_economica=?, descripcion=?, estado_inspeccion=?, element_trab=?, observaciones=?, categoria_id_categoria=?, incidente_id_incidente=?, accidente_id_accidente=?, riesgo_id_riesgo=? WHERE id_insp_loc=?');
         $stmt->execute([
-            $data['razon_social'], $data['tipo_inspeccion'], $data['fecha_hora'], $data['act_economica'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo'], $data['reporte_id_reporte'], $id
+            $data['tipo_inspeccion'], $data['fecha_hora'], $data['act_economica'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo'], $id
         ]);
     }
     public static function delete($id) {

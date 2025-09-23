@@ -5,6 +5,7 @@ require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../models/Incidente.php';
 require_once __DIR__ . '/../models/Accidente.php';
+require_once __DIR__ . '/../models/InspeccionLocativa.php';
 
 class ReportesController extends Controller {
     // Reporte predefinido: incidentes y accidentes por empleado y fecha
@@ -12,6 +13,7 @@ class ReportesController extends Controller {
     $empleados = Empleado::all();
     $inspecciones = InspeccionLocativa::all();
     $reporteEmpleado = null;
+    $inspeccionSeleccionada = null;
     $empleadoId = isset($_POST['empleado_id']) ? $_POST['empleado_id'] : '';
     $fecha_inicio = isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : '';
     $fecha_fin = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : '';
@@ -24,25 +26,41 @@ class ReportesController extends Controller {
             $db = Database::getConnection();
             $incidentes = [];
             $accidentes = [];
-            $params = [$empleadoId];
-            $where = " WHERE empleado_id_empleado = ?";
+            // Incidentes relacionados al empleado
+            $sqlInc = "SELECT i.id_incidente, i.tipo, i.fecha_hora FROM empleado e
+                JOIN categoria c ON c.empleado_id_empleado = e.id_empleado
+                JOIN inspeccion_locativa il ON il.categoria_id_categoria = c.id_categoria
+                JOIN incidente i ON il.incidente_id_incidente = i.id_incidente
+                WHERE e.id_empleado = ?";
+            $paramsInc = [$empleadoId];
             if ($fecha_inicio && $fecha_fin) {
-                $where .= " AND DATE(fecha_hora) BETWEEN ? AND ?";
-                $params[] = $fecha_inicio;
-                $params[] = $fecha_fin;
+                $sqlInc .= " AND DATE(i.fecha_hora) BETWEEN ? AND ?";
+                $paramsInc[] = $fecha_inicio;
+                $paramsInc[] = $fecha_fin;
             } elseif ($fecha_inicio) {
-                $where .= " AND DATE(fecha_hora) = ?";
-                $params[] = $fecha_inicio;
+                $sqlInc .= " AND DATE(i.fecha_hora) = ?";
+                $paramsInc[] = $fecha_inicio;
             }
-            // Incidentes
-            $sqlInc = "SELECT id_incidente, tipo, fecha_hora FROM incidente" . $where;
             $stmtInc = $db->prepare($sqlInc);
-            $stmtInc->execute($params);
+            $stmtInc->execute($paramsInc);
             $incidentes = $stmtInc->fetchAll(PDO::FETCH_ASSOC);
-            // Accidentes
-            $sqlAcc = "SELECT id_accidente, tipo, fecha_hora FROM accidente" . $where;
+            // Accidentes relacionados al empleado
+            $sqlAcc = "SELECT a.id_accidente, a.tipo, a.fecha_hora FROM empleado e
+                JOIN categoria c ON c.empleado_id_empleado = e.id_empleado
+                JOIN inspeccion_locativa il ON il.categoria_id_categoria = c.id_categoria
+                JOIN accidente a ON il.accidente_id_accidente = a.id_accidente
+                WHERE e.id_empleado = ?";
+            $paramsAcc = [$empleadoId];
+            if ($fecha_inicio && $fecha_fin) {
+                $sqlAcc .= " AND DATE(a.fecha_hora) BETWEEN ? AND ?";
+                $paramsAcc[] = $fecha_inicio;
+                $paramsAcc[] = $fecha_fin;
+            } elseif ($fecha_inicio) {
+                $sqlAcc .= " AND DATE(a.fecha_hora) = ?";
+                $paramsAcc[] = $fecha_inicio;
+            }
             $stmtAcc = $db->prepare($sqlAcc);
-            $stmtAcc->execute($params);
+            $stmtAcc->execute($paramsAcc);
             $accidentes = $stmtAcc->fetchAll(PDO::FETCH_ASSOC);
             $reporteEmpleado = [
                 'id_empleado' => $empleado['id_empleado'],
@@ -51,6 +69,10 @@ class ReportesController extends Controller {
                 'incidentes' => $incidentes,
                 'accidentes' => $accidentes
             ];
+            // Obtener datos de la inspección locativa seleccionada
+            if ($inspeccion_locativa_id) {
+                $inspeccionSeleccionada = InspeccionLocativa::find($inspeccion_locativa_id);
+            }
             // Guardar el reporte en la base de datos
             if ($nombre_reporte) {
                 Reporte::create([
@@ -67,7 +89,8 @@ class ReportesController extends Controller {
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'reporteEmpleado' => $reporteEmpleado,
-            'inspecciones' => $inspecciones
+            'inspecciones' => $inspecciones,
+            'inspeccionSeleccionada' => $inspeccionSeleccionada
         ]);
     }
     // Mostrar selector de tabla y campos
@@ -99,19 +122,30 @@ class ReportesController extends Controller {
         $nombre = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
         $reportes = Reporte::getFiltered($id, $nombre, $orden);
-        // Para cada reporte de tipo empleado, obtener incidentes y accidentes
         foreach ($reportes as &$reporte) {
+            // Agregar datos completos de inspección locativa relacionada
+            if (!empty($reporte['inspeccion_locativa_id_insp_loc'])) {
+                $reporte['inspeccion_locativa'] = InspeccionLocativa::find($reporte['inspeccion_locativa_id_insp_loc']);
+            }
             // Si el nombre contiene "empleado" (puedes ajustar la lógica según tu tipo de reporte)
             if (stripos($reporte['nombre'], 'empleado') !== false && !empty($reporte['inspeccion_locativa_id_insp_loc'])) {
                 $empleadoId = $reporte['inspeccion_locativa_id_insp_loc'];
                 $db = Database::getConnection();
-                // Incidentes
-                $sqlInc = "SELECT id_incidente, tipo, fecha_hora FROM incidente WHERE empleado_id_empleado = ?";
+                // Incidentes relacionados al empleado
+                $sqlInc = "SELECT i.id_incidente, i.tipo, i.fecha_hora FROM empleado e
+                    JOIN categoria c ON c.empleado_id_empleado = e.id_empleado
+                    JOIN inspeccion_locativa il ON il.categoria_id_categoria = c.id_categoria
+                    JOIN incidente i ON il.incidente_id_incidente = i.id_incidente
+                    WHERE e.id_empleado = ?";
                 $stmtInc = $db->prepare($sqlInc);
                 $stmtInc->execute([$empleadoId]);
                 $reporte['incidentes'] = $stmtInc->fetchAll(PDO::FETCH_ASSOC);
-                // Accidentes
-                $sqlAcc = "SELECT id_accidente, tipo, fecha_hora FROM accidente WHERE empleado_id_empleado = ?";
+                // Accidentes relacionados al empleado
+                $sqlAcc = "SELECT a.id_accidente, a.tipo, a.fecha_hora FROM empleado e
+                    JOIN categoria c ON c.empleado_id_empleado = e.id_empleado
+                    JOIN inspeccion_locativa il ON il.categoria_id_categoria = c.id_categoria
+                    JOIN accidente a ON il.accidente_id_accidente = a.id_accidente
+                    WHERE e.id_empleado = ?";
                 $stmtAcc = $db->prepare($sqlAcc);
                 $stmtAcc->execute([$empleadoId]);
                 $reporte['accidentes'] = $stmtAcc->fetchAll(PDO::FETCH_ASSOC);
@@ -125,7 +159,10 @@ class ReportesController extends Controller {
         ]);
     }
     public function create() {
-        $this->view('reportes/create');
+        $inspecciones = InspeccionLocativa::all();
+        $this->view('reportes/create', [
+            'inspecciones' => $inspecciones
+        ]);
     }
     public function store() {
         $data = [

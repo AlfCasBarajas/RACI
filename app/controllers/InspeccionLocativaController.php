@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/InspeccionLocativa.php';
+require_once __DIR__ . '/../models/Categoria.php';
+require_once __DIR__ . '/../models/Incidente.php';
+require_once __DIR__ . '/../models/Accidente.php';
+require_once __DIR__ . '/../models/Riesgo.php';
 require_once __DIR__ . '/../core/Controller.php';
 
 class InspeccionLocativaController extends Controller {
@@ -28,11 +32,19 @@ class InspeccionLocativaController extends Controller {
         ]);
     }
     public function create() {
-        $this->view('inspeccioneslocativas/create');
+        $categorias = Categoria::all();
+        $incidentes = Incidente::all();
+        $accidentes = Accidente::all();
+        $riesgos = Riesgo::all();
+        $this->view('inspeccioneslocativas/create', [
+            'categorias' => $categorias,
+            'incidentes' => $incidentes,
+            'accidentes' => $accidentes,
+            'riesgos' => $riesgos
+        ]);
     }
     public function store() {
         $data = [
-            'razon_social' => $_POST['razon_social'],
             'tipo_inspeccion' => $_POST['tipo_inspeccion'],
             'fecha_hora' => $_POST['fecha_hora'],
             'act_economica' => $_POST['act_economica'],
@@ -43,8 +55,7 @@ class InspeccionLocativaController extends Controller {
             'categoria_id_categoria' => $_POST['categoria_id_categoria'],
             'incidente_id_incidente' => $_POST['incidente_id_incidente'],
             'accidente_id_accidente' => $_POST['accidente_id_accidente'],
-            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo'],
-            'reporte_id_reporte' => $_POST['reporte_id_reporte']
+            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
         ];
         InspeccionLocativa::create($data);
         header('Location: ?controller=inspeccionlocativa&action=index');
@@ -53,14 +64,21 @@ class InspeccionLocativaController extends Controller {
     public function edit() {
         $id = $_GET['id'];
         $inspeccion = InspeccionLocativa::find($id);
+        $categorias = Categoria::all();
+        $incidentes = Incidente::all();
+        $accidentes = Accidente::all();
+        $riesgos = Riesgo::all();
         $this->view('inspeccioneslocativas/edit', [
-            'inspeccion' => $inspeccion
+            'inspeccion' => $inspeccion,
+            'categorias' => $categorias,
+            'incidentes' => $incidentes,
+            'accidentes' => $accidentes,
+            'riesgos' => $riesgos
         ]);
     }
     public function update() {
         $id = $_GET['id'];
         $data = [
-            'razon_social' => $_POST['razon_social'],
             'tipo_inspeccion' => $_POST['tipo_inspeccion'],
             'fecha_hora' => $_POST['fecha_hora'],
             'act_economica' => $_POST['act_economica'],
@@ -71,8 +89,7 @@ class InspeccionLocativaController extends Controller {
             'categoria_id_categoria' => $_POST['categoria_id_categoria'],
             'incidente_id_incidente' => $_POST['incidente_id_incidente'],
             'accidente_id_accidente' => $_POST['accidente_id_accidente'],
-            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo'],
-            'reporte_id_reporte' => $_POST['reporte_id_reporte']
+            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
         ];
         InspeccionLocativa::update($id, $data);
         header('Location: ?controller=inspeccionlocativa&action=index');
