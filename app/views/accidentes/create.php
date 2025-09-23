@@ -1,6 +1,7 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
 <div class="container mt-4">
   <h2>Registrar Accidente</h2>
+  <a href="/dashboard.php" class="btn btn-secondary mb-3">Regresar al dashboard</a>
   <form method="post" action="?controller=accidentes&action=store">
     <div class="row">
       <div class="col-md-4 mb-2">

@@ -10,6 +10,7 @@
 </style>
 <div class="accidentes-bg">
   <div class="container">
+    <a href="/dashboard.php" class="btn btn-secondary mb-3">Regresar al dashboard</a>
     <div class="row justify-content-center">
       <div class="col-lg-10">
         <div class="card accidentes-card p-4">

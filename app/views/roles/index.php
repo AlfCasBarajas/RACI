@@ -54,11 +54,11 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="card roles-card p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-                        <div class="w-100 text-center mb-2 mb-md-0">
+                    <div class="mb-3">
+                        <div class="w-100 text-center mb-3">
                             <h2 class="roles-title mb-0"><i class="bi bi-person-badge me-2"></i>Gestión de Roles</h2>
                         </div>
-                        <form class="d-flex align-items-center gap-2" method="get" action="">
+                        <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
                             <input type="hidden" name="controller" value="roles">
                             <input type="hidden" name="action" value="index">
                             <input type="text" class="form-control" name="filtro_nombre" placeholder="Filtrar por nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 200px;">
@@ -70,7 +70,9 @@
                             <button type="submit" class="btn btn-roles-outline"><i class="bi bi-funnel"></i> Filtrar</button>
                             <a href="?controller=roles&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
                         </form>
-                        <a href="?controller=roles&action=create" class="btn btn-roles"><i class="bi bi-plus-circle me-1"></i>Nuevo Rol</a>
+                        <div class="text-end">
+                            <a href="?controller=roles&action=create" class="btn btn-roles"><i class="bi bi-plus-circle me-1"></i>Nuevo Rol</a>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table roles-table align-middle">
