@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background: #1a237e;">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" class="me-2" style="height:40px;">
+            <img src="../Imagenes/Logo_RACI.png" alt="Logo" class="me-2" style="height:40px;">
             RACI SST
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,9 +10,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-                <li class="nav-item"><a class="nav-link" href="/RACI/?controller=roles&action=index">Roles</a></li>
+                <li class="nav-item"><a class="nav-link" href="#servicios">Gestiones</a></li>
+                <!--<li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>-->
+                <!--<li class="nav-item"><a class="nav-link" href="/RACI/?controller=roles&action=index">Roles</a></li>-->
                 <li class="nav-item"><a class="nav-link" href="../../index.php">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -72,17 +72,17 @@ $user = $_SESSION['user'];
         <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100 position-fixed" style="z-index: 100;">
             <div class="sidebar-sticky pt-4">
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=inspeccionlocativa&action=index"><i class="bi bi-clipboard-check me-2"></i>Inspección Locativa</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open me-2"></i>Categorías</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle me-2"></i>Incidente</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity me-2"></i>Accidente</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=riesgos&action=index"><i class="bi bi-shield-check me-2"></i>Riesgo</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=roles&action=index"><i class="bi bi-person-badge me-2"></i>Roles</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=users&action=index"><i class="bi bi-people me-2"></i>Usuarios</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=areas&action=index"><i class="bi bi-building me-2"></i>Áreas</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=users&action=index"><i class="bi bi-people me-2"></i>Usuarios</a></li>                    
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill me-2"></i>Empleados</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond me-2"></i>Condición Insegura</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=reportes&action=index"><i class="bi bi-file-earmark-text me-2"></i>Reporte</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=areas&action=index"><i class="bi bi-building me-2"></i>Áreas</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open me-2"></i>Categorías</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle me-2"></i>Incidentes</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity me-2"></i>Accidentes</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=riesgos&action=index"><i class="bi bi-shield-check me-2"></i>Riesgos</a></li>                    
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond me-2"></i>Condiciones Inseguras</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=inspeccionlocativa&action=index"><i class="bi bi-clipboard-check me-2"></i>Inspecciones Locativas</a></li>                   
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=reportes&action=index"><i class="bi bi-file-earmark-text me-2"></i>Reportes</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-danger" href="../../index.php"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
                 </ul>
             </div>
@@ -146,44 +146,15 @@ $user = $_SESSION['user'];
         <div class="row align-items-center mb-5">
             <div class="col-md-7">
                 <h1 class="display-5 fw-bold text-primary mb-3">Bienvenido, <?php echo htmlspecialchars($user['nombres']); ?>!</h1>
-                <p class="lead text-secondary">Somos expertos en Seguridad y Salud en el Trabajo. Protegemos a tu empresa y a tus colaboradores con soluciones integrales, asesoría y cumplimiento normativo.</p>
+                <p class="lead text-secondary">Facilitamos la gestión de Seguridad y Salud en el Trabajo a través del registro estructurado de información, permitiendo el seguimiento, análisis y mejora continua de los procesos. Nuestro enfoque está en la trazabilidad, organización y eficiencia documental.</p>
             </div>
             <div class="col-md-5 text-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2920/2920061.png" alt="SST" class="img-fluid" style="max-height: 180px;">
+                <!--<img src="https://cdn-icons-png.flaticon.com/512/2920/2920061.png" alt="SST" class="img-fluid" style="max-height: 180px;">-->
+                <img src="../Imagenes/Logo_RACI.png" alt="SST" class="img-fluid" style="max-height: 180px;">
             </div>
         </div>
             <h2 class="text-center mb-4" id="servicios">Gestiones</h2>
             <div class="row justify-content-center g-3">
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-clipboard-check fs-2 mb-1 text-primary"></i>
-                        <span>Inspección Locativa</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-folder2-open fs-2 mb-1 text-primary"></i>
-                        <span>Categoría</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-exclamation-triangle fs-2 mb-1 text-primary"></i>
-                        <span>Incidente</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-activity fs-2 mb-1 text-primary"></i>
-                        <span>Accidente</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-shield-check fs-2 mb-1 text-primary"></i>
-                        <span>Riesgo</span>
-                    </a>
-                </div>
                 <div class="col-6 col-md-2">
                     <a href="/RACI/?controller=roles&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
                         <i class="bi bi-person-badge fs-2 mb-1 text-primary"></i>
@@ -191,31 +162,65 @@ $user = $_SESSION['user'];
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                    <a href="/RACI/?controller=users&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
                         <i class="bi bi-people fs-2 mb-1 text-primary"></i>
                         <span>Usuarios</span>
                     </a>
-                </div>
+                </div>                
                 <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-building fs-2 mb-1 text-primary"></i>
-                        <span>Área</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                    <a href="/RACI/?controller=empleados&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
                         <i class="bi bi-person-lines-fill fs-2 mb-1 text-primary"></i>
-                        <span>Empleado</span>
+                        <span>Empleados</span>
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a href="#" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                    <a href="/RACI/?controller=areas&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-building fs-2 mb-1 text-primary"></i>
+                        <span>Áreas</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=categorias&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-folder2-open fs-2 mb-1 text-primary"></i>
+                        <span>Categorías</span>
+                    </a>
+                </div>                                
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=incidentes&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-exclamation-triangle fs-2 mb-1 text-primary"></i>
+                        <span>Incidentes</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=accidentes&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-activity fs-2 mb-1 text-primary"></i>
+                        <span>Accidentes</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=riesgos&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-shield-check fs-2 mb-1 text-primary"></i>
+                        <span>Riesgos</span>
+                    </a>
+                </div>
+                
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=condicionesinseguras&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
                         <i class="bi bi-exclamation-diamond fs-2 mb-1 text-primary"></i>
-                        <span>Condición Insegura</span>
+                        <span>Condiciones Inseguras</span>
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
-                    
+                    <a href="/RACI/?controller=inspeccionlocativa&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-clipboard-check fs-2 mb-1 text-primary"></i>
+                        <span>Inspecciones Locativas</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=reportes&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-exclamation-diamond fs-2 mb-1 text-primary"></i>
+                        <span>Reportes</span>
+                    </a>
                 </div>
             </div>
     </div>
@@ -246,5 +251,11 @@ $user = $_SESSION['user'];
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Forzar scroll al tope al cargar el dashboard
+    window.addEventListener('load', function() {
+        window.scrollTo(0, 0);
+    });
+</script>
 </body>
 </html>
