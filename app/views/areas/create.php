@@ -1,5 +1,4 @@
 <?php include __DIR__ . '/../header.php'; ?>
-<a href="app/views/dashboard.php" class="btn btn-secondary mb-3">Regresar al dashboard</a>
 <style>
   .areas-bg {
     background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%);
