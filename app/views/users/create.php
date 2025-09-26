@@ -1,4 +1,6 @@
-<?php include __DIR__ . '/../header.php'; ?>
+<?php include __DIR__ . '/../header.php';
+require_once __DIR__ . '../../../models/Rol.php';
+?>
 <style>
   .users-bg {
     background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%);
@@ -6,17 +8,20 @@
     padding-top: 40px;
     padding-bottom: 40px;
   }
+
   .users-card {
     border-radius: 1.2rem;
-    box-shadow: 0 2px 12px rgba(30,40,90,0.10);
+    box-shadow: 0 2px 12px rgba(30, 40, 90, 0.10);
     background: #fff;
     border: none;
   }
+
   .users-title {
     color: #1a237e;
     font-weight: 700;
     letter-spacing: 1px;
   }
+
   .btn-users {
     background: #1a237e;
     color: #fff;
@@ -24,10 +29,12 @@
     font-weight: 500;
     transition: background 0.2s;
   }
+
   .btn-users:hover {
     background: #3949ab;
     color: #fff;
   }
+
   .btn-users-outline {
     border: 2px solid #1a237e;
     color: #1a237e;
@@ -36,11 +43,13 @@
     font-weight: 500;
     transition: background 0.2s, color 0.2s;
   }
+
   .btn-users-outline:hover {
     background: #1a237e;
     color: #fff;
   }
 </style>
+
 <div class="users-bg">
   <div class="container">
     <div class="row justify-content-center">
@@ -72,10 +81,12 @@
             </div>
             <div class="mb-3">
               <label for="rol" class="form-label">Rol</label>
+              <?php $roles = Rol::all();
+              ?>
               <select class="form-select" id="rol" name="rol" required>
                 <option value="">Seleccione un rol</option>
                 <?php foreach ($roles as $rol): ?>
-                  <option value="<?= $rol['id_Rol'] ?>"><?= htmlspecialchars($rol['nombre']) ?></option>
+                  <option value="<?= $rol['nombre'] ?>"><?= htmlspecialchars($rol['nombre']) ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
