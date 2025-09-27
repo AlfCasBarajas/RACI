@@ -21,6 +21,7 @@ class EmpleadosController extends Controller {
 
     public function store() {
         $data = [
+            'id_empleado' => $_POST['id_empleado'],
             'tipo_doc' => $_POST['tipo_doc'],
             'nombres' => $_POST['nombres'],
             'apellidos' => $_POST['apellidos'],
@@ -46,6 +47,7 @@ class EmpleadosController extends Controller {
     public function update() {
         $id = $_GET['id'];
         $data = [
+            'id_empleado' => $_POST['id_empleado'],
             'tipo_doc' => $_POST['tipo_doc'],
             'nombres' => $_POST['nombres'],
             'apellidos' => $_POST['apellidos'],

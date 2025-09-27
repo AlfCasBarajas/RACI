@@ -49,6 +49,10 @@
           <h2 class="empleados-title mb-4"><i class="bi bi-person-lines-fill me-2"></i>Editar Empleado</h2>
           <form method="post" action="?controller=empleados&action=update&id=<?= $empleado['id_empleado'] ?>">
             <div class="mb-3">
+              <label for="id_empleado" class="form-label">ID Empleado</label>
+              <input type="number" class="form-control" id="id_empleado" name="id_empleado" value="<?= htmlspecialchars($empleado['id_empleado']) ?>" required readonly>
+            </div>
+            <div class="mb-3">
               <label for="tipo_doc" class="form-label">Tipo de Documento</label>
               <select class="form-select" id="tipo_doc" name="tipo_doc" required>
                 <option value="">Seleccione</option>

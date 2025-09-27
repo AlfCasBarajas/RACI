@@ -29,14 +29,14 @@ CREATE TABLE user (
 
 -- Insertar usuarios iniciales
 INSERT INTO user (num_doc, tipo_doc, nombres, apellidos, rol, contrasena, telefono) VALUES
-(1, 'CC', 'admin', 'Administrador', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
-(2, 'CC', 'super', 'Supervisor', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
-(3, 'CC', 'coord', 'Coordinador', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
-(4, 'CC', 'traba', 'Trabajador', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
+(1053349252, 'CC', 'Gabriel', 'Parra', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
+(1156464465, 'CC', 'Alfredo', 'Castro', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
+(1546465465, 'CC', 'Angela', 'Mora', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
+(3256464454, 'CC', 'Andres', 'Gonzalez', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
 
 -- Tabla empleado
 CREATE TABLE empleado (
-    id_empleado INT PRIMARY KEY AUTO_INCREMENT,
+    id_empleado INT PRIMARY KEY,
     tipo_doc VARCHAR(20) NOT NULL,
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,

@@ -44,8 +44,9 @@ class Empleado {
 
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO empleado (tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         return $stmt->execute([
+            $data['id_empleado'],
             $data['tipo_doc'],
             $data['nombres'],
             $data['apellidos'],
@@ -60,19 +61,20 @@ class Empleado {
 
     public static function update($id, $data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE empleado SET tipo_doc=?, nombres=?, apellidos=?, telefono=?, eps=?, arl=?, cargo_funcion=?, antig_cargo=?, rol=? WHERE id_empleado=?');
-        return $stmt->execute([
-            $data['tipo_doc'],
-            $data['nombres'],
-            $data['apellidos'],
-            $data['telefono'],
-            $data['eps'],
-            $data['arl'],
-            $data['cargo_funcion'],
-            $data['antig_cargo'],
-            $data['rol'],
-            $id
-        ]);
+        $stmt = $db->prepare('UPDATE empleado SET id_empleado = ?, tipo_doc = ?, nombres = ?, apellidos = ?, telefono = ?, eps = ?, arl = ?, cargo_funcion = ?, antig_cargo = ?, rol = ? WHERE id_empleado = ?');
+            return $stmt->execute([
+                $data['id_empleado'],
+                $data['tipo_doc'],
+                $data['nombres'],
+                $data['apellidos'],
+                $data['telefono'],
+                $data['eps'],
+                $data['arl'],
+                $data['cargo_funcion'],
+                $data['antig_cargo'],
+                $data['rol'],
+                $id
+            ]);
     }
 
     public static function delete($id) {

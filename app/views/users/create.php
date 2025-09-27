@@ -86,7 +86,7 @@ require_once __DIR__ . '../../../models/Rol.php';
               <select class="form-select" id="rol" name="rol" required>
                 <option value="">Seleccione un rol</option>
                 <?php foreach ($roles as $rol): ?>
-                  <option value="<?= $rol['nombre'] ?>"><?= htmlspecialchars($rol['nombre']) ?></option>
+              <option value="<?= $rol['id_Rol'] ?>"><?= htmlspecialchars($rol['nombre']) ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
