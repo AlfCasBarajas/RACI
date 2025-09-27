@@ -127,7 +127,6 @@ CREATE TABLE inspeccion_locativa (
     id_insp_loc INT PRIMARY KEY AUTO_INCREMENT,
     tipo_inspeccion VARCHAR(50),
     fecha_hora DATETIME,
-    act_economica VARCHAR(100),
     descripcion TEXT,
     estado_inspeccion VARCHAR(50),
     element_trab TEXT,

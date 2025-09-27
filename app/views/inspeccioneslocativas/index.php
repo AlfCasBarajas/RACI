@@ -51,7 +51,6 @@
                       <div class="col-md-6"><strong>ID:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['id_insp_loc']) ?></div>
                       <div class="col-md-6"><strong>Tipo Inspección:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['tipo_inspeccion']) ?></div>
                       <div class="col-md-6"><strong>Fecha y Hora:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['fecha_hora']) ?></div>
-                      <div class="col-md-6"><strong>Actividad Económica:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['act_economica']) ?></div>
                       <div class="col-md-6"><strong>Descripción:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['descripcion']) ?></div>
                       <div class="col-md-6"><strong>Estado Inspección:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['estado_inspeccion']) ?></div>
                       <div class="col-md-6"><strong>Elementos de Trabajo:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['element_trab']) ?></div>

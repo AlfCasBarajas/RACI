@@ -5,7 +5,6 @@
     <div class="row">
       <div class="col-md-4 mb-2"><label>Tipo Inspección</label><input type="text" name="tipo_inspeccion" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>Fecha y Hora</label><input type="datetime-local" name="fecha_hora" class="form-control"></div>
-      <div class="col-md-4 mb-2"><label>Actividad Económica</label><input type="text" name="act_economica" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>Descripción</label><input type="text" name="descripcion" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>Estado Inspección</label><input type="text" name="estado_inspeccion" class="form-control"></div>
       <div class="col-md-4 mb-2"><label>Elementos de Trabajo</label><input type="text" name="element_trab" class="form-control"></div>

@@ -47,7 +47,6 @@ class InspeccionLocativaController extends Controller {
         $data = [
             'tipo_inspeccion' => $_POST['tipo_inspeccion'],
             'fecha_hora' => $_POST['fecha_hora'],
-            'act_economica' => $_POST['act_economica'],
             'descripcion' => $_POST['descripcion'],
             'estado_inspeccion' => $_POST['estado_inspeccion'],
             'element_trab' => $_POST['element_trab'],

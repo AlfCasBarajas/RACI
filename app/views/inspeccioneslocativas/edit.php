@@ -5,7 +5,6 @@
     <div class="row">
       <div class="col-md-4 mb-2"><label>Tipo Inspección</label><input type="text" name="tipo_inspeccion" class="form-control" value="<?= htmlspecialchars($inspeccion['tipo_inspeccion']) ?>"></div>
       <div class="col-md-4 mb-2"><label>Fecha y Hora</label><input type="datetime-local" name="fecha_hora" class="form-control" value="<?= date('Y-m-d\TH:i', strtotime($inspeccion['fecha_hora'])) ?>"></div>
-      <div class="col-md-4 mb-2"><label>Actividad Económica</label><input type="text" name="act_economica" class="form-control" value="<?= htmlspecialchars($inspeccion['act_economica']) ?>"></div>
       <div class="col-md-4 mb-2"><label>Descripción</label><input type="text" name="descripcion" class="form-control" value="<?= htmlspecialchars($inspeccion['descripcion']) ?>"></div>
       <div class="col-md-4 mb-2"><label>Estado Inspección</label><input type="text" name="estado_inspeccion" class="form-control" value="<?= htmlspecialchars($inspeccion['estado_inspeccion']) ?>"></div>
       <div class="col-md-4 mb-2"><label>Elementos de Trabajo</label><input type="text" name="element_trab" class="form-control" value="<?= htmlspecialchars($inspeccion['element_trab']) ?>"></div>

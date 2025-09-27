@@ -62,13 +62,29 @@ class ReportesController extends Controller {
             $stmtAcc = $db->prepare($sqlAcc);
             $stmtAcc->execute($paramsAcc);
             $accidentes = $stmtAcc->fetchAll(PDO::FETCH_ASSOC);
-            $reporteEmpleado = [
-                'id_empleado' => $empleado['id_empleado'],
-                'nombres' => $empleado['nombres'],
-                'apellidos' => $empleado['apellidos'],
-                'incidentes' => $incidentes,
-                'accidentes' => $accidentes
-            ];
+            if (is_array($empleado)) {
+                $reporteEmpleado = [
+                    'id_empleado' => $empleado['id_empleado'],
+                    'nombres' => $empleado['nombres'],
+                    'apellidos' => $empleado['apellidos'],
+                    'incidentes' => $incidentes,
+                    'accidentes' => $accidentes
+                ];
+            } else {
+                $reporteEmpleado = null;
+                // Opcional: puedes agregar un mensaje de error para la vista
+                $this->view('reportes/create', [
+                    'error' => 'Empleado no encontrado',
+                    'empleados' => $empleados,
+                    'empleado' => $empleadoId,
+                    'fecha_inicio' => $fecha_inicio,
+                    'fecha_fin' => $fecha_fin,
+                    'inspecciones' => $inspecciones,
+                    'reporteEmpleado' => null,
+                    'inspeccionSeleccionada' => $inspeccionSeleccionada
+                ]);
+                return;
+            }
             // Obtener datos de la inspección locativa seleccionada
             if ($inspeccion_locativa_id) {
                 $inspeccionSeleccionada = InspeccionLocativa::find($inspeccion_locativa_id);
