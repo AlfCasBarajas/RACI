@@ -72,12 +72,8 @@ require_once __DIR__ . '../../../models/Rol.php';
               </select>
             </div>
             <div class="mb-3">
-              <label for="nombres" class="form-label">Nombres</label>
-              <input type="text" class="form-control" id="nombres" name="nombres" required>
-            </div>
-            <div class="mb-3">
-              <label for="apellidos" class="form-label">Apellidos</label>
-              <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
             <div class="mb-3">
               <label for="rol" class="form-label">Rol</label>

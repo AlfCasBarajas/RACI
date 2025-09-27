@@ -65,12 +65,8 @@ include __DIR__ . '/../header.php'; ?>
               </select>
             </div>
             <div class="mb-3">
-              <label for="nombres" class="form-label">Nombres</label>
-              <input type="text" class="form-control" id="nombres" name="nombres" value="<?= htmlspecialchars($usuario['nombres']) ?>" required>
-            </div>
-            <div class="mb-3">
-              <label for="apellidos" class="form-label">Apellidos</label>
-              <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= htmlspecialchars($usuario['apellidos']) ?>" required>
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control" id="usuario" name="usuario" value="<?= htmlspecialchars($usuario['usuario']) ?>" required>
             </div>
             <div class="mb-3">
               <label for="rol" class="form-label">Rol</label>

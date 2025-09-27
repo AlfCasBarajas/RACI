@@ -57,7 +57,7 @@ include __DIR__ . '/../header.php'; ?>
               <input type="hidden" name="controller" value="users">
               <input type="hidden" name="action" value="index">
               <input type="text" class="form-control" name="filtro_doc" placeholder="N° Documento" value="<?= isset($_GET['filtro_doc']) ? htmlspecialchars($_GET['filtro_doc']) : '' ?>" style="max-width: 130px;">
-              <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 150px;">
+              <input type="text" class="form-control" name="filtro_usuario" placeholder="Usuario" value="<?= isset($_GET['filtro_usuario']) ? htmlspecialchars($_GET['filtro_usuario']) : '' ?>" style="max-width: 150px;">
               <select class="form-select" name="filtro_rol" style="max-width: 140px;">
                 <option value="">Rol</option>
                 <?php
@@ -69,7 +69,7 @@ include __DIR__ . '/../header.php'; ?>
               <select class="form-select" name="orden" style="max-width: 160px;">
                 <option value="">Ordenar por</option>
                 <option value="num_doc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'num_doc') ? 'selected' : '' ?>>N° Documento</option>
-                <option value="nombres" <?= (isset($_GET['orden']) && $_GET['orden'] == 'nombres') ? 'selected' : '' ?>>Nombre</option>
+                <option value="usuario" <?= (isset($_GET['orden']) && $_GET['orden'] == 'usuario') ? 'selected' : '' ?>>Usuario</option>
                 <option value="rol" <?= (isset($_GET['orden']) && $_GET['orden'] == 'rol') ? 'selected' : '' ?>>Rol</option>
               </select>
               <button type="submit" class="btn btn-users-outline"><i class="bi bi-funnel"></i> Filtrar</button>
@@ -85,8 +85,7 @@ include __DIR__ . '/../header.php'; ?>
                 <tr>
                   <th>N° Documento</th>
                   <th>Tipo Doc</th>
-                  <th>Nombres</th>
-                  <th>Apellidos</th>
+                  <th>Usuario</th>
                   <th>Rol</th>
                   <th>Teléfono</th>
                   <th>Acciones</th>
@@ -97,8 +96,7 @@ include __DIR__ . '/../header.php'; ?>
                   <tr>
                     <td><?= htmlspecialchars($usuario['num_doc']) ?></td>
                     <td><?= htmlspecialchars($usuario['tipo_doc']) ?></td>
-                    <td><?= htmlspecialchars($usuario['nombres']) ?></td>
-                    <td><?= htmlspecialchars($usuario['apellidos']) ?></td>
+                    <td><?= htmlspecialchars($usuario['usuario']) ?></td>
                     <td><?= htmlspecialchars($usuario['rol_nombre']) ?></td>
                     <td><?= htmlspecialchars($usuario['telefono']) ?></td>
                     <td>

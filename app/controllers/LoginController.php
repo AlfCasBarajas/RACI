@@ -12,7 +12,7 @@ class LoginController extends Controller {
             $password = $_POST['password'];
             $db = new Database();
             $conn = $db->getConnection();
-            $stmt = $conn->prepare('SELECT * FROM user WHERE nombres = :username');
+            $stmt = $conn->prepare('SELECT * FROM user WHERE usuario = :username');
             $stmt->bindParam(':username', $username);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);

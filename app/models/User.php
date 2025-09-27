@@ -46,13 +46,12 @@ class User {
 
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO user (num_doc, tipo_doc, nombres, apellidos, rol, contrasena, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO user (num_doc, tipo_doc, usuario, rol, contrasena, telefono) VALUES (?, ?, ?, ?, ?, ?)');
         $hashed = password_hash($data['contrasena'], PASSWORD_DEFAULT);
         return $stmt->execute([
             $data['num_doc'],
             $data['tipo_doc'],
-            $data['nombres'],
-            $data['apellidos'],
+            $data['usuario'],
             $data['rol'],
             $hashed,
             $data['telefono']
@@ -63,22 +62,20 @@ class User {
         $db = Database::getConnection();
         if (!empty($data['contrasena'])) {
             $hashed = password_hash($data['contrasena'], PASSWORD_DEFAULT);
-            $stmt = $db->prepare('UPDATE user SET tipo_doc=?, nombres=?, apellidos=?, rol=?, contrasena=?, telefono=? WHERE num_doc=?');
+            $stmt = $db->prepare('UPDATE user SET tipo_doc=?, usuario=?, rol=?, contrasena=?, telefono=? WHERE num_doc=?');
             return $stmt->execute([
                 $data['tipo_doc'],
-                $data['nombres'],
-                $data['apellidos'],
+                $data['usuario'],
                 $data['rol'],
                 $hashed,
                 $data['telefono'],
                 $num_doc
             ]);
         } else {
-            $stmt = $db->prepare('UPDATE user SET tipo_doc=?, nombres=?, apellidos=?, rol=?, telefono=? WHERE num_doc=?');
+            $stmt = $db->prepare('UPDATE user SET tipo_doc=?, usuario=?, rol=?, telefono=? WHERE num_doc=?');
             return $stmt->execute([
                 $data['tipo_doc'],
-                $data['nombres'],
-                $data['apellidos'],
+                $data['usuario'],
                 $data['rol'],
                 $data['telefono'],
                 $num_doc

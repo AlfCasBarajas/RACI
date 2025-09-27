@@ -19,8 +19,7 @@ INSERT INTO rol (id_Rol, nombre) VALUES
 CREATE TABLE user (
     num_doc INT PRIMARY KEY,
     tipo_doc VARCHAR(20) NOT NULL,
-    nombres VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100) NOT NULL,
+    usuario VARCHAR(100) NOT NULL,
     rol INT NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
     telefono INT,
@@ -28,11 +27,11 @@ CREATE TABLE user (
 );
 
 -- Insertar usuarios iniciales
-INSERT INTO user (num_doc, tipo_doc, nombres, apellidos, rol, contrasena, telefono) VALUES
-(1053349252, 'CC', 'Gabriel', 'Parra', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
-(1156464465, 'CC', 'Alfredo', 'Castro', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
-(1546465465, 'CC', 'Angela', 'Mora', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
-(3256464454, 'CC', 'Andres', 'Gonzalez', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
+INSERT INTO user (num_doc,  tipo_doc, usuario, rol, contrasena, telefono) VALUES
+(1053349252, 'CC', 'admin', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
+(1156464465, 'CC', 'super', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
+(1546465465, 'CC', 'coord', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
+(3256464454, 'CC', 'traba', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
 
 -- Tabla empleado
 CREATE TABLE empleado (

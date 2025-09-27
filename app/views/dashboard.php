@@ -145,7 +145,7 @@ $user = $_SESSION['user'];
     <div class="container">
         <div class="row align-items-center mb-5">
             <div class="col-md-7">
-                <h1 class="display-5 fw-bold text-primary mb-3">Bienvenido, <?php echo htmlspecialchars($user['nombres']); ?>!</h1>
+                <h1 class="display-5 fw-bold text-primary mb-3">Bienvenido, <?php echo htmlspecialchars($user['usuario']); ?>!</h1>
                 <p class="lead text-secondary">Facilitamos la gestión de Seguridad y Salud en el Trabajo a través del registro estructurado de información, permitiendo el seguimiento, análisis y mejora continua de los procesos. Nuestro enfoque está en la trazabilidad, organización y eficiencia documental.</p>
             </div>
             <div class="col-md-5 text-center">

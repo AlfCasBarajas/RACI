@@ -23,8 +23,7 @@ class UsersController extends Controller {
         $data = [
             'num_doc' => $_POST['num_doc'],
             'tipo_doc' => $_POST['tipo_doc'],
-            'nombres' => $_POST['nombres'],
-            'apellidos' => $_POST['apellidos'],
+            'usuario' => $_POST['usuario'],
             'rol' => $_POST['rol'],
             'telefono' => $_POST['telefono'],
             'contrasena' => $_POST['contrasena']
@@ -45,8 +44,7 @@ class UsersController extends Controller {
         $num_doc = $_GET['id'];
         $data = [
             'tipo_doc' => $_POST['tipo_doc'],
-            'nombres' => $_POST['nombres'],
-            'apellidos' => $_POST['apellidos'],
+            'usuario' => $_POST['usuario'],
             'rol' => $_POST['rol'],
             'telefono' => $_POST['telefono'],
             'contrasena' => $_POST['contrasena']
