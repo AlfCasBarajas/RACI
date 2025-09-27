@@ -79,8 +79,8 @@ $user = $_SESSION['user'];
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open me-2"></i>Categorías</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle me-2"></i>Incidentes</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity me-2"></i>Accidentes</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=riesgos&action=index"><i class="bi bi-shield-check me-2"></i>Riesgos</a></li>                    
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond me-2"></i>Condiciones Inseguras</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=riesgos&action=index"><i class="bi bi-shield-check me-2"></i>Riesgos</a></li>                    
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=inspeccionlocativa&action=index"><i class="bi bi-clipboard-check me-2"></i>Inspecciones Locativas</a></li>                   
                     <li class="nav-item mb-2"><a class="nav-link text-dark" href="/RACI/?controller=reportes&action=index"><i class="bi bi-file-earmark-text me-2"></i>Reportes</a></li>
                     <li class="nav-item mb-2"><a class="nav-link text-danger" href="../../index.php"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
@@ -198,16 +198,15 @@ $user = $_SESSION['user'];
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a href="/RACI/?controller=riesgos&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
-                        <i class="bi bi-shield-check fs-2 mb-1 text-primary"></i>
-                        <span>Riesgos</span>
-                    </a>
-                </div>
-                
-                <div class="col-6 col-md-2">
                     <a href="/RACI/?controller=condicionesinseguras&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
                         <i class="bi bi-exclamation-diamond fs-2 mb-1 text-primary"></i>
                         <span>Condiciones Inseguras</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-2">
+                    <a href="/RACI/?controller=riesgos&action=index" class="btn btn-light border w-100 py-3 shadow-sm d-flex flex-column align-items-center">
+                        <i class="bi bi-shield-check fs-2 mb-1 text-primary"></i>
+                        <span>Riesgos</span>
                     </a>
                 </div>
                 <div class="col-6 col-md-2">
