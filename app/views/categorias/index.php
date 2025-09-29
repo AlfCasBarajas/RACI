@@ -64,7 +64,7 @@
               <select class="form-select" name="filtro_usuario" style="max-width: 140px;">
                 <option value="">Usuario</option>
                 <?php foreach ($usuarios as $usuario): ?>
-                  <option value="<?= $usuario['num_doc'] ?>" <?= (isset($_GET['filtro_usuario']) && $_GET['filtro_usuario'] == $usuario['num_doc']) ? 'selected' : '' ?>><?= htmlspecialchars($usuario['nombres']) ?></option>
+                  <option value="<?= $usuario['num_doc'] ?>" <?= (isset($_GET['filtro_usuario']) && $_GET['filtro_usuario'] == $usuario['num_doc']) ? 'selected' : '' ?>><?= htmlspecialchars($usuario['usuario']) ?></option>
                 <?php endforeach; ?>
               </select>
               <select class="form-select" name="filtro_empleado" style="max-width: 140px;">

@@ -27,7 +27,7 @@
             <select class="form-select" id="user_num_doc" name="user_num_doc" required>
               <option value="">Seleccione un usuario</option>
               <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['num_doc'] ?>"><?= htmlspecialchars($usuario['nombres']) ?></option>
+                <option value="<?= $usuario['num_doc'] ?>"><?= htmlspecialchars($usuario['usuario']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../core/Database.php';
 class Categoria {
     public static function getFiltered($nombre = '', $area = '', $usuario = '', $empleado = '', $descripcion = '', $orden = 'nombre_asc') {
         $db = Database::getConnection();
-        $sql = 'SELECT c.*, a.nombre as area_nombre, u.nombres as usuario_nombre, e.nombres as empleado_nombre FROM categoria c '
+        $sql = 'SELECT c.*, a.nombre as area_nombre, u.usuario as usuario_nombre, e.nombres as empleado_nombre FROM categoria c '
             . 'LEFT JOIN area a ON c.area_id_area = a.id_area '
             . 'LEFT JOIN user u ON c.user_num_doc = u.num_doc '
             . 'LEFT JOIN empleado e ON c.empleado_id_empleado = e.id_empleado';
