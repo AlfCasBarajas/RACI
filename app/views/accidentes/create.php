@@ -1,4 +1,21 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
+<style>
+  .btn-inicio-claro {
+    background: #e3f2fd;
+    color: #3949ab;
+    border-radius: 2rem;
+    font-weight: 600;
+    border: 2px solid #bbdefb;
+    box-shadow: 0 2px 8px #bbdefb88;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .btn-inicio-claro:hover {
+    background: #ffd600;
+    color: #3949ab;
+    border: 2px solid #3949ab;
+    box-shadow: 0 2px 12px #ffd60055;
+  }
+</style>
 <div class="container mt-4">
   <h2>Registrar Accidente</h2>
   <form method="post" action="?controller=accidentes&action=store">
@@ -28,9 +45,10 @@
         <input type="text" name="tipo_vinc_lab_" class="form-control">
       </div>
       <div class="col-md-4 mb-2">
-        <label>Jornada Laboral</label>
-        <input type="text" name="jornada_laboral" class="form-control">
-      </div>
+        <div class="accidentes-bg">
+          <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
+          <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+            <div class="card accidentes-card p-4 w-100" style="max-width:700px;">
       <div class="col-md-4 mb-2">
         <label>Turno Momento Accidente</label>
         <input type="text" name="turno_mom_acc" class="form-control">

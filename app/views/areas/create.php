@@ -6,6 +6,21 @@
     padding-top: 40px;
     padding-bottom: 40px;
   }
+  .btn-inicio-claro {
+    background: #e3f2fd;
+    color: #3949ab;
+    border-radius: 2rem;
+    font-weight: 600;
+    border: 2px solid #bbdefb;
+    box-shadow: 0 2px 8px #bbdefb88;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .btn-inicio-claro:hover {
+    background: #ffd600;
+    color: #3949ab;
+    border: 2px solid #3949ab;
+    box-shadow: 0 2px 12px #ffd60055;
+  }
   .areas-card {
     border-radius: 1.2rem;
     box-shadow: 0 2px 12px rgba(30,40,90,0.10);
@@ -42,10 +57,8 @@
   }
 </style>
 <div class="areas-bg">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-6">
-        <div class="card areas-card p-4">
+  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <div class="card areas-card p-4 w-100" style="max-width:700px;">
           <h2 class="areas-title mb-4"><i class="bi bi-building me-2"></i>Nueva Área</h2>
           <form method="post" action="?controller=areas&action=store">
             <div class="mb-3">

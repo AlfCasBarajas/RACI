@@ -1,64 +1,78 @@
 <?php include __DIR__ . '/../header.php'; ?>
 <style>
-    .roles-bg {
-        background: linear-gradient(135deg, #e3eafc 0%, #f5f7fa 100%);
+    body {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
         min-height: 100vh;
-        padding-top: 40px;
-        padding-bottom: 40px;
+    }
+    .roles-bg {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .roles-card {
         border-radius: 1.2rem;
         box-shadow: 0 2px 12px rgba(30,40,90,0.10);
         background: #fff;
         border: none;
+        max-width: 400px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .roles-title {
         color: #1a237e;
         font-weight: 700;
         letter-spacing: 1px;
+        text-align: center;
+        width: 100%;
+        border-bottom: 3px solid #ffd600;
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
     }
     .btn-roles {
-        background: #1a237e;
-        color: #fff;
-        border-radius: 2rem;
-        font-weight: 500;
-        transition: background 0.2s;
-    }
-    .btn-roles:hover {
         background: #3949ab;
         color: #fff;
+        border-radius: 2rem;
+        font-weight: 600;
+        border: 2px solid #ffd600;
+        box-shadow: 0 2px 8px rgba(255,214,0,0.10);
+        transition: background 0.2s, border 0.2s;
+    }
+    .btn-roles:hover {
+        background: #ffd600;
+        color: #3949ab;
+        border: 2px solid #3949ab;
     }
     .btn-roles-outline {
-        border: 2px solid #1a237e;
-        color: #1a237e;
+        border: 2px solid #3949ab;
+        color: #3949ab;
         background: #fff;
         border-radius: 2rem;
-        font-weight: 500;
-        transition: background 0.2s, color 0.2s;
+        font-weight: 600;
+        transition: background 0.2s, color 0.2s, border 0.2s;
     }
     .btn-roles-outline:hover {
-        background: #1a237e;
+        background: #3949ab;
         color: #fff;
+        border: 2px solid #ffd600;
     }
 </style>
 <div class="roles-bg">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card roles-card p-4">
-                    <h2 class="roles-title mb-4"><i class="bi bi-person-badge me-2"></i>Nuevo Rol</h2>
-                    <form method="post" action="?controller=roles&action=store">
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre del Rol</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" required>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-roles me-2"><i class="bi bi-check-circle me-1"></i>Guardar</button>
-                            <a href="?controller=roles&action=index" class="btn btn-roles-outline">Cancelar</a>
-                        </div>
-                    </form>
+    <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+        <div class="card roles-card p-4 w-100">
+            <h2 class="roles-title mb-4"><i class="bi bi-person-badge me-2"></i>Nuevo Rol</h2>
+            <form method="post" action="?controller=roles&action=store" class="w-100">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre del Rol</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
                 </div>
-            </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-roles"><i class="bi bi-check-circle me-1"></i>Guardar</button>
+                    <a href="?controller=roles&action=index" class="btn btn-roles-outline">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

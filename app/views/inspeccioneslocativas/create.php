@@ -1,6 +1,6 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
 <div class="container mt-4">
-  <h2>Nueva Inspección Locativa</h2>
+  <h2 class="text-center">Nueva Inspección Locativa</h2>
   <form method="post" action="?controller=inspeccionlocativa&action=store">
     <div class="row">
       <div class="col-md-4 mb-2"><label>Tipo Inspección</label><input type="text" name="tipo_inspeccion" class="form-control"></div>
@@ -51,5 +51,23 @@
       </div>
     </div>
   </form>
+  <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
 </div>
+<style>
+  .btn-inicio-claro {
+    background: #e3f2fd;
+    color: #3949ab;
+    border-radius: 2rem;
+    font-weight: 600;
+    border: 2px solid #bbdefb;
+    box-shadow: 0 2px 8px #bbdefb88;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .btn-inicio-claro:hover {
+    background: #ffd600;
+    color: #3949ab;
+    border: 2px solid #3949ab;
+    box-shadow: 0 2px 12px #ffd60055;
+  }
+</style>
 <?php include __DIR__ . '/../footer.php'; ?>

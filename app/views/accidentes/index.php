@@ -1,6 +1,21 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<a href="app/views/dashboard.php" class="btn btn-secondary mb-3">Volver a inicio</a>
+<a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
 <style>
+  .btn-inicio-claro {
+    background: #e3f2fd;
+    color: #3949ab;
+    border-radius: 2rem;
+    font-weight: 600;
+    border: 2px solid #bbdefb;
+    box-shadow: 0 2px 8px #bbdefb88;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .btn-inicio-claro:hover {
+    background: #ffd600;
+    color: #3949ab;
+    border: 2px solid #3949ab;
+    box-shadow: 0 2px 12px #ffd60055;
+  }
   .accidentes-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%); min-height: 100vh; padding-top: 40px; padding-bottom: 40px; }
   .accidentes-card { border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; }
   .accidentes-title { color: #b71c1c; font-weight: 700; letter-spacing: 1px; }
@@ -10,10 +25,8 @@
   .btn-accidentes-outline:hover { background: #b71c1c; color: #fff; }
 </style>
 <div class="accidentes-bg">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="card accidentes-card p-4">
+  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <div class="card accidentes-card p-4 w-100" style="max-width:1200px;">
           <div class="mb-3">
             <div class="w-100 text-center mb-3">
               <h2 class="accidentes-title mb-0"><i class="bi bi-activity me-2"></i>Gestión de Accidentes</h2>
