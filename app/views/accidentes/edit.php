@@ -1,8 +1,10 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<div class="container mt-4">
-  <h2>Editar Accidente</h2>
-  <form method="post" action="?controller=accidentes&action=update&id=<?= $accidente['id_accidente'] ?>">
-    <div class="row">
+<div class="accidentes-bg">
+  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <div class="card accidentes-card p-4 w-100" style="max-width:700px;">
+      <h2 class="mb-4 text-center">Editar Accidente</h2>
+      <form method="post" action="?controller=accidentes&action=update&id=<?= $accidente['id_accidente'] ?>">
+        <div class="row">
       <div class="col-md-4 mb-2">
         <label>Tipo</label>
         <input type="text" name="tipo" class="form-control" value="<?= htmlspecialchars($accidente['tipo']) ?>" required>
@@ -68,10 +70,13 @@
         <input type="text" name="persona_informo" class="form-control" value="<?= htmlspecialchars($accidente['persona_informo']) ?>">
       </div>
       <div class="col-12 mt-3">
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="?controller=accidentes&action=index" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <a href="?controller=accidentes&action=index" class="btn btn-secondary ms-2">Cancelar</a>
       </div>
     </div>
   </form>
+      </form>
+    </div>
+  </div>
 </div>
 <?php include __DIR__ . '/../footer.php'; ?>

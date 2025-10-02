@@ -1,9 +1,24 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-7">
-      <div class="card shadow p-4">
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+  <div class="card categorias-card p-4 w-100" style="max-width:700px;">
         <h3 class="mb-3 text-center"><i class="bi bi-pencil-square me-2"></i>Editar Categoría</h3>
+<style>
+  .btn-inicio-claro {
+    background: #e3f2fd;
+    color: #3949ab;
+    border-radius: 2rem;
+    font-weight: 600;
+    border: 2px solid #bbdefb;
+    box-shadow: 0 2px 8px #bbdefb88;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .btn-inicio-claro:hover {
+    background: #ffd600;
+    color: #3949ab;
+    border: 2px solid #3949ab;
+    box-shadow: 0 2px 12px #ffd60055;
+  }
+</style>
         <form method="post" action="?controller=categorias&action=update&id=<?= $categoria['id_categoria'] ?>">
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
@@ -41,8 +56,8 @@
             </select>
           </div>
           <div class="d-flex justify-content-between mt-4">
-            <a href="?controller=categorias&action=index" class="btn btn-secondary">Cancelar</a>
             <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="?controller=categorias&action=index" class="btn btn-secondary ms-2">Cancelar</a>
           </div>
         </form>
       </div>

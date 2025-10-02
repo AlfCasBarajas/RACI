@@ -16,6 +16,17 @@ include __DIR__ . '/../header.php';
 // ...aquí termina el bloque PHP, el resto es HTML y CSS...
 ?>
 <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
+<style>
+  body {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    min-height: 100vh;
+  }
+  .reportes-bg {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .btn-inicio-claro {
     background: #e3f2fd;
     color: #3949ab;
@@ -30,6 +41,14 @@ include __DIR__ . '/../header.php';
     color: #3949ab;
     border: 2px solid #3949ab;
     box-shadow: 0 2px 12px #ffd60055;
+  }
+  .btn.btn-primary.btn-lg.rounded-pill.px-4.shadow-sm.d-inline-flex.align-items-center.gap-2 {
+    transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+  }
+  .btn.btn-primary.btn-lg.rounded-pill.px-4.shadow-sm.d-inline-flex.align-items-center.gap-2:hover {
+    box-shadow: 0 4px 16px #3949ab55;
+    background: linear-gradient(90deg,#1976d2 60%,#3949ab 100%);
+    color: #fff;
   }
 </style>
 <div class="reportes-bg">
@@ -54,7 +73,9 @@ include __DIR__ . '/../header.php';
               <a href="?controller=reportes&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
             </form>
             <div class="text-end">
-              <a href="?controller=reportes&action=create" class="btn btn-reportes"><i class="bi bi-plus-circle me-1"></i>Nuevo Reporte</a>
+              <a href="?controller=reportes&action=create" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm d-inline-flex align-items-center gap-2" style="background: linear-gradient(90deg,#3949ab 60%,#1976d2 100%); border: none; font-weight: 600;">
+                <i class="bi bi-plus-circle me-1"></i>Nuevo Reporte
+              </a>
             </div>
           </div>
           <div class="table-responsive">
@@ -150,7 +171,7 @@ include __DIR__ . '/../header.php';
                       <div><strong>ID:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['id_insp_loc']) ?></div>
                       <div><strong>Tipo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['tipo_inspeccion']) ?></div>
                       <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['fecha_hora']) ?></div>
-                      <div><strong>Actividad económica:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['act_economica']) ?></div>
+                      <div><strong>Actividad económica:</strong> <?= isset($reporte['inspeccion_locativa']['act_economica']) ? htmlspecialchars($reporte['inspeccion_locativa']['act_economica']) : '<span class="text-muted">No disponible</span>' ?></div>
                       <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['descripcion']) ?></div>
                       <div><strong>Estado:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['estado_inspeccion']) ?></div>
                       <div><strong>Elementos de trabajo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['element_trab']) ?></div>

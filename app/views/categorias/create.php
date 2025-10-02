@@ -41,23 +41,8 @@
             </select>
           </div>
           <div class="d-flex justify-content-between mt-4">
-            <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
             <button type="submit" class="btn btn-primary">Guardar</button>
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
+            <a href="?controller=categorias&action=index" class="btn btn-secondary ms-2">Cancelar</a>
           </div>
         </form>
       </div>

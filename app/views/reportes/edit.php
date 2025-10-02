@@ -1,15 +1,29 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
 <div class="container mt-4">
-  <h2 class="text-center">Editar Reporte</h2>
-  <form method="post" action="?controller=reportes&action=update&id=<?= $reporte['id_reporte'] ?>">
-    <div class="row">
-      <div class="col-md-6 mb-2"><label>Nombre</label><input type="text" name="nombre" class="form-control" value="<?= htmlspecialchars($reporte['nombre']) ?>" required></div>
-      <div class="col-12 mt-3">
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="?controller=reportes&action=index" class="btn btn-inicio-claro">Cancelar</a>
-      </div>
+  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <div class="card shadow p-4 w-100" style="max-width:700px;">
+      <h2 class="text-center mb-4">Editar Reporte</h2>
+      <form method="post" action="?controller=reportes&action=update&id=<?= $reporte['id_reporte'] ?>">
+        <div class="row">
+          <div class="col-md-6 mb-2"><label>Nombre</label><input type="text" name="nombre" class="form-control" value="<?= htmlspecialchars($reporte['nombre']) ?>" required></div>
+          <div class="col-md-6 mb-2"><label>Descripción</label><textarea name="descripcion" class="form-control" rows="3"><?= isset($reporte['descripcion']) ? htmlspecialchars($reporte['descripcion']) : '' ?></textarea></div>
+          <div class="col-md-6 mb-2">
+            <label>Inspección Locativa</label>
+            <select name="inspeccion_locativa_id_insp_loc" class="form-control">
+              <option value="">-- Selecciona inspección --</option>
+              <?php if (isset($inspeccioneslocativas)): foreach ($inspeccioneslocativas as $insp): ?>
+                <option value="<?= $insp['id_insp_loc'] ?>" <?= (isset($reporte['inspeccion_locativa_id_insp_loc']) && $reporte['inspeccion_locativa_id_insp_loc'] == $insp['id_insp_loc']) ? 'selected' : '' ?>><?= htmlspecialchars($insp['tipo_inspeccion']) ?> - <?= date('d/m/Y H:i', strtotime($insp['fecha_hora'])) ?></option>
+              <?php endforeach; endif; ?>
+            </select>
+          </div>
+          <div class="col-12 mt-3 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="?controller=reportes&action=index" class="btn btn-inicio-claro ms-2">Cancelar</a>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
   <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
   <style>
     .btn-inicio-claro {

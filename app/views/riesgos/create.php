@@ -22,9 +22,9 @@
               <?php endforeach; ?>
             </select>
           </div>
-          <div class="d-flex justify-content-between mt-4">
-            <a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
+          <div class="d-flex justify-content-end mt-4">
             <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="?controller=riesgos&action=index" class="btn btn-secondary ms-2">Cancelar</a>
           </div>
         </form>
       </div>
