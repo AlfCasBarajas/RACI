@@ -1,76 +1,136 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<div class="container mt-4">
-  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-    <div class="card shadow p-4 w-100" style="max-width:900px;">
-      <h2 class="text-center mb-4">Nueva Inspección Locativa</h2>
-      <form method="post" action="?controller=inspeccionlocativa&action=store">
-        <div class="row">
-          <div class="col-md-4 mb-2"><label>Tipo Inspección</label><input type="text" name="tipo_inspeccion" class="form-control"></div>
-          <div class="col-md-4 mb-2"><label>Fecha y Hora</label><input type="datetime-local" name="fecha_hora" class="form-control"></div>
-          <div class="col-md-4 mb-2"><label>Descripción</label><input type="text" name="descripcion" class="form-control"></div>
-          <div class="col-md-4 mb-2"><label>Estado Inspección</label><input type="text" name="estado_inspeccion" class="form-control"></div>
-          <div class="col-md-4 mb-2"><label>Elementos de Trabajo</label><input type="text" name="element_trab" class="form-control"></div>
-          <div class="col-md-4 mb-2"><label>Observaciones</label><input type="text" name="observaciones" class="form-control"></div>
-          <div class="col-md-4 mb-2">
-            <label>Categoría</label>
-            <select name="categoria_id_categoria" class="form-control">
-              <option value="">-- Selecciona categoría --</option>
-              <?php if (isset($categorias)): foreach ($categorias as $cat): ?>
-                <option value="<?= $cat['id_categoria'] ?>"><?= htmlspecialchars($cat['nombre']) ?></option>
-              <?php endforeach; endif; ?>
-            </select>
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Incidente</label>
-            <select name="incidente_id_incidente" class="form-control">
-              <option value="">-- Selecciona incidente --</option>
-              <?php if (isset($incidentes)): foreach ($incidentes as $inc): ?>
-                <option value="<?= $inc['id_incidente'] ?>"><?= htmlspecialchars($inc['tipo']) ?></option>
-              <?php endforeach; endif; ?>
-            </select>
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Accidente</label>
-            <select name="accidente_id_accidente" class="form-control">
-              <option value="">-- Selecciona accidente --</option>
-              <?php if (isset($accidentes)): foreach ($accidentes as $acc): ?>
-                <option value="<?= $acc['id_accidente'] ?>"><?= htmlspecialchars($acc['tipo']) ?></option>
-              <?php endforeach; endif; ?>
-            </select>
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Riesgo</label>
-            <select name="riesgo_id_riesgo" class="form-control">
-              <option value="">-- Selecciona riesgo --</option>
-              <?php if (isset($riesgos)): foreach ($riesgos as $ries): ?>
-                <option value="<?= $ries['id_riesgo'] ?>"><?= htmlspecialchars($ries['tipo']) ?></option>
-              <?php endforeach; endif; ?>
-            </select>
-          </div>
-          <div class="col-12 mt-3 d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="?controller=inspeccionlocativa&action=index" class="btn btn-secondary ms-2">Cancelar</a>
-          </div>
-        </div>
-      </form>
+
+<div class="container-fluid">
+    <div class="row">
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="?controller=inspeccionlocativa&action=index" class="btn btn-outline-secondary me-3" title="Volver">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2 style="color: #1a237e; font-weight: 700; margin: 0;">
+                        <i class="bi bi-clipboard-check me-2"></i>Nueva Inspección Locativa
+                    </h2>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <form method="post" action="?controller=inspeccionlocativa&action=store">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="tipo_inspeccion" class="form-label fw-semibold">Tipo Inspección</label>
+                                    <input type="text" name="tipo_inspeccion" id="tipo_inspeccion" class="form-control" 
+                                           placeholder="Ej: Preventiva, Correctiva">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="fecha_hora" class="form-label fw-semibold">Fecha y Hora</label>
+                                    <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="estado_inspeccion" class="form-label fw-semibold">Estado Inspección</label>
+                                    <input type="text" name="estado_inspeccion" id="estado_inspeccion" class="form-control" 
+                                           placeholder="Ej: Programada, En proceso">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                                    <input type="text" name="descripcion" id="descripcion" class="form-control" 
+                                           placeholder="Descripción de la inspección">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="element_trab" class="form-label fw-semibold">Elementos de Trabajo</label>
+                                    <input type="text" name="element_trab" id="element_trab" class="form-control" 
+                                           placeholder="Herramientas y equipos utilizados">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="observaciones" class="form-label fw-semibold">Observaciones</label>
+                                    <textarea name="observaciones" id="observaciones" class="form-control" rows="3" 
+                                              placeholder="Observaciones detalladas de la inspección..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="categoria_id_categoria" class="form-label fw-semibold">Categoría</label>
+                                    <select name="categoria_id_categoria" id="categoria_id_categoria" class="form-select">
+                                        <option value="">Selecciona categoría</option>
+                                        <?php if (isset($categorias)): foreach ($categorias as $cat): ?>
+                                            <option value="<?= $cat['id_categoria'] ?>"><?= htmlspecialchars($cat['nombre']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="incidente_id_incidente" class="form-label fw-semibold">Incidente (Opcional)</label>
+                                    <select name="incidente_id_incidente" id="incidente_id_incidente" class="form-select">
+                                        <option value="">Selecciona incidente</option>
+                                        <?php if (isset($incidentes)): foreach ($incidentes as $inc): ?>
+                                            <option value="<?= $inc['id_incidente'] ?>"><?= htmlspecialchars($inc['tipo']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="accidente_id_accidente" class="form-label fw-semibold">Accidente (Opcional)</label>
+                                    <select name="accidente_id_accidente" id="accidente_id_accidente" class="form-select">
+                                        <option value="">Selecciona accidente</option>
+                                        <?php if (isset($accidentes)): foreach ($accidentes as $acc): ?>
+                                            <option value="<?= $acc['id_accidente'] ?>"><?= htmlspecialchars($acc['tipo']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="riesgo_id_riesgo" class="form-label fw-semibold">Riesgo (Opcional)</label>
+                                    <select name="riesgo_id_riesgo" id="riesgo_id_riesgo" class="form-select">
+                                        <option value="">Selecciona riesgo</option>
+                                        <?php if (isset($riesgos)): foreach ($riesgos as $ries): ?>
+                                            <option value="<?= $ries['id_riesgo'] ?>"><?= htmlspecialchars($ries['tipo']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado</label>
+                                    <select name="empleado_id_empleado" id="empleado_id_empleado" class="form-select">
+                                        <option value="">Selecciona empleado</option>
+                                        <?php if (isset($empleados)): foreach ($empleados as $emp): ?>
+                                            <option value="<?= $emp['id_empleado'] ?>"><?= htmlspecialchars($emp['nombres'] . ' ' . $emp['apellidos']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="area_id_area" class="form-label fw-semibold">Área</label>
+                                    <select name="area_id_area" id="area_id_area" class="form-select">
+                                        <option value="">Selecciona área</option>
+                                        <?php if (isset($areas)): foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="?controller=inspeccionlocativa&action=index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i>Guardar Inspección
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
 </div>
-<style>
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
-</style>
+
 <?php include __DIR__ . '/../footer.php'; ?>

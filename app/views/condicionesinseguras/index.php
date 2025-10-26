@@ -1,83 +1,128 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
-<style>
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
-  .condiciones-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%); min-height: 100vh; padding-top: 40px; padding-bottom: 40px; }
-  .condiciones-card { border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; }
-  .condiciones-title { color: #1a237e; font-weight: 700; letter-spacing: 1px; }
-  .btn-condiciones { background: #1a237e; color: #fff; border-radius: 2rem; font-weight: 500; transition: background 0.2s; }
-  .btn-condiciones:hover { background: #3949ab; color: #fff; }
-  .btn-condiciones-outline { border: 2px solid #1a237e; color: #1a237e; background: #fff; border-radius: 2rem; font-weight: 500; transition: background 0.2s, color 0.2s; }
-  .btn-condiciones-outline:hover { background: #1a237e; color: #fff; }
-</style>
-<div class="condiciones-bg">
-  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-    <div class="card condiciones-card p-4 w-100" style="max-width:1200px;">
-          <div class="mb-3">
-            <div class="w-100 text-center mb-3">
-              <h2 class="condiciones-title mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Condiciones Inseguras</h2>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Incluir sidebar -->
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        
+        <!-- Contenido principal -->
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <style>
+                .condicionesinseguras-card {
+                    border-radius: 1.2rem;
+                    box-shadow: 0 2px 12px rgba(30,40,90,0.10);
+                    background: #fff;
+                    border: none;
+                    padding: 2rem;
+                    margin-top: 2rem;
+                }
+                .condicionesinseguras-title {
+                    color: #1a237e;
+                    font-weight: 700;
+                    border-bottom: 3px solid #ffd600;
+                    margin-bottom: 2rem;
+                    padding-bottom: 0.5rem;
+                }
+                .btn-condicionesinseguras {
+                    background: #ff5722;
+                    color: #fff;
+                    border-radius: 2rem;
+                    font-weight: 600;
+                    border: 2px solid #ffd600;
+                    transition: background 0.2s, border 0.2s;
+                }
+                .btn-condicionesinseguras:hover {
+                    background: #ffd600;
+                    color: #ff5722;
+                    border: 2px solid #ff5722;
+                }
+                .btn-condicionesinseguras-outline {
+                    border: 2px solid #ff5722;
+                    color: #ff5722;
+                    background: #fff;
+                    border-radius: 2rem;
+                    font-weight: 600;
+                    transition: background 0.2s, color 0.2s;
+                }
+                .btn-condicionesinseguras-outline:hover {
+                    background: #ff5722;
+                    color: #fff;
+                    border: 2px solid #ffd600;
+                }
+            </style>
+
+            <div class="condicionesinseguras-card">
+                <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center w-100 gap-5">
+                    <div class="w-100" style="max-width:350px;">
+                        <h2 class="condicionesinseguras-title text-center"><i class="bi bi-exclamation-diamond me-2"></i>Gestión de Condiciones Inseguras</h2>
+                        <form method="get" action="" class="mb-3">
+                            <input type="hidden" name="controller" value="condicionesinseguras">
+                            <input type="hidden" name="action" value="index">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>">
+                                </div>
+                                <div class="col-md-12">
+                                    <select class="form-select" name="filtro_orden">
+                                        <option value="">Ordenar por</option>
+                                        <option value="nombre_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_asc') ? 'selected' : '' ?>>Nombre (A-Z)</option>
+                                        <option value="nombre_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Z-A)</option>
+                                        <option value="id_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
+                                        <option value="id_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 justify-content-between">
+                                <button type="submit" class="btn btn-condicionesinseguras-outline"><i class="bi bi-funnel"></i> Filtrar</button>
+                                <a href="?controller=condicionesinseguras&action=index" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Limpiar</a>
+                            </div>
+                        </form>
+                        <div class="text-center">
+                            <?php if (!$isTrabajador): ?>
+                                <a href="?controller=condicionesinseguras&action=create" class="btn btn-condicionesinseguras w-100"><i class="bi bi-plus-circle me-1"></i>Nueva Condición Insegura</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="w-100" style="max-width:700px;">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Descripción</th>
+                                        <th>Lugar</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($condiciones as $cond): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($cond['id_cond_inseg']) ?></td>
+                                        <td><?= htmlspecialchars($cond['nombre']) ?></td>
+                                        <td><?= htmlspecialchars($cond['descripcion']) ?></td>
+                                        <td><?= htmlspecialchars($cond['lugar']) ?></td>
+                                        <td>
+                                            <?php if (!$isTrabajador): ?>
+                                                <a href="?controller=condicionesinseguras&action=edit&id=<?= $cond['id_cond_inseg'] ?>" class="btn btn-condicionesinseguras-outline btn-sm me-2" title="Editar"><i class="bi bi-pencil"></i></a>
+                                            <?php endif; ?>
+                                            <?php if (!$isCoordinador && !$isSupervisor && !$isTrabajador): ?>
+                                                <a href="?controller=condicionesinseguras&action=delete&id=<?= $cond['id_cond_inseg'] ?>" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar esta condición?');" style="border-radius:2rem;"><i class="bi bi-trash"></i></a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
-              <input type="hidden" name="controller" value="condicionesinseguras">
-              <input type="hidden" name="action" value="index">
-              <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 180px;">
-              <select class="form-select" name="filtro_orden" style="max-width: 160px;">
-                <option value="nombre_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_asc') ? 'selected' : '' ?>>Nombre (A-Z)</option>
-                <option value="nombre_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Z-A)</option>
-                <option value="id_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
-                <option value="id_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
-              </select>
-              <button type="submit" class="btn btn-condiciones-outline"><i class="bi bi-funnel"></i> Filtrar</button>
-              <a href="?controller=condicionesinseguras&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
-            </form>
-            <div class="text-end">
-              <a href="?controller=condicionesinseguras&action=create" class="btn btn-condiciones"><i class="bi bi-plus-circle me-1"></i>Nueva Condición</a>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table align-middle table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th>Lugar</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($condiciones as $cond): ?>
-                  <tr>
-                    <td><?= htmlspecialchars($cond['id_cond_inseg']) ?></td>
-                    <td><?= htmlspecialchars($cond['nombre']) ?></td>
-                    <td><?= htmlspecialchars($cond['descripcion']) ?></td>
-                    <td><?= htmlspecialchars($cond['lugar']) ?></td>
-                    <td>
-                      <a href="?controller=condicionesinseguras&action=edit&id=<?= $cond['id_cond_inseg'] ?>" class="btn btn-condiciones btn-sm me-2" title="Editar"><i class="bi bi-pencil me-1"></i>Editar</a>
-                      <a href="?controller=condicionesinseguras&action=delete&id=<?= $cond['id_cond_inseg'] ?>" class="btn btn-condiciones-outline btn-sm" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar esta condición?');"><i class="bi bi-trash me-1"></i>Eliminar</a>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        </main>
     </div>
-  </div>
 </div>
+
 <?php include __DIR__ . '/../footer.php'; ?>

@@ -4,14 +4,22 @@ require_once __DIR__ . '/../core/Database.php';
 function crearUsuariosIniciales() {
     $db = new Database();
     $conn = $db->getConnection();
+    // Solo insertar si la tabla user está vacía
+    $count = $conn->query('SELECT COUNT(*) FROM user')->fetchColumn();
+    if ($count > 0) {
+        echo "Tabla 'user' ya contiene datos. No se crearán usuarios iniciales.\n";
+        return;
+    }
+
+    // Ajustar columnas al esquema de db.sql: usuario, contrasena
     $usuarios = [
-        ['num_doc' => 1, 'tipo_doc' => 'CC', 'nombres' => 'admin', 'apellidos' => 'Administrador', 'rol' => 1, 'contraseña' => password_hash('admin123', PASSWORD_DEFAULT), 'telefono' => 123456789],
-        ['num_doc' => 2, 'tipo_doc' => 'CC', 'nombres' => 'super', 'apellidos' => 'Supervisor', 'rol' => 2, 'contraseña' => password_hash('456', PASSWORD_DEFAULT), 'telefono' => 234567890],
-        ['num_doc' => 3, 'tipo_doc' => 'CC', 'nombres' => 'coord', 'apellidos' => 'Coordinador', 'rol' => 3, 'contraseña' => password_hash('789', PASSWORD_DEFAULT), 'telefono' => 345678901],
-        ['num_doc' => 4, 'tipo_doc' => 'CC', 'nombres' => 'traba', 'apellidos' => 'Trabajador', 'rol' => 4, 'contraseña' => password_hash('369', PASSWORD_DEFAULT), 'telefono' => 456789012]
+        ['num_doc' => 1053349252, 'tipo_doc' => 'CC', 'usuario' => 'admin', 'rol' => 1, 'contrasena' => password_hash('admin123', PASSWORD_DEFAULT), 'telefono' => 123456789],
+        ['num_doc' => 1156464465, 'tipo_doc' => 'CC', 'usuario' => 'super', 'rol' => 2, 'contrasena' => password_hash('456', PASSWORD_DEFAULT), 'telefono' => 234567890],
+        ['num_doc' => 1546465465, 'tipo_doc' => 'CC', 'usuario' => 'coord', 'rol' => 3, 'contrasena' => password_hash('789', PASSWORD_DEFAULT), 'telefono' => 345678901],
+        ['num_doc' => 3256464454, 'tipo_doc' => 'CC', 'usuario' => 'traba', 'rol' => 4, 'contrasena' => password_hash('369', PASSWORD_DEFAULT), 'telefono' => 456789012]
     ];
     foreach ($usuarios as $u) {
-        $stmt = $conn->prepare('INSERT INTO user (num_doc, tipo_doc, nombres, apellidos, rol, contraseña, telefono) VALUES (:num_doc, :tipo_doc, :nombres, :apellidos, :rol, :contraseña, :telefono)');
+        $stmt = $conn->prepare('INSERT INTO user (num_doc, tipo_doc, usuario, rol, contrasena, telefono) VALUES (:num_doc, :tipo_doc, :usuario, :rol, :contrasena, :telefono)');
         $stmt->execute($u);
     }
 }
@@ -19,6 +27,13 @@ function crearUsuariosIniciales() {
 function crearRolesIniciales() {
     $db = new Database();
     $conn = $db->getConnection();
+    // Solo insertar si la tabla rol está vacía
+    $count = $conn->query('SELECT COUNT(*) FROM rol')->fetchColumn();
+    if ($count > 0) {
+        echo "Tabla 'rol' ya contiene datos. No se crearán roles iniciales.\n";
+        return;
+    }
+
     $roles = [
         ['nombre' => 'admin'],
         ['nombre' => 'supervisor'],
@@ -53,7 +68,7 @@ function poblarTablasRACI() {
         return;
     }
 
-    // AREA
+    // AREA - usar ids 1..5 para que coincidan con las referencias en CATEGORIA
     $conn->exec("INSERT INTO area (id_area, nombre, descripcion) VALUES
         (1, 'Administración', 'Área administrativa'),
         (2, 'Producción', 'Área de producción'),
@@ -61,7 +76,7 @@ function poblarTablasRACI() {
         (4, 'Recursos Humanos', 'Área de RRHH'),
         (5, 'Almacén', 'Área de almacén')");
 
-    // EMPLEADO
+    // EMPLEADO - usar ids 1..5 para que coincidan con las referencias en CATEGORIA
     $conn->exec("INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES
         (1, 'CC', 'Juan', 'Pérez', 123456789, 'Sura', 'Colmena', 'Operario', '2 años', 4),
         (2, 'CC', 'Ana', 'García', 234567890, 'Nueva EPS', 'Bolívar', 'Administrativa', '1 año', 1),

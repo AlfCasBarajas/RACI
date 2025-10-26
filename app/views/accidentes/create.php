@@ -1,94 +1,131 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<style>
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
-</style>
-<div class="accidentes-bg">
-  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-    <div class="card accidentes-card p-4 w-100" style="max-width:700px;">
-      <h2 class="mb-4 text-center">Registrar Accidente</h2>
-      <form method="post" action="?controller=accidentes&action=store">
-        <div class="row">
-          <div class="col-md-4 mb-2">
-            <label>Tipo</label>
-            <input type="text" name="tipo" class="form-control" required>
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Clasificación</label>
-            <input type="text" name="clasificacion" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Estado</label>
-            <input type="text" name="estado" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Fecha y Hora</label>
-            <input type="datetime-local" name="fecha_hora" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Lugar</label>
-            <input type="text" name="lugar" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Tipo Vinculación Laboral</label>
-            <input type="text" name="tipo_vinc_lab_" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Turno Momento Accidente</label>
-            <input type="text" name="turno_mom_acc" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Uso EPP</label>
-            <input type="text" name="uso_epp" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Consecuencias</label>
-            <input type="text" name="consecuencias" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Gravedad</label>
-            <input type="text" name="gravedad" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Tipo Lesión</label>
-            <input type="text" name="tipo_lesion" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Parte Cuerpo Afectada</label>
-            <input type="text" name="parte_cuerpo_afect" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Incapacidad Laboral</label>
-            <input type="text" name="incapacidad_lab" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Atención Médica Recibida</label>
-            <input type="text" name="aten_med_recibida" class="form-control">
-          </div>
-          <div class="col-md-4 mb-2">
-            <label>Persona que Informó</label>
-            <input type="text" name="persona_informo" class="form-control">
-          </div>
-          <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="?controller=accidentes&action=index" class="btn btn-secondary ms-2">Cancelar</a>
-          </div>
-        </div>
-      </form>
+
+<div class="container-fluid">
+    <div class="row">
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="?controller=accidentes&action=index" class="btn btn-outline-secondary me-3" title="Volver">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2 style="color: #1a237e; font-weight: 700; margin: 0;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Registrar Accidente
+                    </h2>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <form method="post" action="?controller=accidentes&action=store">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="tipo" class="form-label fw-semibold">Tipo</label>
+                                    <input type="text" name="tipo" id="tipo" class="form-control" 
+                                           placeholder="Ej: Laboral, Tránsito" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="clasificacion" class="form-label fw-semibold">Clasificación</label>
+                                    <input type="text" name="clasificacion" id="clasificacion" class="form-control" 
+                                           placeholder="Ej: Leve, Grave">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="estado" class="form-label fw-semibold">Estado</label>
+                                    <input type="text" name="estado" id="estado" class="form-control" 
+                                           placeholder="Ej: Investigado, Cerrado">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha_hora" class="form-label fw-semibold">Fecha y Hora</label>
+                                    <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lugar" class="form-label fw-semibold">Lugar</label>
+                                    <input type="text" name="lugar" id="lugar" class="form-control" 
+                                           placeholder="Ubicación del accidente">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipo_vinc_lab" class="form-label fw-semibold">Tipo Vinculación Laboral</label>
+                                    <input type="text" name="tipo_vinc_lab_" id="tipo_vinc_lab" class="form-control" 
+                                           placeholder="Ej: Directo, Contratista">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="turno_mom_acc" class="form-label fw-semibold">Turno Momento Accidente</label>
+                                    <input type="text" name="turno_mom_acc" id="turno_mom_acc" class="form-control" 
+                                           placeholder="Ej: Diurno, Nocturno">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="uso_epp" class="form-label fw-semibold">Uso EPP</label>
+                                    <input type="text" name="uso_epp" id="uso_epp" class="form-control" 
+                                           placeholder="Sí/No">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="consecuencias" class="form-label fw-semibold">Consecuencias</label>
+                                    <input type="text" name="consecuencias" id="consecuencias" class="form-control" 
+                                           placeholder="Descripción consecuencias">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="gravedad" class="form-label fw-semibold">Gravedad</label>
+                                    <input type="text" name="gravedad" id="gravedad" class="form-control" 
+                                           placeholder="Ej: Leve, Grave, Mortal">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipo_lesion" class="form-label fw-semibold">Tipo Lesión</label>
+                                    <input type="text" name="tipo_lesion" id="tipo_lesion" class="form-control" 
+                                           placeholder="Descripción del tipo de lesión">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="parte_cuerpo_afect" class="form-label fw-semibold">Parte Cuerpo Afectada</label>
+                                    <input type="text" name="parte_cuerpo_afect" id="parte_cuerpo_afect" class="form-control" 
+                                           placeholder="Ej: Mano derecha, Pierna izquierda">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="incapacidad_lab" class="form-label fw-semibold">Incapacidad Laboral</label>
+                                    <input type="text" name="incapacidad_lab" id="incapacidad_lab" class="form-control" 
+                                           placeholder="Días de incapacidad">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="aten_med_recibida" class="form-label fw-semibold">Atención Médica Recibida</label>
+                                    <input type="text" name="aten_med_recibida" id="aten_med_recibida" class="form-control" 
+                                           placeholder="Tipo de atención médica">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="persona_informo" class="form-label fw-semibold">Persona que Informó</label>
+                                    <input type="text" name="persona_informo" id="persona_informo" class="form-control" 
+                                           placeholder="Nombre de quien informó">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3 justify-content-end mt-4">
+                                <a href="?controller=accidentes&action=index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-1"></i>Registrar Accidente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+</div>
+
+<?php include __DIR__ . '/../footer.php'; ?>
   </div>
 </div>
 <?php include __DIR__ . '/../footer.php'; ?>

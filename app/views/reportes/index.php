@@ -13,72 +13,38 @@ function getEmpleadoByCategoria($catId) {
 }
 if (isset($data) && is_array($data)) extract($data);
 include __DIR__ . '/../header.php';
-// ...aquí termina el bloque PHP, el resto es HTML y CSS...
 ?>
-<a href="app/views/dashboard.php" class="btn btn-inicio-claro position-absolute" style="top:24px;left:24px;z-index:10;"><i class="bi bi-arrow-left"></i> Ir a Inicio</a>
-<style>
-  body {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    min-height: 100vh;
-  }
-  .reportes-bg {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
-  .btn.btn-primary.btn-lg.rounded-pill.px-4.shadow-sm.d-inline-flex.align-items-center.gap-2 {
-    transition: box-shadow 0.2s, background 0.2s, color 0.2s;
-  }
-  .btn.btn-primary.btn-lg.rounded-pill.px-4.shadow-sm.d-inline-flex.align-items-center.gap-2:hover {
-    box-shadow: 0 4px 16px #3949ab55;
-    background: linear-gradient(90deg,#1976d2 60%,#3949ab 100%);
-    color: #fff;
-  }
-</style>
-<div class="reportes-bg">
-  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-    <div class="card reportes-card p-4 w-100" style="max-width:1200px;">
-          <div class="mb-3">
-            <div class="w-100 text-center mb-3">
-              <h2 class="reportes-title mb-0"><i class="bi bi-file-earmark-text me-2"></i>Gestión de Reportes</h2>
-            </div>
-            <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
-              <input type="hidden" name="controller" value="reportes">
-              <input type="hidden" name="action" value="index">
-              <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($_GET['filtro_id']) ? htmlspecialchars($_GET['filtro_id']) : '' ?>" style="max-width: 90px;">
-              <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 160px;">
-              <select class="form-select" name="filtro_orden" style="max-width: 160px;">
-                <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
-                <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
-                <option value="nombre_asc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_asc') ? 'selected' : '' ?>>Nombre (A-Z)</option>
-                <option value="nombre_desc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Z-A)</option>
-              </select>
-              <button type="submit" class="btn btn-reportes-outline"><i class="bi bi-funnel"></i> Filtrar</button>
-              <a href="?controller=reportes&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
-            </form>
-            <div class="text-end">
-              <a href="?controller=reportes&action=create" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm d-inline-flex align-items-center gap-2" style="background: linear-gradient(90deg,#3949ab 60%,#1976d2 100%); border: none; font-weight: 600;">
-                <i class="bi bi-plus-circle me-1"></i>Nuevo Reporte
-              </a>
-            </div>
-          </div>
-          <div class="table-responsive">
+
+<div class="container-fluid">
+    <div class="row">
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
+                <h2 style="color: #1a237e; font-weight: 700; border-bottom: 3px solid #ffd600; margin-bottom: 2rem; padding-bottom: 0.5rem; text-align: center;"><i class="bi bi-file-earmark-text me-2"></i>Gestión de Reportes</h2>
+                <!-- Filtros de búsqueda -->
+                <div class="mb-3">
+                    <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
+                      <input type="hidden" name="controller" value="reportes">
+                      <input type="hidden" name="action" value="index">
+                      <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($_GET['filtro_id']) ? htmlspecialchars($_GET['filtro_id']) : '' ?>" style="max-width: 90px;">
+                      <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 160px;">
+                      <select class="form-select" name="filtro_orden" style="max-width: 160px;">
+                        <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
+                        <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
+                        <option value="nombre_asc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_asc') ? 'selected' : '' ?>>Nombre (Asc)</option>
+                        <option value="nombre_desc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Desc)</option>
+                      </select>
+                      <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+                      <a href="?controller=reportes&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
+                    </form>
+                    <div class="text-end">
+                      <?php if (!$isTrabajador): ?>
+                        <a href="?controller=reportes&action=create" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Nuevo Reporte</a>
+                      <?php endif; ?>
+                    </div>
+                
+                <!-- Tabla de reportes -->
+                <div class="table-responsive">
             <?php if (!empty($reportes)): ?>
               <hr>
               <h4>Reportes generados:</h4>
@@ -211,8 +177,12 @@ include __DIR__ . '/../header.php';
                       <?php endif; ?>
                     <?php endif; ?>
                     <div class="text-end mt-2">
-                      <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
-                      <a href="?controller=reportes&action=delete&id=<?= $reporte['id_reporte'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este reporte?');"><i class="bi bi-trash"></i> Eliminar</a>
+                      <?php if (!$isCoordinador && !$isTrabajador): ?>
+                        <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
+                        <a href="?controller=reportes&action=delete&id=<?= $reporte['id_reporte'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este reporte?');"><i class="bi bi-trash"></i> Eliminar</a>
+                      <?php elseif (!$isSupervisor && !$isCoordinador && !$isTrabajador): ?>
+                        <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                 </div>
@@ -222,9 +192,8 @@ include __DIR__ . '/../header.php';
               <?php endif; ?>
             <?php endif; ?>
           </div>
-        </div>
-      </div>
+        
+        </main>
     </div>
-  </div>
 </div>
 <?php include __DIR__ . '/../footer.php'; ?>

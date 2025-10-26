@@ -134,10 +134,14 @@ CREATE TABLE inspeccion_locativa (
     incidente_id_incidente INT,
     accidente_id_accidente INT,
     riesgo_id_riesgo INT,
+    empleado_id_empleado INT,
+    area_id_area INT,
     FOREIGN KEY (categoria_id_categoria) REFERENCES categoria(id_categoria),
     FOREIGN KEY (incidente_id_incidente) REFERENCES incidente(id_incidente),
     FOREIGN KEY (accidente_id_accidente) REFERENCES accidente(id_accidente),
-    FOREIGN KEY (riesgo_id_riesgo) REFERENCES riesgo(id_riesgo)
+    FOREIGN KEY (riesgo_id_riesgo) REFERENCES riesgo(id_riesgo),
+    FOREIGN KEY (empleado_id_empleado) REFERENCES empleado(id_empleado),
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 -- Tabla reporte

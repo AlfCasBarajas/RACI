@@ -3,18 +3,55 @@ require_once __DIR__ . '/../models/Area.php';
 require_once __DIR__ . '/../core/Controller.php';
 
 class AreasController extends Controller {
+    private function onlyLogged() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user'])) {
+            header('Location: /RACI/?controller=login&action=index');
+            exit;
+        }
+    }
+
+    private function checkNotCoordinadorForEdit() {
+        $this->onlyLogged();
+        if ($_SESSION['user']['rol'] == 3) { // 3 es el ID del rol coordinador
+            header('Location: /RACI/?controller=areas&action=index');
+            exit;
+        }
+    }
+
+    private function checkNotTrabajador() {
+        $this->onlyLogged();
+        if ($_SESSION['user']['rol'] == 4) { // 4 es el ID del rol trabajador
+            header('Location: /RACI/?controller=areas&action=index');
+            exit;
+        }
+    }
+
     public function index() {
+        $this->onlyLogged();
         $filtro_nombre = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
         $orden = isset($_GET['orden']) ? $_GET['orden'] : '';
         $areas = Area::getFiltered($filtro_nombre, $orden);
-        $this->view('areas/index', ['areas' => $areas]);
+        
+        // Obtener el rol del usuario actual
+    $userRole = $_SESSION['user']['rol'];
+    $isCoordinador = ($userRole == 3); // 3 es el ID del rol coordinador
+    $isSupervisor = ($userRole == 2); // 2 es el ID del rol supervisor
+    $isTrabajador = ($userRole == 4); // 4 es el ID del rol trabajador
+    $this->view('areas/index', ['areas' => $areas, 'isCoordinador' => $isCoordinador, 'isSupervisor' => $isSupervisor, 'isTrabajador' => $isTrabajador]);
     }
 
     public function create() {
+        $this->checkNotCoordinadorForEdit();
+        $this->checkNotTrabajador();
         $this->view('areas/create');
     }
 
     public function store() {
+        $this->checkNotCoordinadorForEdit();
+        $this->checkNotTrabajador();
         $data = [
             'nombre' => $_POST['nombre'],
             'descripcion' => $_POST['descripcion']
@@ -25,12 +62,16 @@ class AreasController extends Controller {
     }
 
     public function edit() {
+        $this->checkNotCoordinadorForEdit();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $area = Area::find($id);
         $this->view('areas/edit', ['area' => $area]);
     }
 
     public function update() {
+        $this->checkNotCoordinadorForEdit();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $data = [
             'nombre' => $_POST['nombre'],
@@ -42,6 +83,8 @@ class AreasController extends Controller {
     }
 
     public function delete() {
+        $this->checkNotCoordinadorForEdit();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         Area::delete($id);
         header('Location: ?controller=areas&action=index');

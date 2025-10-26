@@ -4,10 +4,39 @@ require_once __DIR__ . '/../models/Categoria.php';
 require_once __DIR__ . '/../models/Incidente.php';
 require_once __DIR__ . '/../models/Accidente.php';
 require_once __DIR__ . '/../models/Riesgo.php';
+require_once __DIR__ . '/../models/Empleado.php';
+require_once __DIR__ . '/../models/Area.php';
 require_once __DIR__ . '/../core/Controller.php';
 
 class InspeccionLocativaController extends Controller {
+    private function onlyLogged() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user'])) {
+            header('Location: /RACI/?controller=login&action=index');
+            exit;
+        }
+    }
+
+    private function checkNotCoordinadorForDelete() {
+        $this->onlyLogged();
+        if ($_SESSION['user']['rol'] == 3) { // 3 es el ID del rol coordinador
+            header('Location: /RACI/?controller=inspeccionlocativa&action=index');
+            exit;
+        }
+    }
+
+    private function checkNotTrabajador() {
+        $this->onlyLogged();
+        if ($_SESSION['user']['rol'] == 4) { // 4 es el ID del rol trabajador
+            header('Location: /RACI/?controller=inspeccionlocativa&action=index');
+            exit;
+        }
+    }
+
     public function index() {
+        $this->onlyLogged();
         $id = isset($_GET['filtro_id']) ? trim($_GET['filtro_id']) : '';
         $tipo_inspeccion = isset($_GET['filtro_tipo_inspeccion']) ? trim($_GET['filtro_tipo_inspeccion']) : '';
         $fecha_hora = isset($_GET['filtro_fecha_hora']) ? $_GET['filtro_fecha_hora'] : '';
@@ -18,6 +47,12 @@ class InspeccionLocativaController extends Controller {
         $riesgo = isset($_GET['filtro_riesgo']) ? trim($_GET['filtro_riesgo']) : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
         $inspecciones = InspeccionLocativa::getFiltered($id, $tipo_inspeccion, $fecha_hora, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $orden);
+        
+        // Obtener el rol del usuario actual
+        $userRole = $_SESSION['user']['rol'];
+        $isCoordinador = ($userRole == 3); // 3 es el ID del rol coordinador
+        $isSupervisor = ($userRole == 2); // 2 es el ID del rol supervisor
+        $isTrabajador = ($userRole == 4); // 4 es el ID del rol trabajador
         $this->view('inspeccioneslocativas/index', [
             'inspecciones' => $inspecciones,
             'filtro_id' => $id,
@@ -28,22 +63,34 @@ class InspeccionLocativaController extends Controller {
             'filtro_incidente' => $incidente,
             'filtro_accidente' => $accidente,
             'filtro_riesgo' => $riesgo,
-            'filtro_orden' => $orden
+            'filtro_orden' => $orden,
+            'isCoordinador' => $isCoordinador,
+            'isSupervisor' => $isSupervisor,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     public function create() {
+        $this->onlyLogged();
+        $this->checkNotTrabajador();
         $categorias = Categoria::all();
         $incidentes = Incidente::all();
         $accidentes = Accidente::all();
         $riesgos = Riesgo::all();
+        $empleados = Empleado::all();
+        $areas = Area::all();
         $this->view('inspeccioneslocativas/create', [
             'categorias' => $categorias,
             'incidentes' => $incidentes,
             'accidentes' => $accidentes,
             'riesgos' => $riesgos
+            ,
+            'empleados' => $empleados,
+            'areas' => $areas
         ]);
     }
     public function store() {
+        $this->onlyLogged();
+        $this->checkNotTrabajador();
         $data = [
             'tipo_inspeccion' => $_POST['tipo_inspeccion'],
             'fecha_hora' => $_POST['fecha_hora'],
@@ -52,6 +99,8 @@ class InspeccionLocativaController extends Controller {
             'element_trab' => $_POST['element_trab'],
             'observaciones' => $_POST['observaciones'],
             'categoria_id_categoria' => $_POST['categoria_id_categoria'],
+            'empleado_id_empleado' => isset($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
+            'area_id_area' => isset($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
             'incidente_id_incidente' => $_POST['incidente_id_incidente'],
             'accidente_id_accidente' => $_POST['accidente_id_accidente'],
             'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
@@ -61,21 +110,30 @@ class InspeccionLocativaController extends Controller {
         exit;
     }
     public function edit() {
+        $this->onlyLogged();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $inspeccion = InspeccionLocativa::find($id);
         $categorias = Categoria::all();
         $incidentes = Incidente::all();
         $accidentes = Accidente::all();
         $riesgos = Riesgo::all();
+        $empleados = Empleado::all();
+        $areas = Area::all();
         $this->view('inspeccioneslocativas/edit', [
             'inspeccion' => $inspeccion,
             'categorias' => $categorias,
             'incidentes' => $incidentes,
             'accidentes' => $accidentes,
             'riesgos' => $riesgos
+            ,
+            'empleados' => $empleados,
+            'areas' => $areas
         ]);
     }
     public function update() {
+        $this->onlyLogged();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $data = [
             'tipo_inspeccion' => $_POST['tipo_inspeccion'],
@@ -86,6 +144,8 @@ class InspeccionLocativaController extends Controller {
             'element_trab' => $_POST['element_trab'],
             'observaciones' => $_POST['observaciones'],
             'categoria_id_categoria' => $_POST['categoria_id_categoria'],
+            'empleado_id_empleado' => isset($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
+            'area_id_area' => isset($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
             'incidente_id_incidente' => $_POST['incidente_id_incidente'],
             'accidente_id_accidente' => $_POST['accidente_id_accidente'],
             'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
@@ -95,6 +155,8 @@ class InspeccionLocativaController extends Controller {
         exit;
     }
     public function delete() {
+        $this->checkNotCoordinadorForDelete();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         InspeccionLocativa::delete($id);
         header('Location: ?controller=inspeccionlocativa&action=index');

@@ -1,4 +1,8 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/Reporte.php';
 require_once __DIR__ . '/../core/Controller.php';
 
@@ -8,6 +12,41 @@ require_once __DIR__ . '/../models/Accidente.php';
 require_once __DIR__ . '/../models/InspeccionLocativa.php';
 
 class ReportesController extends Controller {
+    
+    // Verificar que el usuario esté logueado
+    private function onlyLogged() {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?controller=login&action=index');
+            exit;
+        }
+    }
+    
+    // Verificar que el usuario coordinador no pueda editar
+    private function checkNotCoordinadorEdit() {
+        $this->onlyLogged();
+        if (isset($_SESSION['user']['rol']) && $_SESSION['user']['rol'] == 3) {
+            header('Location: ?controller=reportes&action=index');
+            exit;
+        }
+    }
+    
+    // Verificar que el usuario coordinador no pueda eliminar
+    private function checkNotCoordinadorDelete() {
+        $this->onlyLogged();
+        if (isset($_SESSION['user']['rol']) && $_SESSION['user']['rol'] == 3) {
+            header('Location: ?controller=reportes&action=index');
+            exit;
+        }
+    }
+
+    private function checkNotTrabajador() {
+        $this->onlyLogged();
+        if ($_SESSION['user']['rol'] == 4) { // 4 es el ID del rol trabajador
+            header('Location: /RACI/?controller=reportes&action=index');
+            exit;
+        }
+    }
+    
     // Reporte predefinido: incidentes y accidentes por empleado y fecha
     public function generarEmpleado() {
     $empleados = Empleado::all();
@@ -134,6 +173,11 @@ class ReportesController extends Controller {
         ]);
     }
     public function index() {
+        $this->onlyLogged();
+        $userRole = isset($_SESSION['user']['rol']) ? $_SESSION['user']['rol'] : null;
+        $isCoordinador = ($userRole == 3);
+        $isSupervisor = ($userRole == 2);
+        $isTrabajador = ($userRole == 4); // 4 es el ID del rol trabajador
         $id = isset($_GET['filtro_id']) ? trim($_GET['filtro_id']) : '';
         $nombre = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
@@ -171,16 +215,21 @@ class ReportesController extends Controller {
             'reportes' => $reportes,
             'filtro_id' => $id,
             'filtro_nombre' => $nombre,
-            'filtro_orden' => $orden
+            'filtro_orden' => $orden,
+            'isCoordinador' => $isCoordinador,
+            'isSupervisor' => $isSupervisor,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     public function create() {
+        $this->checkNotTrabajador();
         $inspecciones = InspeccionLocativa::all();
         $this->view('reportes/create', [
             'inspecciones' => $inspecciones
         ]);
     }
     public function store() {
+        $this->checkNotTrabajador();
         $data = [
             'nombre' => $_POST['nombre']
         ];
@@ -189,6 +238,8 @@ class ReportesController extends Controller {
         exit;
     }
     public function edit() {
+        $this->checkNotCoordinadorEdit();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $reporte = Reporte::find($id);
         $this->view('reportes/edit', [
@@ -196,6 +247,7 @@ class ReportesController extends Controller {
         ]);
     }
     public function update() {
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         $data = [
             'nombre' => $_POST['nombre']
@@ -205,6 +257,8 @@ class ReportesController extends Controller {
         exit;
     }
     public function delete() {
+        $this->checkNotCoordinadorDelete();
+        $this->checkNotTrabajador();
         $id = $_GET['id'];
         Reporte::delete($id);
         header('Location: ?controller=reportes&action=index');

@@ -1,52 +1,82 @@
 <?php if (isset($data) && is_array($data)) extract($data); include __DIR__ . '/../header.php'; ?>
-<div class="container mt-4">
-  <div class="row justify-content-center">
-      <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-        <div class="card categorias-card p-4 w-100" style="max-width:700px;">
-        <h3 class="mb-3 text-center"><i class="bi bi-folder-plus me-2"></i>Crear Categoría</h3>
-        <form method="post" action="?controller=categorias&action=store">
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
-          </div>
-          <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="area_id_area" class="form-label">Área</label>
-            <select class="form-select" id="area_id_area" name="area_id_area" required>
-              <option value="">Seleccione un área</option>
-              <?php foreach ($areas as $area): ?>
-                <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="user_num_doc" class="form-label">Usuario</label>
-            <select class="form-select" id="user_num_doc" name="user_num_doc" required>
-              <option value="">Seleccione un usuario</option>
-              <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['num_doc'] ?>"><?= htmlspecialchars($usuario['usuario']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="empleado_id_empleado" class="form-label">Empleado</label>
-            <select class="form-select" id="empleado_id_empleado" name="empleado_id_empleado" required>
-              <option value="">Seleccione un empleado</option>
-              <?php foreach ($empleados as $empleado): ?>
-                <option value="<?= $empleado['id_empleado'] ?>"><?= htmlspecialchars($empleado['nombres']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="?controller=categorias&action=index" class="btn btn-secondary ms-2">Cancelar</a>
-          </div>
-        </form>
-      </div>
+
+<div class="container-fluid">
+    <div class="row">
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="?controller=categorias&action=index" class="btn btn-outline-secondary me-3" title="Volver">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2 style="color: #1a237e; font-weight: 700; margin: 0;">
+                        <i class="bi bi-folder-plus me-2"></i>Nueva Categoría
+                    </h2>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <form method="post" action="?controller=categorias&action=store">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label fw-semibold">Nombre de la Categoría</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           placeholder="Ej: Seguridad Industrial" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="area_id_area" class="form-label fw-semibold">Área</label>
+                                    <select class="form-select" id="area_id_area" name="area_id_area" required>
+                                        <option value="">Seleccione un área</option>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 
+                                              placeholder="Descripción detallada de la categoría..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="user_num_doc" class="form-label fw-semibold">Usuario Responsable</label>
+                                    <select class="form-select" id="user_num_doc" name="user_num_doc" required>
+                                        <option value="">Seleccione un usuario</option>
+                                        <?php foreach ($usuarios as $usuario): ?>
+                                            <option value="<?= $usuario['num_doc'] ?>"><?= htmlspecialchars($usuario['usuario']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado</label>
+                                    <select class="form-select" id="empleado_id_empleado" name="empleado_id_empleado" required>
+                                        <option value="">Seleccione un empleado</option>
+                                        <?php foreach ($empleados as $empleado): ?>
+                                            <option value="<?= $empleado['id_empleado'] ?>"><?= htmlspecialchars($empleado['nombres']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3 justify-content-end mt-4">
+                                <a href="?controller=categorias&action=index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-1"></i>Guardar Categoría
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
 </div>
+
 <?php include __DIR__ . '/../footer.php'; ?>

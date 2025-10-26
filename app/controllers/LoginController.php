@@ -17,7 +17,9 @@ class LoginController extends Controller {
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($user && password_verify($password, $user['contrasena'])) {
-                session_start();
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
                 $_SESSION['user'] = $user;
                 header('Location: /RACI/app/views/dashboard.php');
                 exit;

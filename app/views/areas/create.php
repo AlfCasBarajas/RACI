@@ -1,82 +1,50 @@
 <?php include __DIR__ . '/../header.php'; ?>
-<style>
-  .areas-bg {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%);
-    min-height: 100vh;
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
-  .btn-inicio-claro {
-    background: #e3f2fd;
-    color: #3949ab;
-    border-radius: 2rem;
-    font-weight: 600;
-    border: 2px solid #bbdefb;
-    box-shadow: 0 2px 8px #bbdefb88;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-  }
-  .btn-inicio-claro:hover {
-    background: #ffd600;
-    color: #3949ab;
-    border: 2px solid #3949ab;
-    box-shadow: 0 2px 12px #ffd60055;
-  }
-  .areas-card {
-    border-radius: 1.2rem;
-    box-shadow: 0 2px 12px rgba(30,40,90,0.10);
-    background: #fff;
-    border: none;
-  }
-  .areas-title {
-    color: #1a237e;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  .btn-areas {
-    background: #1a237e;
-    color: #fff;
-    border-radius: 2rem;
-    font-weight: 500;
-    transition: background 0.2s;
-  }
-  .btn-areas:hover {
-    background: #3949ab;
-    color: #fff;
-  }
-  .btn-areas-outline {
-    border: 2px solid #1a237e;
-    color: #1a237e;
-    background: #fff;
-    border-radius: 2rem;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
-  }
-  .btn-areas-outline:hover {
-    background: #1a237e;
-    color: #fff;
-  }
-</style>
-<div class="areas-bg">
-  <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
-    <div class="card areas-card p-4 w-100" style="max-width:700px;">
-          <h2 class="areas-title mb-4"><i class="bi bi-building me-2"></i>Nueva Área</h2>
-          <form method="post" action="?controller=areas&action=store">
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" name="nombre" required>
+
+<div class="container-fluid">
+    <div class="row">
+        <?php include __DIR__ . '/../sidebar.php'; ?>
+        <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
+            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="?controller=areas&action=index" class="btn btn-outline-secondary me-3" title="Volver">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2 style="color: #1a237e; font-weight: 700; margin: 0;">
+                        <i class="bi bi-building me-2"></i>Nueva Área
+                    </h2>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form method="post" action="?controller=areas&action=store">
+                            <div class="mb-4">
+                                <label for="nombre" class="form-label fw-semibold">Nombre del Área</label>
+                                <input type="text" class="form-control form-control-lg" id="nombre" name="nombre" 
+                                       placeholder="Ej: Administración, Producción..." required>
+                                <div class="form-text">Ingrese un nombre único para el área</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 
+                                          placeholder="Descripción detallada del área y sus funciones..."></textarea>
+                                <div class="form-text">Descripción opcional del área</div>
+                            </div>
+
+                            <div class="d-flex gap-3 justify-content-end">
+                                <a href="?controller=areas&action=index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-1"></i>Guardar Área
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripción</label>
-              <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-            </div>
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-areas me-2"><i class="bi bi-check-circle me-1"></i>Guardar</button>
-              <a href="?controller=areas&action=index" class="btn btn-areas-outline">Cancelar</a>
-            </div>
-          </form>
-        </div>
-      </div>
+        </main>
     </div>
-  </div>
 </div>
+
 <?php include __DIR__ . '/../footer.php'; ?>
