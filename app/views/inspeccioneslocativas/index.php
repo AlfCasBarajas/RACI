@@ -6,6 +6,23 @@
         <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
             <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
                 <h2 style="color: #1a237e; font-weight: 700; border-bottom: 3px solid #ffd600; margin-bottom: 2rem; padding-bottom: 0.5rem; text-align: center;"><i class="bi bi-clipboard-check me-2"></i>Gestión de Inspecciones Locativas</h2>
+                
+                <!-- Mensajes de éxito y error -->
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i><?= $_SESSION['success'] ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i><?= $_SESSION['error'] ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
                 <!-- Filtros de búsqueda -->
                 <div class="mb-3">
                     <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">

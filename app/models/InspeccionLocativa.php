@@ -177,8 +177,26 @@ class InspeccionLocativa {
             $id
         ]);
     }
+    public static function getRelatedReports($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare('SELECT id_reporte, nombre, fecha_hora FROM reporte WHERE inspeccion_locativa_id_insp_loc = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar si hay reportes asociados
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM reporte WHERE inspeccion_locativa_id_insp_loc = ?');
+        $stmt->execute([$id]);
+        $reportes = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($reportes['total'] > 0) {
+            throw new Exception("No se puede eliminar esta inspección porque está vinculada a {$reportes['total']} reporte(s). Para eliminarla, primero elimine los reportes asociados.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM inspeccion_locativa WHERE id_insp_loc = ?');
         $stmt->execute([$id]);
     }

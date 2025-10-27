@@ -172,7 +172,14 @@ class InspeccionLocativaController extends Controller {
         $this->checkNotCoordinadorForDelete();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        InspeccionLocativa::delete($id);
+        
+        try {
+            InspeccionLocativa::delete($id);
+            $_SESSION['success'] = 'Inspección locativa eliminada correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=inspeccionlocativa&action=index');
         exit;
     }
