@@ -64,6 +64,17 @@ class CondicionInsegura {
     }
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla riesgo
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM riesgo WHERE condicion_insegura_id_cond_inseg = ?');
+        $stmt->execute([$id]);
+        $riesgos = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($riesgos['total'] > 0) {
+            throw new Exception("No se puede eliminar esta condición insegura porque está vinculada a {$riesgos['total']} riesgo(s). Reasigne o elimine primero estos registros.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM condicion_insegura WHERE id_cond_inseg = ?');
         return $stmt->execute([$id]);
     }

@@ -92,7 +92,14 @@ class CondicionesInsegurasController extends Controller {
         $this->checkNotCoordinadorForDelete();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        CondicionInsegura::delete($id);
+        
+        try {
+            CondicionInsegura::delete($id);
+            $_SESSION['success'] = 'Condición insegura eliminada correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=condicionesinseguras&action=index');
         exit;
     }

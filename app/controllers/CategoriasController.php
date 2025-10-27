@@ -127,7 +127,14 @@ class CategoriasController extends Controller {
         $this->checkNotCoordinador();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        Categoria::delete($id);
+        
+        try {
+            Categoria::delete($id);
+            $_SESSION['success'] = 'Categoría eliminada correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=categorias&action=index');
         exit;
     }

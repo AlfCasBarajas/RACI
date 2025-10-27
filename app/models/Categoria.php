@@ -87,6 +87,17 @@ class Categoria {
     }
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla inspeccion_locativa
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM inspeccion_locativa WHERE categoria_id_categoria = ?');
+        $stmt->execute([$id]);
+        $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($inspecciones['total'] > 0) {
+            throw new Exception("No se puede eliminar esta categoría porque está vinculada a {$inspecciones['total']} inspección(es) locativa(s). Reasigne o elimine primero estos registros.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM categoria WHERE id_categoria = ?');
         return $stmt->execute([$id]);
     }

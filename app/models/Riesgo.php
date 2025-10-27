@@ -55,6 +55,17 @@ class Riesgo {
     }
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla inspeccion_locativa
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM inspeccion_locativa WHERE riesgo_id_riesgo = ?');
+        $stmt->execute([$id]);
+        $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($inspecciones['total'] > 0) {
+            throw new Exception("No se puede eliminar este riesgo porque está vinculado a {$inspecciones['total']} inspección(es) locativa(s). Reasigne o elimine primero estos registros.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM riesgo WHERE id_riesgo = ?');
         return $stmt->execute([$id]);
     }

@@ -86,7 +86,14 @@ class AreasController extends Controller {
         $this->checkNotCoordinadorForEdit();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        Area::delete($id);
+        
+        try {
+            Area::delete($id);
+            $_SESSION['success'] = 'Área eliminada correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=areas&action=index');
         exit;
     }

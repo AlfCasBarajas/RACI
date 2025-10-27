@@ -108,7 +108,14 @@ class EmpleadosController extends Controller {
         $this->checkNotCoordinadorForEdit();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        Empleado::delete($id);
+        
+        try {
+            Empleado::delete($id);
+            $_SESSION['success'] = 'Empleado eliminado correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=empleados&action=index');
         exit;
     }

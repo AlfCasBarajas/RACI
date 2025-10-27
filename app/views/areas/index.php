@@ -55,6 +55,24 @@
                 <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center w-100 gap-5">
                     <div class="w-100" style="max-width:350px;">
                         <h2 class="areas-title text-center"><i class="bi bi-building me-2"></i>Gestión de Áreas</h2>
+                        
+                        <!-- Mensajes de éxito y error -->
+                        <?php if (isset($_SESSION['success'])): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle me-2"></i><?= $_SESSION['success'] ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <?php unset($_SESSION['success']); ?>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i><?= $_SESSION['error'] ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <?php unset($_SESSION['error']); ?>
+                        <?php endif; ?>
+                        
                         <form method="get" action="" class="mb-3">
                             <input type="hidden" name="controller" value="areas">
                             <input type="hidden" name="action" value="index">

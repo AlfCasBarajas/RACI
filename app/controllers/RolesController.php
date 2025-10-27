@@ -78,7 +78,14 @@ class RolesController extends Controller {
     public function delete($id) {
         $this->checkNotCoordinador();
         $this->checkNotTrabajador();
-        Rol::delete($id);
+        
+        try {
+            Rol::delete($id);
+            $_SESSION['success'] = 'Rol eliminado correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: /RACI/?controller=roles&action=index');
         exit;
     }

@@ -47,6 +47,33 @@ class Area {
     }
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla categoria
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM categoria WHERE area_id_area = ?');
+        $stmt->execute([$id]);
+        $categorias = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Verificar dependencias en tabla inspeccion_locativa
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM inspeccion_locativa WHERE area_id_area = ?');
+        $stmt->execute([$id]);
+        $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $totalDependencias = $categorias['total'] + $inspecciones['total'];
+        
+        if ($totalDependencias > 0) {
+            $mensaje = "No se puede eliminar esta área porque está vinculada a ";
+            $dependencias = [];
+            if ($categorias['total'] > 0) {
+                $dependencias[] = "{$categorias['total']} categoría(s)";
+            }
+            if ($inspecciones['total'] > 0) {
+                $dependencias[] = "{$inspecciones['total']} inspección(es) locativa(s)";
+            }
+            $mensaje .= implode(' y ', $dependencias) . ". Reasigne o elimine primero estos registros.";
+            throw new Exception($mensaje);
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM area WHERE id_area = ?');
         return $stmt->execute([$id]);
     }

@@ -85,6 +85,17 @@ class User {
 
     public static function delete($num_doc) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla categoria
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM categoria WHERE user_num_doc = ?');
+        $stmt->execute([$num_doc]);
+        $categorias = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($categorias['total'] > 0) {
+            throw new Exception("No se puede eliminar este usuario porque está vinculado a {$categorias['total']} categoría(s). Reasigne o elimine primero estos registros.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM user WHERE num_doc = ?');
         return $stmt->execute([$num_doc]);
     }

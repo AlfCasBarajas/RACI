@@ -100,7 +100,14 @@ class RiesgosController extends Controller {
         $this->checkNotCoordinadorForDelete();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
-        Riesgo::delete($id);
+        
+        try {
+            Riesgo::delete($id);
+            $_SESSION['success'] = 'Riesgo eliminado correctamente';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        
         header('Location: ?controller=riesgos&action=index');
         exit;
     }

@@ -70,6 +70,17 @@ class Accidente {
     }
     public static function delete($id) {
         $db = Database::getConnection();
+        
+        // Verificar dependencias en tabla inspeccion_locativa
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM inspeccion_locativa WHERE accidente_id_accidente = ?');
+        $stmt->execute([$id]);
+        $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($inspecciones['total'] > 0) {
+            throw new Exception("No se puede eliminar este accidente porque está vinculado a {$inspecciones['total']} inspección(es) locativa(s). Reasigne o elimine primero estos registros.");
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $stmt = $db->prepare('DELETE FROM accidente WHERE id_accidente = ?');
         $stmt->execute([$id]);
     }
