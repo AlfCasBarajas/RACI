@@ -98,16 +98,23 @@ class InspeccionLocativaController extends Controller {
             'estado_inspeccion' => $_POST['estado_inspeccion'],
             'element_trab' => $_POST['element_trab'],
             'observaciones' => $_POST['observaciones'],
-            'categoria_id_categoria' => $_POST['categoria_id_categoria'],
-            'empleado_id_empleado' => isset($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
-            'area_id_area' => isset($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
-            'incidente_id_incidente' => $_POST['incidente_id_incidente'],
-            'accidente_id_accidente' => $_POST['accidente_id_accidente'],
-            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
+            'categoria_id_categoria' => !empty($_POST['categoria_id_categoria']) ? $_POST['categoria_id_categoria'] : null,
+            'empleado_id_empleado' => !empty($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
+            'area_id_area' => !empty($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
+            'incidente_id_incidente' => !empty($_POST['incidente_id_incidente']) ? $_POST['incidente_id_incidente'] : null,
+            'accidente_id_accidente' => !empty($_POST['accidente_id_accidente']) ? $_POST['accidente_id_accidente'] : null,
+            'riesgo_id_riesgo' => !empty($_POST['riesgo_id_riesgo']) ? $_POST['riesgo_id_riesgo'] : null
         ];
-        InspeccionLocativa::create($data);
-        header('Location: ?controller=inspeccionlocativa&action=index');
-        exit;
+        
+        try {
+            InspeccionLocativa::create($data);
+            header('Location: ?controller=inspeccionlocativa&action=index');
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header('Location: ?controller=inspeccionlocativa&action=create');
+            exit;
+        }
     }
     public function edit() {
         $this->onlyLogged();
@@ -143,16 +150,23 @@ class InspeccionLocativaController extends Controller {
             'estado_inspeccion' => $_POST['estado_inspeccion'],
             'element_trab' => $_POST['element_trab'],
             'observaciones' => $_POST['observaciones'],
-            'categoria_id_categoria' => $_POST['categoria_id_categoria'],
-            'empleado_id_empleado' => isset($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
-            'area_id_area' => isset($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
-            'incidente_id_incidente' => $_POST['incidente_id_incidente'],
-            'accidente_id_accidente' => $_POST['accidente_id_accidente'],
-            'riesgo_id_riesgo' => $_POST['riesgo_id_riesgo']
+            'categoria_id_categoria' => !empty($_POST['categoria_id_categoria']) ? $_POST['categoria_id_categoria'] : null,
+            'empleado_id_empleado' => !empty($_POST['empleado_id_empleado']) ? $_POST['empleado_id_empleado'] : null,
+            'area_id_area' => !empty($_POST['area_id_area']) ? $_POST['area_id_area'] : null,
+            'incidente_id_incidente' => !empty($_POST['incidente_id_incidente']) ? $_POST['incidente_id_incidente'] : null,
+            'accidente_id_accidente' => !empty($_POST['accidente_id_accidente']) ? $_POST['accidente_id_accidente'] : null,
+            'riesgo_id_riesgo' => !empty($_POST['riesgo_id_riesgo']) ? $_POST['riesgo_id_riesgo'] : null
         ];
-        InspeccionLocativa::update($id, $data);
-        header('Location: ?controller=inspeccionlocativa&action=index');
-        exit;
+        
+        try {
+            InspeccionLocativa::update($id, $data);
+            header('Location: ?controller=inspeccionlocativa&action=index');
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header('Location: ?controller=inspeccionlocativa&action=edit&id=' . $id);
+            exit;
+        }
     }
     public function delete() {
         $this->checkNotCoordinadorForDelete();

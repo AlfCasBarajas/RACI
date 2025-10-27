@@ -89,17 +89,92 @@ class InspeccionLocativa {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public static function create($data) {
+        // Validar campos obligatorios
+        if (empty($data['tipo_inspeccion'])) {
+            throw new Exception('El tipo de inspección es obligatorio');
+        }
+        if (empty($data['fecha_hora'])) {
+            throw new Exception('La fecha y hora es obligatoria');
+        }
+        if (empty($data['descripcion'])) {
+            throw new Exception('La descripción es obligatoria');
+        }
+        if (empty($data['estado_inspeccion'])) {
+            throw new Exception('El estado de inspección es obligatorio');
+        }
+        if (empty($data['element_trab'])) {
+            throw new Exception('Los elementos de trabajo son obligatorios');
+        }
+        if (empty($data['observaciones'])) {
+            throw new Exception('Las observaciones son obligatorias');
+        }
+        if (empty($data['categoria_id_categoria'])) {
+            throw new Exception('La categoría es obligatoria');
+        }
+        if (empty($data['area_id_area'])) {
+            throw new Exception('El área es obligatoria');
+        }
+        
         $db = Database::getConnection();
         $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, element_trab, observaciones, categoria_id_categoria, empleado_id_empleado, area_id_area, incidente_id_incidente, accidente_id_accidente, riesgo_id_riesgo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([
-            $data['tipo_inspeccion'], $data['fecha_hora'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], isset($data['empleado_id_empleado']) ? $data['empleado_id_empleado'] : null, isset($data['area_id_area']) ? $data['area_id_area'] : null, $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo']
+            $data['tipo_inspeccion'], 
+            $data['fecha_hora'], 
+            $data['descripcion'], 
+            $data['estado_inspeccion'], 
+            $data['element_trab'], 
+            $data['observaciones'], 
+            $data['categoria_id_categoria'], // Obligatorio
+            !empty($data['empleado_id_empleado']) ? $data['empleado_id_empleado'] : null, // Opcional
+            $data['area_id_area'], // Obligatorio
+            !empty($data['incidente_id_incidente']) ? $data['incidente_id_incidente'] : null,
+            !empty($data['accidente_id_accidente']) ? $data['accidente_id_accidente'] : null,
+            !empty($data['riesgo_id_riesgo']) ? $data['riesgo_id_riesgo'] : null
         ]);
     }
     public static function update($id, $data) {
+        // Validar campos obligatorios
+        if (empty($data['tipo_inspeccion'])) {
+            throw new Exception('El tipo de inspección es obligatorio');
+        }
+        if (empty($data['fecha_hora'])) {
+            throw new Exception('La fecha y hora es obligatoria');
+        }
+        if (empty($data['descripcion'])) {
+            throw new Exception('La descripción es obligatoria');
+        }
+        if (empty($data['estado_inspeccion'])) {
+            throw new Exception('El estado de inspección es obligatorio');
+        }
+        if (empty($data['element_trab'])) {
+            throw new Exception('Los elementos de trabajo son obligatorios');
+        }
+        if (empty($data['observaciones'])) {
+            throw new Exception('Las observaciones son obligatorias');
+        }
+        if (empty($data['categoria_id_categoria'])) {
+            throw new Exception('La categoría es obligatoria');
+        }
+        if (empty($data['area_id_area'])) {
+            throw new Exception('El área es obligatoria');
+        }
+        
         $db = Database::getConnection();
         $stmt = $db->prepare('UPDATE inspeccion_locativa SET tipo_inspeccion=?, fecha_hora=?, descripcion=?, estado_inspeccion=?, element_trab=?, observaciones=?, categoria_id_categoria=?, empleado_id_empleado=?, area_id_area=?, incidente_id_incidente=?, accidente_id_accidente=?, riesgo_id_riesgo=? WHERE id_insp_loc=?');
         $stmt->execute([
-            $data['tipo_inspeccion'], $data['fecha_hora'], $data['descripcion'], $data['estado_inspeccion'], $data['element_trab'], $data['observaciones'], $data['categoria_id_categoria'], isset($data['empleado_id_empleado']) ? $data['empleado_id_empleado'] : null, isset($data['area_id_area']) ? $data['area_id_area'] : null, $data['incidente_id_incidente'], $data['accidente_id_accidente'], $data['riesgo_id_riesgo'], $id
+            $data['tipo_inspeccion'], 
+            $data['fecha_hora'], 
+            $data['descripcion'], 
+            $data['estado_inspeccion'], 
+            $data['element_trab'], 
+            $data['observaciones'], 
+            $data['categoria_id_categoria'], // Obligatorio
+            !empty($data['empleado_id_empleado']) ? $data['empleado_id_empleado'] : null, // Opcional
+            $data['area_id_area'], // Obligatorio
+            !empty($data['incidente_id_incidente']) ? $data['incidente_id_incidente'] : null,
+            !empty($data['accidente_id_accidente']) ? $data['accidente_id_accidente'] : null,
+            !empty($data['riesgo_id_riesgo']) ? $data['riesgo_id_riesgo'] : null,
+            $id
         ]);
     }
     public static function delete($id) {

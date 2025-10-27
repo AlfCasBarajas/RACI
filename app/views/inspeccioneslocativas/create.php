@@ -19,46 +19,46 @@
                         <form method="post" action="?controller=inspeccionlocativa&action=store">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="tipo_inspeccion" class="form-label fw-semibold">Tipo Inspección</label>
+                                    <label for="tipo_inspeccion" class="form-label fw-semibold">Tipo Inspección <span class="text-danger">*</span></label>
                                     <input type="text" name="tipo_inspeccion" id="tipo_inspeccion" class="form-control" 
-                                           placeholder="Ej: Preventiva, Correctiva">
+                                           placeholder="Ej: Preventiva, Correctiva" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="fecha_hora" class="form-label fw-semibold">Fecha y Hora</label>
-                                    <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control">
+                                    <label for="fecha_hora" class="form-label fw-semibold">Fecha y Hora <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="estado_inspeccion" class="form-label fw-semibold">Estado Inspección</label>
+                                    <label for="estado_inspeccion" class="form-label fw-semibold">Estado Inspección <span class="text-danger">*</span></label>
                                     <input type="text" name="estado_inspeccion" id="estado_inspeccion" class="form-control" 
-                                           placeholder="Ej: Programada, En proceso">
+                                           placeholder="Ej: Programada, En proceso" required>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                                    <label for="descripcion" class="form-label fw-semibold">Descripción <span class="text-danger">*</span></label>
                                     <input type="text" name="descripcion" id="descripcion" class="form-control" 
-                                           placeholder="Descripción de la inspección">
+                                           placeholder="Descripción de la inspección" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="element_trab" class="form-label fw-semibold">Elementos de Trabajo</label>
+                                    <label for="element_trab" class="form-label fw-semibold">Elementos de Trabajo <span class="text-danger">*</span></label>
                                     <input type="text" name="element_trab" id="element_trab" class="form-control" 
-                                           placeholder="Herramientas y equipos utilizados">
+                                           placeholder="Herramientas y equipos utilizados" required>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <label for="observaciones" class="form-label fw-semibold">Observaciones</label>
+                                    <label for="observaciones" class="form-label fw-semibold">Observaciones <span class="text-danger">*</span></label>
                                     <textarea name="observaciones" id="observaciones" class="form-control" rows="3" 
-                                              placeholder="Observaciones detalladas de la inspección..."></textarea>
+                                              placeholder="Observaciones detalladas de la inspección..." required></textarea>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="categoria_id_categoria" class="form-label fw-semibold">Categoría</label>
-                                    <select name="categoria_id_categoria" id="categoria_id_categoria" class="form-select">
+                                    <label for="categoria_id_categoria" class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
+                                    <select name="categoria_id_categoria" id="categoria_id_categoria" class="form-select" required>
                                         <option value="">Selecciona categoría</option>
                                         <?php if (isset($categorias)): foreach ($categorias as $cat): ?>
                                             <option value="<?= $cat['id_categoria'] ?>"><?= htmlspecialchars($cat['nombre']) ?></option>
@@ -96,7 +96,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado</label>
+                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado (Opcional)</label>
                                     <select name="empleado_id_empleado" id="empleado_id_empleado" class="form-select">
                                         <option value="">Selecciona empleado</option>
                                         <?php if (isset($empleados)): foreach ($empleados as $emp): ?>
@@ -105,8 +105,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="area_id_area" class="form-label fw-semibold">Área</label>
-                                    <select name="area_id_area" id="area_id_area" class="form-select">
+                                    <label for="area_id_area" class="form-label fw-semibold">Área <span class="text-danger">*</span></label>
+                                    <select name="area_id_area" id="area_id_area" class="form-select" required>
                                         <option value="">Selecciona área</option>
                                         <?php if (isset($areas)): foreach ($areas as $area): ?>
                                             <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
