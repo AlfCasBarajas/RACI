@@ -10,8 +10,7 @@ class LoginController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
-            $db = new Database();
-            $conn = $db->getConnection();
+            $conn = Database::getConnection();
             $stmt = $conn->prepare('SELECT * FROM user WHERE usuario = :username');
             $stmt->bindParam(':username', $username);
             $stmt->execute();

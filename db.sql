@@ -28,10 +28,10 @@ CREATE TABLE user (
 
 -- Insertar usuarios iniciales
 INSERT INTO user (num_doc,  tipo_doc, usuario, rol, contrasena, telefono) VALUES
-(1053349252, 'CC', 'admin', 1, '$2y$10$wQwQwQwQwQwQwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw', 123456789),
-(1156464465, 'CC', 'super', 2, '$2y$10$K1uQk1uQk1uQk1uQk1uQkOeQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1uQk1u', 234567890),
-(1546465465, 'CC', 'coord', 3, '$2y$10$A1bC2dE3fG4hI5jK6lM7nOePqRsTuVwXyZ0123456789abcdefgHIJKL', 345678901),
-(3256464454, 'CC', 'traba', 4, '$2y$10$Z9yX8wV7uT6sR5qP4oN3mLeKjIhGfEdCbA0987654321zyxwvutsrqp', 456789012);
+(1053349252, 'CC', 'admin', 1, '$2y$10$1/pkxSXADT6BTgj3YcMwFeTefSGrXZpfFBsQunfY2U7lEboLWVDbi', 123456789),
+(1156464465, 'CC', 'super', 2, '$2y$10$ikVtob3xzRywZ51nOtmv9u3VsA/UsW3R51OIXFmnKd1.pwLXZ8Eze', 234567890),
+(1546465465, 'CC', 'coord', 3, '$2y$10$Vyduy9Ox9TY.s02w0EMHEumTy5XYSsbvccZ9nG4LZx5UcLuKtiJiS', 345678901),
+(3256464454, 'CC', 'traba', 4, '$2y$10$/.wA7NEbAJ3mgmBtrIS7J.E1LowpW./bPM0zlbEyT.rrgLOoEwa6q', 456789012);
 
 -- Tabla empleado
 CREATE TABLE empleado (
