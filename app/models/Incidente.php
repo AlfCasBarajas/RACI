@@ -2,38 +2,41 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Incidente {
-    public static function getFiltered($tipo = '', $fecha = '', $lugar = '', $orden = 'id_asc') {
+    public static function getFiltered($tipo = '', $fecha_inicio = '', $fecha_fin = '', $orden = 'id_asc') {
         $db = Database::getConnection();
-        $sql = 'SELECT * FROM incidente';
+        $sql = 'SELECT i.* FROM incidente i';
         $where = [];
         $params = [];
         if ($tipo !== '') {
-            $where[] = 'tipo LIKE ?';
+            $where[] = 'i.tipo LIKE ?';
             $params[] = "%$tipo%";
         }
-        if ($fecha !== '') {
-            $where[] = 'DATE(fecha_hora) = ?';
-            $params[] = $fecha;
-        }
-        if ($lugar !== '') {
-            $where[] = 'lugar LIKE ?';
-            $params[] = "%$lugar%";
+        if ($fecha_inicio !== '' && $fecha_fin !== '') {
+            $where[] = 'DATE(i.fecha_hora) BETWEEN ? AND ?';
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        } elseif ($fecha_inicio !== '') {
+            $where[] = 'DATE(i.fecha_hora) >= ?';
+            $params[] = $fecha_inicio;
+        } elseif ($fecha_fin !== '') {
+            $where[] = 'DATE(i.fecha_hora) <= ?';
+            $params[] = $fecha_fin;
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
         switch ($orden) {
             case 'tipo_asc':
-                $sql .= ' ORDER BY tipo ASC';
+                $sql .= ' ORDER BY i.tipo ASC';
                 break;
             case 'tipo_desc':
-                $sql .= ' ORDER BY tipo DESC';
+                $sql .= ' ORDER BY i.tipo DESC';
                 break;
             case 'id_desc':
-                $sql .= ' ORDER BY id_incidente DESC';
+                $sql .= ' ORDER BY i.id_incidente DESC';
                 break;
             default:
-                $sql .= ' ORDER BY id_incidente ASC';
+                $sql .= ' ORDER BY i.id_incidente ASC';
         }
         $stmt = $db->prepare($sql);
         $stmt->execute($params);

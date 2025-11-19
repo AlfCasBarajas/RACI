@@ -2,11 +2,15 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Riesgo {
-    public static function getFiltered($tipo = '', $condicion = '') {
+    public static function getFiltered($descripcion = '', $tipo = '', $condicion = '') {
         $db = Database::getConnection();
         $sql = 'SELECT r.*, c.nombre as condicion_nombre FROM riesgo r LEFT JOIN condicion_insegura c ON r.condicion_insegura_id_cond_inseg = c.id_cond_inseg';
         $where = [];
         $params = [];
+        if ($descripcion !== '') {
+            $where[] = 'r.descripcion LIKE ?';
+            $params[] = "%$descripcion%";
+        }
         if ($tipo !== '') {
             $where[] = 'r.tipo LIKE ?';
             $params[] = "%$tipo%";

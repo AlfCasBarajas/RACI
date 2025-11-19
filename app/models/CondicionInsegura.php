@@ -2,11 +2,15 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class CondicionInsegura {
-    public static function getFiltered($nombre = '', $orden = 'nombre_asc') {
+    public static function getFiltered($descripcion = '', $nombre = '', $orden = 'nombre_asc') {
         $db = Database::getConnection();
         $sql = 'SELECT * FROM condicion_insegura';
         $where = [];
         $params = [];
+        if ($descripcion !== '') {
+            $where[] = 'descripcion LIKE ?';
+            $params[] = "%$descripcion%";
+        }
         if ($nombre !== '') {
             $where[] = 'nombre LIKE ?';
             $params[] = "%$nombre%";

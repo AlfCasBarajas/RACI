@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class InspeccionLocativa {
-    public static function getFiltered($id = '', $tipo_inspeccion = '', $fecha_hora = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
+    public static function getFiltered($fecha_inicio = '', $fecha_fin = '', $tipo_inspeccion = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
         $db = Database::getConnection();
-        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
              . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
              . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
              . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
@@ -13,17 +13,20 @@ class InspeccionLocativa {
              . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area';
         $where = [];
         $params = [];
-        if ($id !== '' && is_numeric($id)) {
-            $where[] = 'il.id_insp_loc = ?';
-            $params[] = $id;
+        if ($fecha_inicio !== '' && $fecha_fin !== '') {
+            $where[] = 'DATE(il.fecha_hora) BETWEEN ? AND ?';
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        } elseif ($fecha_inicio !== '') {
+            $where[] = 'DATE(il.fecha_hora) >= ?';
+            $params[] = $fecha_inicio;
+        } elseif ($fecha_fin !== '') {
+            $where[] = 'DATE(il.fecha_hora) <= ?';
+            $params[] = $fecha_fin;
         }
         if ($tipo_inspeccion !== '') {
             $where[] = 'il.tipo_inspeccion LIKE ?';
             $params[] = "%$tipo_inspeccion%";
-        }
-        if ($fecha_hora !== '') {
-            $where[] = 'DATE(il.fecha_hora) = ?';
-            $params[] = $fecha_hora;
         }
         if ($estado_inspeccion !== '') {
             $where[] = 'il.estado_inspeccion LIKE ?';
@@ -177,6 +180,12 @@ class InspeccionLocativa {
             $id
         ]);
     }
+    public static function getTiposInspeccion() {
+        $db = Database::getConnection();
+        $stmt = $db->query('SELECT DISTINCT tipo_inspeccion FROM inspeccion_locativa WHERE tipo_inspeccion IS NOT NULL AND tipo_inspeccion != "" ORDER BY tipo_inspeccion');
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+    
     public static function getRelatedReports($id) {
         $db = Database::getConnection();
         $stmt = $db->prepare('SELECT id_reporte, nombre, fecha_hora FROM reporte WHERE inspeccion_locativa_id_insp_loc = ?');

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Accidente {
-    public static function getFiltered($tipo = '', $fecha = '', $lugar = '', $orden = 'id_asc', $id = '') {
+    public static function getFiltered($tipo = '', $fecha_inicio = '', $fecha_fin = '', $orden = 'id_asc', $id = '') {
         $db = Database::getConnection();
         $sql = 'SELECT * FROM accidente';
         $where = [];
@@ -15,13 +15,16 @@ class Accidente {
             $where[] = 'tipo LIKE ?';
             $params[] = "%$tipo%";
         }
-        if ($fecha !== '') {
-            $where[] = 'DATE(fecha_hora) = ?';
-            $params[] = $fecha;
-        }
-        if ($lugar !== '') {
-            $where[] = 'lugar LIKE ?';
-            $params[] = "%$lugar%";
+        if ($fecha_inicio !== '' && $fecha_fin !== '') {
+            $where[] = 'DATE(fecha_hora) BETWEEN ? AND ?';
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        } elseif ($fecha_inicio !== '') {
+            $where[] = 'DATE(fecha_hora) >= ?';
+            $params[] = $fecha_inicio;
+        } elseif ($fecha_fin !== '') {
+            $where[] = 'DATE(fecha_hora) <= ?';
+            $params[] = $fecha_fin;
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);

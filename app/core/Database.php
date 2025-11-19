@@ -15,6 +15,8 @@ class Database {
         try {
             $conn = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
             $conn->exec("set names utf8");
+            // Configurar zona horaria de MySQL para Colombia
+            $conn->exec("SET time_zone = '-05:00'");
         } catch(PDOException $exception) {
             echo "Connection error: " . $exception->getMessage();
         }

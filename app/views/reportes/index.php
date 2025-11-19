@@ -1,16 +1,4 @@
 <?php
-// Función auxiliar para obtener el empleado relacionado a una categoría
-function getEmpleadoByCategoria($catId) {
-  try {
-    $pdo = new PDO('mysql:host=localhost;dbname=raci_db', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $stmt = $pdo->prepare('SELECT e.* FROM categoria c JOIN empleado e ON c.empleado_id_empleado = e.id_empleado WHERE c.id_categoria = ?');
-    $stmt->execute([$catId]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-  } catch (Exception $ex) {
-    return null;
-  }
-}
 if (isset($data) && is_array($data)) extract($data);
 include __DIR__ . '/../header.php';
 ?>
@@ -19,181 +7,141 @@ include __DIR__ . '/../header.php';
     <div class="row">
         <?php include __DIR__ . '/../sidebar.php'; ?>
         <main class="col-md-10 ms-sm-auto offset-md-2 px-4 main-content">
-            <div style="border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(30,40,90,0.10); background: #fff; border: none; padding: 2rem; margin-top: 2rem;">
-                <h2 style="color: #1a237e; font-weight: 700; border-bottom: 3px solid #ffd600; margin-bottom: 2rem; padding-bottom: 0.5rem; text-align: center;"><i class="bi bi-file-earmark-text me-2"></i>Gestión de Reportes</h2>
-                <!-- Filtros de búsqueda -->
-                <div class="mb-3">
-                    <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
-                      <input type="hidden" name="controller" value="reportes">
-                      <input type="hidden" name="action" value="index">
-                      <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($_GET['filtro_id']) ? htmlspecialchars($_GET['filtro_id']) : '' ?>" style="max-width: 90px;">
-                      <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>" style="max-width: 160px;">
-                      <select class="form-select" name="filtro_orden" style="max-width: 160px;">
-                        <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
-                        <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
-                        <option value="nombre_asc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_asc') ? 'selected' : '' ?>>Nombre (Asc)</option>
-                        <option value="nombre_desc" <?= (isset($filtro_orden) && $filtro_orden == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Desc)</option>
-                      </select>
-                      <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
-                      <a href="?controller=reportes&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
-                    </form>
-                    <div class="text-end">
-                      <?php if (!$isTrabajador): ?>
-                        <a href="?controller=reportes&action=create" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Nuevo Reporte</a>
-                      <?php endif; ?>
-                    </div>
+            <div class="container py-5">
+                <h2 class="mb-4 text-center" style="color: #1a237e; font-weight: 700; border-bottom: 3px solid #ffd600; padding-bottom: 0.5rem;">
+                    <i class="bi bi-bar-chart me-2"></i>Módulo de Reportes
+                </h2>
                 
-                <!-- Tabla de reportes -->
-                <div class="table-responsive">
-            <?php if (!empty($reportes)): ?>
-              <hr>
-              <h4>Reportes generados:</h4>
-              <?php foreach ($reportes as $reporte): ?>
-                <div class="card mb-2">
-                  <div class="card-body">
-                    <div><strong>ID Reporte:</strong> <?= htmlspecialchars($reporte['id_reporte']) ?></div>
-                    <div><strong>Nombre:</strong> <?= htmlspecialchars($reporte['nombre']) ?></div>
-                    <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['fecha_hora']) ?></div>
-                    <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['descripcion']) ?></div>
-                    <?php if (!empty($reporte['inspeccion_locativa'])): ?>
-                      <?php if (!empty($reporte['inspeccion_locativa']['categoria_id_categoria'])): ?>
-                        <?php
-                        // Obtener datos del empleado relacionado a la categoría
-                        $catId = $reporte['inspeccion_locativa']['categoria_id_categoria'];
-                        $empleado = null;
-                        if (function_exists('getEmpleadoByCategoria')) {
-                          $empleado = getEmpleadoByCategoria($catId);
-                        }
-                        ?>
-                        <?php if (!empty($empleado)): ?>
-                          <hr>
-                          <h5>Empleado relacionado</h5>
-                          <div><strong>ID:</strong> <?= htmlspecialchars($empleado['id_empleado']) ?></div>
-                          <div><strong>Nombres:</strong> <?= htmlspecialchars($empleado['nombres']) ?></div>
-                          <div><strong>Apellidos:</strong> <?= htmlspecialchars($empleado['apellidos']) ?></div>
-                          <div><strong>Teléfono:</strong> <?= htmlspecialchars($empleado['telefono']) ?></div>
-                          <div><strong>Cargo/Función:</strong> <?= htmlspecialchars($empleado['cargo_funcion']) ?></div>
-                          <hr>
-                          <h5>Incidentes asociados al empleado</h5>
-                          <?php
-                          // Consultar incidentes asociados al empleado
-                          try {
-                            $pdo = new PDO('mysql:host=localhost;dbname=raci_db', 'root', '');
-                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                            $stmt = $pdo->prepare('SELECT * FROM incidente WHERE id_incidente IN (SELECT il.incidente_id_incidente FROM inspeccion_locativa il JOIN categoria c ON il.categoria_id_categoria = c.id_categoria WHERE c.empleado_id_empleado = ?)');
-                            $stmt->execute([$empleado['id_empleado']]);
-                            $incidentesEmpleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                          } catch (Exception $ex) {
-                            $incidentesEmpleado = [];
-                          }
-                          ?>
-                          <?php if (!empty($incidentesEmpleado)): ?>
-                            <?php foreach ($incidentesEmpleado as $inc): ?>
-                              <div class="card mb-2">
-                                <div class="card-body">
-                                  <div><strong>ID Incidente:</strong> <?= htmlspecialchars($inc['id_incidente']) ?></div>
-                                  <div><strong>Tipo:</strong> <?= htmlspecialchars($inc['tipo']) ?></div>
-                                  <div><strong>Fecha:</strong> <?= htmlspecialchars($inc['fecha_hora']) ?></div>
-                                  <div><strong>Descripción:</strong> <?= htmlspecialchars($inc['descripcion']) ?></div>
-                                  <div><strong>Lugar:</strong> <?= htmlspecialchars($inc['lugar']) ?></div>
-                                  <!-- Puedes agregar más campos si lo deseas -->
-                                </div>
-                              </div>
-                            <?php endforeach; ?>
-                          <?php else: ?>
-                            <div class="alert alert-info">No hay incidentes asociados al empleado.</div>
-                          <?php endif; ?>
-                          <h5>Accidentes asociados al empleado</h5>
-                          <?php
-                          // Consultar accidentes asociados al empleado
-                          try {
-                            $stmt = $pdo->prepare('SELECT * FROM accidente WHERE id_accidente IN (SELECT il.accidente_id_accidente FROM inspeccion_locativa il JOIN categoria c ON il.categoria_id_categoria = c.id_categoria WHERE c.empleado_id_empleado = ?)');
-                            $stmt->execute([$empleado['id_empleado']]);
-                            $accidentesEmpleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                          } catch (Exception $ex) {
-                            $accidentesEmpleado = [];
-                          }
-                          ?>
-                          <?php if (!empty($accidentesEmpleado)): ?>
-                            <?php foreach ($accidentesEmpleado as $acc): ?>
-                              <div class="card mb-2">
-                                <div class="card-body">
-                                  <div><strong>ID Accidente:</strong> <?= htmlspecialchars($acc['id_accidente']) ?></div>
-                                  <div><strong>Tipo:</strong> <?= htmlspecialchars($acc['tipo']) ?></div>
-                                  <div><strong>Fecha:</strong> <?= htmlspecialchars($acc['fecha_hora']) ?></div>
-                                  <div><strong>Descripción:</strong> <?= htmlspecialchars($acc['descripcion']) ?></div>
-                                  <div><strong>Lugar:</strong> <?= htmlspecialchars($acc['lugar']) ?></div>
-                                  <!-- Puedes agregar más campos si lo deseas -->
-                                </div>
-                              </div>
-                            <?php endforeach; ?>
-                          <?php else: ?>
-                            <div class="alert alert-info">No hay accidentes asociados al empleado.</div>
-                          <?php endif; ?>
-                        <?php endif; ?>
-                      <?php endif; ?>
-                      <hr>
-                      <h5>Inspección locativa relacionada</h5>
-                      <div><strong>ID:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['id_insp_loc']) ?></div>
-                      <div><strong>Tipo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['tipo_inspeccion']) ?></div>
-                      <div><strong>Fecha:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['fecha_hora']) ?></div>
-                      <div><strong>Actividad económica:</strong> <?= isset($reporte['inspeccion_locativa']['act_economica']) ? htmlspecialchars($reporte['inspeccion_locativa']['act_economica']) : '<span class="text-muted">No disponible</span>' ?></div>
-                      <div><strong>Descripción:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['descripcion']) ?></div>
-                      <div><strong>Estado:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['estado_inspeccion']) ?></div>
-                      <div><strong>Elementos de trabajo:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['element_trab']) ?></div>
-                      <div><strong>Observaciones:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa']['observaciones']) ?></div>
-                    <?php else: ?>
-                      <div><strong>Inspección locativa:</strong> <?= htmlspecialchars($reporte['inspeccion_locativa_id_insp_loc']) ?></div>
-                    <?php endif; ?>
-                    <?php if (isset($reporte['incidentes']) || isset($reporte['accidentes'])): ?>
-                      <hr>
-                      <h5>Incidentes</h5>
-                      <?php if (!empty($reporte['incidentes'])): ?>
-                        <?php foreach ($reporte['incidentes'] as $inc): ?>
-                          <div class="card mb-2">
-                            <div class="card-body">
-                              <div><strong>ID Incidente:</strong> <?= htmlspecialchars($inc['id_incidente']) ?></div>
-                              <div><strong>Tipo:</strong> <?= htmlspecialchars($inc['tipo']) ?></div>
-                              <div><strong>Fecha:</strong> <?= htmlspecialchars($inc['fecha_hora']) ?></div>
+                <div class="row g-4 justify-content-center">
+                    <!-- Reporte de Roles -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-person-badge display-4" style="color: #6f42c1;"></i>
+                                <h5 class="card-title mt-2">Roles</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los roles del sistema</p>
+                                <a href="?controller=reportes&action=roles" class="btn btn-primary w-100">Ver Reporte</a>
                             </div>
-                          </div>
-                        <?php endforeach; ?>
-                      <?php else: ?>
-                        <div class="alert alert-info">No hay incidentes registrados.</div>
-                      <?php endif; ?>
-                      <h5>Accidentes</h5>
-                      <?php if (!empty($reporte['accidentes'])): ?>
-                        <?php foreach ($reporte['accidentes'] as $acc): ?>
-                          <div class="card mb-2">
-                            <div class="card-body">
-                              <div><strong>ID Accidente:</strong> <?= htmlspecialchars($acc['id_accidente']) ?></div>
-                              <div><strong>Tipo:</strong> <?= htmlspecialchars($acc['tipo']) ?></div>
-                              <div><strong>Fecha:</strong> <?= htmlspecialchars($acc['fecha_hora']) ?></div>
-                            </div>
-                          </div>
-                        <?php endforeach; ?>
-                      <?php else: ?>
-                        <div class="alert alert-info">No hay accidentes registrados.</div>
-                      <?php endif; ?>
-                    <?php endif; ?>
-                    <div class="text-end mt-2">
-                      <?php if (!$isCoordinador && !$isTrabajador): ?>
-                        <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
-                        <a href="?controller=reportes&action=delete&id=<?= $reporte['id_reporte'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este reporte?');"><i class="bi bi-trash"></i> Eliminar</a>
-                      <?php elseif (!$isSupervisor && !$isCoordinador && !$isTrabajador): ?>
-                        <a href="?controller=reportes&action=edit&id=<?= $reporte['id_reporte'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Editar</a>
-                      <?php endif; ?>
+                        </div>
                     </div>
-                  </div>
+
+                    <!-- Reporte de Usuarios -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-people display-4 text-dark"></i>
+                                <h5 class="card-title mt-2">Usuarios</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los usuarios registrados</p>
+                                <a href="?controller=reportes&action=usuarios" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Empleados -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-person-lines-fill display-4 text-primary"></i>
+                                <h5 class="card-title mt-2">Empleados</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los empleados registrados</p>
+                                <a href="?controller=reportes&action=empleados" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Áreas -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-building display-4 text-info"></i>
+                                <h5 class="card-title mt-2">Áreas</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todas las áreas registradas</p>
+                                <a href="?controller=reportes&action=areas" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Categorías -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-folder2-open display-4 text-success"></i>
+                                <h5 class="card-title mt-2">Categorías</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todas las categorías registradas</p>
+                                <a href="?controller=reportes&action=categorias" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Incidentes -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+                                <h5 class="card-title mt-2">Incidentes</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los incidentes registrados</p>
+                                <a href="?controller=reportes&action=incidentes" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Accidentes -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-activity display-4 text-danger"></i>
+                                <h5 class="card-title mt-2">Accidentes</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los accidentes registrados</p>
+                                <a href="?controller=reportes&action=accidentes" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Condiciones Inseguras -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-exclamation-diamond display-4 text-warning"></i>
+                                <h5 class="card-title mt-2">Condiciones Inseguras</h5>
+                                <p class="card-text">Consulta y descarga el reporte de condiciones inseguras identificadas</p>
+                                <a href="?controller=reportes&action=condicionesinseguras" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Riesgos -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-shield-check display-4 text-secondary"></i>
+                                <h5 class="card-title mt-2">Riesgos</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todos los riesgos identificados</p>
+                                <a href="?controller=reportes&action=riesgos" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte de Inspecciones Locativas -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-clipboard-check display-4 text-primary"></i>
+                                <h5 class="card-title mt-2">Inspecciones Locativas</h5>
+                                <p class="card-text">Consulta y descarga el reporte de todas las inspecciones locativas</p>
+                                <a href="?controller=reportes&action=inspecciones" class="btn btn-primary w-100">Ver Reporte</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              <?php endforeach; ?>
-              <?php if (empty($reportes)): ?>
-                <div class="alert alert-info">No hay reportes para mostrar.</div>
-              <?php endif; ?>
-            <?php endif; ?>
-          </div>
-        
+
+                <div class="text-center mt-5">
+                    <a href="/RACI/app/views/dashboard.php" class="btn btn-dark">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                </div>
+            </div>
         </main>
     </div>
 </div>
+
 <?php include __DIR__ . '/../footer.php'; ?>

@@ -42,6 +42,14 @@
                       <a href="?controller=inspeccionlocativa&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
                     </form>
                     <div class="text-end">
+                      <div class="btn-group me-2" role="group" aria-label="Reportes">
+                        <a href="?controller=reportes&action=generateInspeccionesPDF<?= $queryString ?>" class="btn btn-danger" target="_blank">
+                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                        </a>
+                        <a href="?controller=reportes&action=generateInspeccionesExcel<?= $queryString ?>" class="btn btn-success">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Excel
+                        </a>
+                      </div>
                       <?php if (!$isTrabajador): ?>
                         <a href="?controller=inspeccionlocativa&action=create" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Nueva Inspección</a>
                       <?php endif; ?>
@@ -64,8 +72,8 @@
                       <div class="col-md-6"><strong>Incidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['incidente_tipo'] ?? $insp['incidente_id_incidente']) ?></div>
                       <div class="col-md-6"><strong>Accidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['accidente_tipo'] ?? $insp['accidente_id_accidente']) ?></div>
                       <div class="col-md-6"><strong>Riesgo:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['riesgo_tipo'] ?? $insp['riesgo_id_riesgo']) ?></div>
-                      <div class="col-md-6"><strong>Empleado:</strong></div><div class="col-md-6"><?= htmlspecialchars((isset($insp['empleado_nombres']) ? $insp['empleado_nombres'] . ' ' . $insp['empleado_apellidos'] : $insp['empleado_id_empleado'])) ?></div>
-                      <div class="col-md-6"><strong>Área:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['area_nombre'] ?? $insp['area_id_area']) ?></div>
+                      <div class="col-md-6"><strong>Empleado:</strong></div><div class="col-md-6"><?= !empty($insp['empleado_nombre']) ? htmlspecialchars($insp['empleado_nombre']) : 'Sin empleado asignado' ?></div>
+                      <div class="col-md-6"><strong>Área:</strong></div><div class="col-md-6"><?= !empty($insp['area_nombre']) ? htmlspecialchars($insp['area_nombre']) : 'Sin área asignada' ?></div>
                     </div>
                     <div class="mt-3 text-end">
                       <?php if (!$isTrabajador): ?>

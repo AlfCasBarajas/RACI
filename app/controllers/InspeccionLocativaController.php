@@ -53,6 +53,20 @@ class InspeccionLocativaController extends Controller {
         $isCoordinador = ($userRole == 3); // 3 es el ID del rol coordinador
         $isSupervisor = ($userRole == 2); // 2 es el ID del rol supervisor
         $isTrabajador = ($userRole == 4); // 4 es el ID del rol trabajador
+        
+        // Construir query string para reportes
+        $params = [];
+        if (!empty($id)) $params[] = 'filtro_id=' . urlencode($id);
+        if (!empty($tipo_inspeccion)) $params[] = 'filtro_tipo_inspeccion=' . urlencode($tipo_inspeccion);
+        if (!empty($fecha_hora)) $params[] = 'filtro_fecha_hora=' . urlencode($fecha_hora);
+        if (!empty($estado_inspeccion)) $params[] = 'filtro_estado_inspeccion=' . urlencode($estado_inspeccion);
+        if (!empty($categoria)) $params[] = 'filtro_categoria=' . urlencode($categoria);
+        if (!empty($incidente)) $params[] = 'filtro_incidente=' . urlencode($incidente);
+        if (!empty($accidente)) $params[] = 'filtro_accidente=' . urlencode($accidente);
+        if (!empty($riesgo)) $params[] = 'filtro_riesgo=' . urlencode($riesgo);
+        if (!empty($orden)) $params[] = 'filtro_orden=' . urlencode($orden);
+        $queryString = !empty($params) ? '&' . implode('&', $params) : '';
+        
         $this->view('inspeccioneslocativas/index', [
             'inspecciones' => $inspecciones,
             'filtro_id' => $id,
@@ -64,6 +78,7 @@ class InspeccionLocativaController extends Controller {
             'filtro_accidente' => $accidente,
             'filtro_riesgo' => $riesgo,
             'filtro_orden' => $orden,
+            'queryString' => $queryString,
             'isCoordinador' => $isCoordinador,
             'isSupervisor' => $isSupervisor,
             'isTrabajador' => $isTrabajador

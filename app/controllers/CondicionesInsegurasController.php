@@ -33,7 +33,7 @@ class CondicionesInsegurasController extends Controller {
         $this->onlyLogged();
         $nombre = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'nombre_asc';
-        $condiciones = CondicionInsegura::getFiltered($nombre, $orden);
+        $condiciones = CondicionInsegura::getFiltered('', $nombre, $orden);
         
         // Obtener el rol del usuario actual
         $userRole = $_SESSION['user']['rol'];

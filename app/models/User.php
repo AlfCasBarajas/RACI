@@ -3,18 +3,18 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class User {
-    public static function getFiltered($filtro_doc = '', $filtro_nombre = '', $filtro_rol = '', $orden = '') {
+    public static function getFiltered($filtro_usuario = '', $filtro_rol = '', $filtro_doc = '', $orden = '') {
         $db = Database::getConnection();
         $sql = 'SELECT u.*, r.nombre as rol_nombre FROM user u JOIN rol r ON u.rol = r.id_Rol';
         $where = [];
         $params = [];
+        if ($filtro_usuario !== '') {
+            $where[] = 'u.usuario LIKE ?';
+            $params[] = "%$filtro_usuario%";
+        }
         if ($filtro_doc !== '') {
             $where[] = 'u.num_doc LIKE ?';
             $params[] = "%$filtro_doc%";
-        }
-        if ($filtro_nombre !== '') {
-            $where[] = 'u.nombres LIKE ?';
-            $params[] = "%$filtro_nombre%";
         }
         if ($filtro_rol !== '') {
             $where[] = 'u.rol = ?';
@@ -23,7 +23,7 @@ class User {
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $ordenes = ['num_doc' => 'u.num_doc', 'nombres' => 'u.nombres', 'rol' => 'r.nombre'];
+        $ordenes = ['num_doc' => 'u.num_doc', 'usuario' => 'u.usuario', 'rol' => 'r.nombre'];
         if ($orden && isset($ordenes[$orden])) {
             $sql .= ' ORDER BY ' . $ordenes[$orden] . ' ASC';
         }
