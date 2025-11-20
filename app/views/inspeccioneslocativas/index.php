@@ -28,10 +28,10 @@
                     <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
                       <input type="hidden" name="controller" value="inspeccionlocativa">
                       <input type="hidden" name="action" value="index">
-                      <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($_GET['filtro_id']) ? htmlspecialchars($_GET['filtro_id']) : '' ?>" style="max-width: 90px;">
-                      <input type="text" class="form-control" name="filtro_tipo_inspeccion" placeholder="Tipo Inspección" value="<?= isset($_GET['filtro_tipo_inspeccion']) ? htmlspecialchars($_GET['filtro_tipo_inspeccion']) : '' ?>" style="max-width: 130px;">
-                      <input type="date" class="form-control" name="filtro_fecha_hora" value="<?= isset($_GET['filtro_fecha_hora']) ? htmlspecialchars($_GET['filtro_fecha_hora']) : '' ?>" style="max-width: 130px;">
-                      <input type="text" class="form-control" name="filtro_estado_inspeccion" placeholder="Estado" value="<?= isset($_GET['filtro_estado_inspeccion']) ? htmlspecialchars($_GET['filtro_estado_inspeccion']) : '' ?>" style="max-width: 110px;">
+                      <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($filtro_id) ? htmlspecialchars($filtro_id) : '' ?>" style="max-width: 90px;">
+                      <input type="text" class="form-control" name="filtro_tipo_inspeccion" placeholder="Tipo Inspección" value="<?= isset($filtro_tipo_inspeccion) ? htmlspecialchars($filtro_tipo_inspeccion) : '' ?>" style="max-width: 130px;">
+                      <input type="date" class="form-control" name="filtro_fecha_hora" value="<?= isset($filtro_fecha_hora) ? htmlspecialchars($filtro_fecha_hora) : '' ?>" style="max-width: 130px;">
+                      <input type="text" class="form-control" name="filtro_estado_inspeccion" placeholder="Estado" value="<?= isset($filtro_estado_inspeccion) ? htmlspecialchars($filtro_estado_inspeccion) : '' ?>" style="max-width: 110px;">>
                       <select class="form-select" name="filtro_orden" style="max-width: 160px;">
                         <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                         <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
@@ -42,14 +42,6 @@
                       <a href="?controller=inspeccionlocativa&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
                     </form>
                     <div class="text-end">
-                      <div class="btn-group me-2" role="group" aria-label="Reportes">
-                        <a href="?controller=reportes&action=generateInspeccionesPDF<?= $queryString ?>" class="btn btn-danger" target="_blank">
-                            <i class="bi bi-file-earmark-pdf"></i> PDF
-                        </a>
-                        <a href="?controller=reportes&action=generateInspeccionesExcel<?= $queryString ?>" class="btn btn-success">
-                            <i class="bi bi-file-earmark-spreadsheet"></i> Excel
-                        </a>
-                      </div>
                       <?php if (!$isTrabajador): ?>
                         <a href="?controller=inspeccionlocativa&action=create" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Nueva Inspección</a>
                       <?php endif; ?>

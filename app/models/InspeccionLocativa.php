@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class InspeccionLocativa {
-    public static function getFiltered($fecha_inicio = '', $fecha_fin = '', $tipo_inspeccion = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
+    public static function getFiltered($id = '', $tipo_inspeccion = '', $fecha_hora = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
         $db = Database::getConnection();
         $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
              . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
@@ -13,17 +13,19 @@ class InspeccionLocativa {
              . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area';
         $where = [];
         $params = [];
-        if ($fecha_inicio !== '' && $fecha_fin !== '') {
-            $where[] = 'DATE(il.fecha_hora) BETWEEN ? AND ?';
-            $params[] = $fecha_inicio;
-            $params[] = $fecha_fin;
-        } elseif ($fecha_inicio !== '') {
-            $where[] = 'DATE(il.fecha_hora) >= ?';
-            $params[] = $fecha_inicio;
-        } elseif ($fecha_fin !== '') {
-            $where[] = 'DATE(il.fecha_hora) <= ?';
-            $params[] = $fecha_fin;
+        
+        // Filtro por ID
+        if ($id !== '') {
+            $where[] = 'il.id_insp_loc = ?';
+            $params[] = $id;
         }
+        
+        // Filtro por fecha
+        if ($fecha_hora !== '') {
+            $where[] = 'DATE(il.fecha_hora) = ?';
+            $params[] = $fecha_hora;
+        }
+        
         if ($tipo_inspeccion !== '') {
             $where[] = 'il.tipo_inspeccion LIKE ?';
             $params[] = "%$tipo_inspeccion%";
