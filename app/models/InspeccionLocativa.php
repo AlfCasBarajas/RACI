@@ -70,6 +70,80 @@ class InspeccionLocativa {
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    // Método específico para reportes que maneja rangos de fechas
+    public static function getFilteredForReports($fecha_inicio = '', $fecha_fin = '', $tipo_inspeccion = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
+        $db = Database::getConnection();
+        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+             . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
+             . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
+             . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
+             . ' LEFT JOIN riesgo r ON il.riesgo_id_riesgo = r.id_riesgo'
+             . ' LEFT JOIN empleado e ON il.empleado_id_empleado = e.id_empleado'
+             . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area';
+        $where = [];
+        $params = [];
+        
+        // Filtro por rango de fechas (para reportes)
+        if ($fecha_inicio !== '' && $fecha_fin !== '') {
+            $where[] = 'DATE(il.fecha_hora) BETWEEN ? AND ?';
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        } elseif ($fecha_inicio !== '') {
+            $where[] = 'DATE(il.fecha_hora) >= ?';
+            $params[] = $fecha_inicio;
+        } elseif ($fecha_fin !== '') {
+            $where[] = 'DATE(il.fecha_hora) <= ?';
+            $params[] = $fecha_fin;
+        }
+        
+        if ($tipo_inspeccion !== '') {
+            $where[] = 'il.tipo_inspeccion LIKE ?';
+            $params[] = "%$tipo_inspeccion%";
+        }
+        if ($estado_inspeccion !== '') {
+            $where[] = 'il.estado_inspeccion LIKE ?';
+            $params[] = "%$estado_inspeccion%";
+        }
+        if ($categoria !== '') {
+            $where[] = 'il.categoria_id_categoria = ?';
+            $params[] = $categoria;
+        }
+        if ($incidente !== '') {
+            $where[] = 'il.incidente_id_incidente = ?';
+            $params[] = $incidente;
+        }
+        if ($accidente !== '') {
+            $where[] = 'il.accidente_id_accidente = ?';
+            $params[] = $accidente;
+        }
+        if ($riesgo !== '') {
+            $where[] = 'il.riesgo_id_riesgo = ?';
+            $params[] = $riesgo;
+        }
+        
+        if ($where) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        
+        switch ($orden) {
+            case 'fecha_asc':
+                $sql .= ' ORDER BY il.fecha_hora ASC';
+                break;
+            case 'fecha_desc':
+                $sql .= ' ORDER BY il.fecha_hora DESC';
+                break;
+            case 'id_desc':
+                $sql .= ' ORDER BY il.id_insp_loc DESC';
+                break;
+            default:
+                $sql .= ' ORDER BY il.id_insp_loc ASC';
+        }
+        
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public static function all() {
         $db = Database::getConnection();
         $stmt = $db->query('SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'

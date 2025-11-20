@@ -1473,8 +1473,8 @@ class ReportesController extends Controller {
         $riesgo = isset($_GET['riesgo']) ? $_GET['riesgo'] : '';
         $orden = isset($_GET['orden']) ? $_GET['orden'] : 'id_asc';
         
-        // Obtener inspecciones filtradas usando la firma correcta del modelo
-        $inspecciones = InspeccionLocativa::getFiltered($fecha_inicio, $fecha_fin, $tipo_inspeccion, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $orden);
+        // Obtener inspecciones filtradas usando el método específico para reportes
+        $inspecciones = InspeccionLocativa::getFilteredForReports($fecha_inicio, $fecha_fin, $tipo_inspeccion, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $orden);
         
         // Manejar descarga de PDF
         if ($format === 'pdf') {
