@@ -63,13 +63,24 @@
                                     <input type="text" class="form-control" name="filtro_nombre" placeholder="Nombre" value="<?= isset($_GET['filtro_nombre']) ? htmlspecialchars($_GET['filtro_nombre']) : '' ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>">
+                                    <select class="form-select" name="filtro_area">
+                                        <option value="">Todas las áreas</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>" <?= (isset($filtro_area) && $filtro_area == $area['id_area']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($area['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
                                 </div>
                                 <div class="col-md-12">
                                     <select class="form-select" name="filtro_orden">
                                         <option value="">Ordenar por</option>
                                         <option value="nombre_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_asc') ? 'selected' : '' ?>>Nombre (A-Z)</option>
                                         <option value="nombre_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'nombre_desc') ? 'selected' : '' ?>>Nombre (Z-A)</option>
+                                        <option value="area_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'area_asc') ? 'selected' : '' ?>>Área (A-Z)</option>
+                                        <option value="area_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'area_desc') ? 'selected' : '' ?>>Área (Z-A)</option>
                                         <option value="id_asc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                                         <option value="id_desc" <?= (isset($_GET['filtro_orden']) && $_GET['filtro_orden'] == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
                                     </select>
@@ -95,6 +106,7 @@
                                         <th>Nombre</th>
                                         <th>Descripción</th>
                                         <th>Lugar</th>
+                                        <th>Área</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -105,6 +117,7 @@
                                         <td><?= htmlspecialchars($cond['nombre']) ?></td>
                                         <td><?= htmlspecialchars($cond['descripcion']) ?></td>
                                         <td><?= htmlspecialchars($cond['lugar']) ?></td>
+                                        <td><?= htmlspecialchars($cond['nombre_area']) ?></td>
                                         <td>
                                             <?php if (!$isTrabajador): ?>
                                                 <a href="?controller=condicionesinseguras&action=edit&id=<?= $cond['id_cond_inseg'] ?>" class="btn btn-condicionesinseguras-outline btn-sm me-2" title="Editar"><i class="bi bi-pencil"></i></a>

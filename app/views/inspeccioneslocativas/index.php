@@ -31,7 +31,19 @@
                       <input type="number" class="form-control" name="filtro_id" placeholder="ID" value="<?= isset($filtro_id) ? htmlspecialchars($filtro_id) : '' ?>" style="max-width: 90px;">
                       <input type="text" class="form-control" name="filtro_tipo_inspeccion" placeholder="Tipo Inspección" value="<?= isset($filtro_tipo_inspeccion) ? htmlspecialchars($filtro_tipo_inspeccion) : '' ?>" style="max-width: 130px;">
                       <input type="date" class="form-control" name="filtro_fecha_hora" value="<?= isset($filtro_fecha_hora) ? htmlspecialchars($filtro_fecha_hora) : '' ?>" style="max-width: 130px;">
-                      <input type="text" class="form-control" name="filtro_estado_inspeccion" placeholder="Estado" value="<?= isset($filtro_estado_inspeccion) ? htmlspecialchars($filtro_estado_inspeccion) : '' ?>" style="max-width: 110px;">>
+                      <input type="text" class="form-control" name="filtro_estado_inspeccion" placeholder="Estado" value="<?= isset($filtro_estado_inspeccion) ? htmlspecialchars($filtro_estado_inspeccion) : '' ?>" style="max-width: 110px;">
+                      <select class="form-select" name="filtro_condicion_insegura" style="max-width: 180px;">
+                        <option value="">Todas las Condiciones</option>
+                        <?php
+                        // Obter condiciones inseguras únicas
+                        require_once __DIR__ . '/../../models/CondicionInsegura.php';
+                        $condiciones_inseguras = CondicionInsegura::all();
+                        foreach ($condiciones_inseguras as $condicion): ?>
+                          <option value="<?= $condicion['id_cond_inseg'] ?>" <?= (isset($filtro_condicion_insegura) && $filtro_condicion_insegura == $condicion['id_cond_inseg']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($condicion['nombre']) ?>
+                          </option>
+                        <?php endforeach; ?>
+                      </select>
                       <select class="form-select" name="filtro_orden" style="max-width: 160px;">
                         <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                         <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
@@ -64,6 +76,7 @@
                       <div class="col-md-6"><strong>Incidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['incidente_tipo'] ?? $insp['incidente_id_incidente']) ?></div>
                       <div class="col-md-6"><strong>Accidente:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['accidente_tipo'] ?? $insp['accidente_id_accidente']) ?></div>
                       <div class="col-md-6"><strong>Riesgo:</strong></div><div class="col-md-6"><?= htmlspecialchars($insp['riesgo_tipo'] ?? $insp['riesgo_id_riesgo']) ?></div>
+                      <div class="col-md-6"><strong>Condición Insegura:</strong></div><div class="col-md-6"><?= !empty($insp['condicion_insegura_nombre']) ? htmlspecialchars($insp['condicion_insegura_nombre']) : 'Sin condición insegura asignada' ?></div>
                       <div class="col-md-6"><strong>Empleado:</strong></div><div class="col-md-6"><?= !empty($insp['empleado_nombre']) ? htmlspecialchars($insp['empleado_nombre']) : 'Sin empleado asignado' ?></div>
                       <div class="col-md-6"><strong>Área:</strong></div><div class="col-md-6"><?= !empty($insp['area_nombre']) ? htmlspecialchars($insp['area_nombre']) : 'Sin área asignada' ?></div>
                     </div>

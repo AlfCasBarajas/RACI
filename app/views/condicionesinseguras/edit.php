@@ -18,17 +18,32 @@
                     <div class="col-md-8">
                         <form method="post" action="?controller=condicionesinseguras&action=update&id=<?= $condicion['id_cond_inseg'] ?>">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="nombre" class="form-label fw-semibold">Nombre de la Condición</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" 
                                            value="<?= htmlspecialchars($condicion['nombre']) ?>" 
                                            placeholder="Ej: Superficie resbalosa, Equipo defectuoso" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="lugar" class="form-label fw-semibold">Lugar</label>
                                     <input type="text" class="form-control" id="lugar" name="lugar" 
                                            value="<?= htmlspecialchars($condicion['lugar']) ?>" 
                                            placeholder="Ej: Planta de producción, Oficinas">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="area_id" class="form-label fw-semibold">Área *</label>
+                                    <select class="form-select" id="area_id" name="area_id" required>
+                                        <option value="">Seleccionar área...</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>" 
+                                                        <?= (isset($area_actual) && $area_actual == $area['id_area']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($area['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el área donde se presenta la condición insegura</div>
                                 </div>
                             </div>
                             

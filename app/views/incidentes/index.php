@@ -65,11 +65,23 @@
               <input type="text" class="form-control" name="filtro_tipo" placeholder="Tipo" value="<?= isset($_GET['filtro_tipo']) ? htmlspecialchars($_GET['filtro_tipo']) : '' ?>" style="max-width: 120px;">
               <input type="date" class="form-control" name="filtro_fecha" value="<?= isset($_GET['filtro_fecha']) ? htmlspecialchars($_GET['filtro_fecha']) : '' ?>" style="max-width: 150px;">
               <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>" style="max-width: 120px;">
+              <select class="form-select" name="filtro_area" style="max-width: 150px;">
+                <option value="">Todas las áreas</option>
+                <?php if (isset($areas)): ?>
+                  <?php foreach ($areas as $area): ?>
+                    <option value="<?= $area['id_area'] ?>" <?= (isset($filtro_area) && $filtro_area == $area['id_area']) ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($area['nombre']) ?>
+                    </option>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </select>
               <select class="form-select" name="filtro_orden" style="max-width: 160px;">
                 <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                 <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
                 <option value="tipo_asc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_asc') ? 'selected' : '' ?>>Tipo (A-Z)</option>
                 <option value="tipo_desc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_desc') ? 'selected' : '' ?>>Tipo (Z-A)</option>
+                <option value="area_asc" <?= (isset($filtro_orden) && $filtro_orden == 'area_asc') ? 'selected' : '' ?>>Área (A-Z)</option>
+                <option value="area_desc" <?= (isset($filtro_orden) && $filtro_orden == 'area_desc') ? 'selected' : '' ?>>Área (Z-A)</option>
               </select>
               <button type="submit" class="btn btn-incidentes-outline"><i class="bi bi-funnel"></i> Filtrar</button>
               <a href="?controller=incidentes&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
@@ -89,6 +101,7 @@
                   <th>Descripción</th>
                   <th>Fecha</th>
                   <th>Lugar</th>
+                  <th>Área</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -100,6 +113,7 @@
                     <td><?= htmlspecialchars($inc['descripcion']) ?></td>
                     <td><?= htmlspecialchars($inc['fecha_hora']) ?></td>
                     <td><?= htmlspecialchars($inc['lugar']) ?></td>
+                    <td><?= htmlspecialchars($inc['nombre_area']) ?></td>
                     <td>
                       <?php if (!$isTrabajador): ?>
                         <a href="?controller=incidentes&action=edit&id=<?= $inc['id_incidente'] ?>" class="btn btn-incidentes btn-sm me-2" title="Editar"><i class="bi bi-pencil me-1"></i>Editar</a>

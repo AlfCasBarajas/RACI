@@ -4,8 +4,10 @@ require_once __DIR__ . '/../models/Categoria.php';
 require_once __DIR__ . '/../models/Incidente.php';
 require_once __DIR__ . '/../models/Accidente.php';
 require_once __DIR__ . '/../models/Riesgo.php';
+require_once __DIR__ . '/../models/CondicionInsegura.php';
 require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../models/Area.php';
+require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/Controller.php';
 
 class InspeccionLocativaController extends Controller {
@@ -45,8 +47,9 @@ class InspeccionLocativaController extends Controller {
         $incidente = isset($_GET['filtro_incidente']) ? trim($_GET['filtro_incidente']) : '';
         $accidente = isset($_GET['filtro_accidente']) ? trim($_GET['filtro_accidente']) : '';
         $riesgo = isset($_GET['filtro_riesgo']) ? trim($_GET['filtro_riesgo']) : '';
+        $condicion_insegura = isset($_GET['filtro_condicion_insegura']) ? trim($_GET['filtro_condicion_insegura']) : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        $inspecciones = InspeccionLocativa::getFiltered($id, $tipo_inspeccion, $fecha_hora, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $orden);
+        $inspecciones = InspeccionLocativa::getFiltered($id, $tipo_inspeccion, $fecha_hora, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $condicion_insegura, $orden);
         
         // Obtener el rol del usuario actual
         $userRole = $_SESSION['user']['rol'];
@@ -64,6 +67,7 @@ class InspeccionLocativaController extends Controller {
         if (!empty($incidente)) $params[] = 'filtro_incidente=' . urlencode($incidente);
         if (!empty($accidente)) $params[] = 'filtro_accidente=' . urlencode($accidente);
         if (!empty($riesgo)) $params[] = 'filtro_riesgo=' . urlencode($riesgo);
+        if (!empty($condicion_insegura)) $params[] = 'filtro_condicion_insegura=' . urlencode($condicion_insegura);
         if (!empty($orden)) $params[] = 'filtro_orden=' . urlencode($orden);
         $queryString = !empty($params) ? '&' . implode('&', $params) : '';
         
@@ -77,6 +81,7 @@ class InspeccionLocativaController extends Controller {
             'filtro_incidente' => $incidente,
             'filtro_accidente' => $accidente,
             'filtro_riesgo' => $riesgo,
+            'filtro_condicion_insegura' => $condicion_insegura,
             'filtro_orden' => $orden,
             'queryString' => $queryString,
             'isCoordinador' => $isCoordinador,
@@ -87,18 +92,26 @@ class InspeccionLocativaController extends Controller {
     public function create() {
         $this->onlyLogged();
         $this->checkNotTrabajador();
-        $categorias = Categoria::all();
+        
+        // Obtener categorías con información de empleado y área
+        $db = Database::getConnection();
+        $stmt = $db->query('SELECT c.*, e.nombres, e.apellidos, a.nombre as area_nombre FROM categoria c 
+                           LEFT JOIN empleado e ON c.empleado_id_empleado = e.id_empleado 
+                           LEFT JOIN area a ON c.area_id_area = a.id_area');
+        $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         $incidentes = Incidente::all();
         $accidentes = Accidente::all();
         $riesgos = Riesgo::all();
+        $condiciones_inseguras = CondicionInsegura::all();
         $empleados = Empleado::all();
         $areas = Area::all();
         $this->view('inspeccioneslocativas/create', [
             'categorias' => $categorias,
             'incidentes' => $incidentes,
             'accidentes' => $accidentes,
-            'riesgos' => $riesgos
-            ,
+            'riesgos' => $riesgos,
+            'condiciones_inseguras' => $condiciones_inseguras,
             'empleados' => $empleados,
             'areas' => $areas
         ]);
@@ -136,10 +149,18 @@ class InspeccionLocativaController extends Controller {
         $this->checkNotTrabajador();
         $id = $_GET['id'];
         $inspeccion = InspeccionLocativa::find($id);
-        $categorias = Categoria::all();
+        
+        // Obtener categorías con información de empleado y área
+        $db = Database::getConnection();
+        $stmt = $db->query('SELECT c.*, e.nombres, e.apellidos, a.nombre as area_nombre FROM categoria c 
+                           LEFT JOIN empleado e ON c.empleado_id_empleado = e.id_empleado 
+                           LEFT JOIN area a ON c.area_id_area = a.id_area');
+        $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         $incidentes = Incidente::all();
         $accidentes = Accidente::all();
         $riesgos = Riesgo::all();
+        $condiciones_inseguras = CondicionInsegura::all();
         $empleados = Empleado::all();
         $areas = Area::all();
         $this->view('inspeccioneslocativas/edit', [
@@ -147,8 +168,8 @@ class InspeccionLocativaController extends Controller {
             'categorias' => $categorias,
             'incidentes' => $incidentes,
             'accidentes' => $accidentes,
-            'riesgos' => $riesgos
-            ,
+            'riesgos' => $riesgos,
+            'condiciones_inseguras' => $condiciones_inseguras,
             'empleados' => $empleados,
             'areas' => $areas
         ]);

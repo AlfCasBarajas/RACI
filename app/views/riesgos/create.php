@@ -18,12 +18,12 @@
                     <div class="col-md-8">
                         <form method="post" action="?controller=riesgos&action=store">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="tipo" class="form-label fw-semibold">Tipo de Riesgo</label>
                                     <input type="text" class="form-control" id="tipo" name="tipo" 
                                            placeholder="Ej: Físico, Químico, Ergonómico" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="condicion_insegura_id_cond_inseg" class="form-label fw-semibold">Condición Insegura</label>
                                     <select class="form-select" id="condicion_insegura_id_cond_inseg" name="condicion_insegura_id_cond_inseg" required>
                                         <option value="">Seleccione una condición</option>
@@ -31,6 +31,18 @@
                                             <option value="<?= $cond['id_cond_inseg'] ?>"><?= htmlspecialchars($cond['nombre']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="area_id" class="form-label fw-semibold">Área *</label>
+                                    <select class="form-select" id="area_id" name="area_id" required>
+                                        <option value="">Seleccionar área...</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el área donde se presenta el riesgo</div>
                                 </div>
                             </div>
                             

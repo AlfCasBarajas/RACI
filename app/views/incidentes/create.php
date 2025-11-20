@@ -30,10 +30,22 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="lugar" class="form-label fw-semibold">Lugar</label>
                                     <input type="text" class="form-control" id="lugar" name="lugar" 
                                            placeholder="Ubicación específica donde ocurrió el incidente">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="area_id" class="form-label fw-semibold">Área *</label>
+                                    <select class="form-select" id="area_id" name="area_id" required>
+                                        <option value="">Seleccionar área...</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el área donde ocurrió el incidente</div>
                                 </div>
                             </div>
                             

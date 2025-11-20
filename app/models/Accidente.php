@@ -2,6 +2,66 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Accidente {
+    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $area = '', $orden = 'id_asc', $id = '') {
+        $db = Database::getConnection();
+        $sql = 'SELECT a.*, 
+                       COALESCE(ar.nombre, "Sin área asignada") as nombre_area
+                FROM accidente a
+                LEFT JOIN inspeccion_locativa il ON a.id_accidente = il.accidente_id_accidente
+                LEFT JOIN area ar ON il.area_id_area = ar.id_area';
+        $where = [];
+        $params = [];
+        if ($id !== '' && is_numeric($id)) {
+            $where[] = 'a.id_accidente = ?';
+            $params[] = $id;
+        }
+        if ($tipo !== '') {
+            $where[] = 'a.tipo LIKE ?';
+            $params[] = "%$tipo%";
+        }
+        if ($fecha_inicio !== '' && $fecha_fin !== '') {
+            $where[] = 'DATE(a.fecha_hora) BETWEEN ? AND ?';
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        } elseif ($fecha_inicio !== '') {
+            $where[] = 'DATE(a.fecha_hora) >= ?';
+            $params[] = $fecha_inicio;
+        } elseif ($fecha_fin !== '') {
+            $where[] = 'DATE(a.fecha_hora) <= ?';
+            $params[] = $fecha_fin;
+        }
+        if ($area !== '') {
+            $where[] = 'ar.id_area = ?';
+            $params[] = $area;
+        }
+        if ($where) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= ' GROUP BY a.id_accidente'; // Evitar duplicados si un accidente está en múltiples inspecciones
+        switch ($orden) {
+            case 'tipo_asc':
+                $sql .= ' ORDER BY a.tipo ASC';
+                break;
+            case 'tipo_desc':
+                $sql .= ' ORDER BY a.tipo DESC';
+                break;
+            case 'area_asc':
+                $sql .= ' ORDER BY nombre_area ASC';
+                break;
+            case 'area_desc':
+                $sql .= ' ORDER BY nombre_area DESC';
+                break;
+            case 'id_desc':
+                $sql .= ' ORDER BY a.id_accidente DESC';
+                break;
+            default:
+                $sql .= ' ORDER BY a.id_accidente ASC';
+        }
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function getFiltered($tipo = '', $fecha_inicio = '', $fecha_fin = '', $orden = 'id_asc', $id = '') {
         $db = Database::getConnection();
         $sql = 'SELECT * FROM accidente';

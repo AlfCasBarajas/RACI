@@ -11,12 +11,30 @@
                     <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
                       <input type="hidden" name="controller" value="riesgos">
                       <input type="hidden" name="action" value="index">
-                      <input type="text" class="form-control" name="filtro_tipo" placeholder="Tipo" value="<?= isset($_GET['filtro_tipo']) ? htmlspecialchars($_GET['filtro_tipo']) : '' ?>" style="max-width: 180px;">
+                      <input type="text" class="form-control" name="filtro_tipo" placeholder="Tipo" value="<?= isset($_GET['filtro_tipo']) ? htmlspecialchars($_GET['filtro_tipo']) : '' ?>" style="max-width: 150px;">
                       <select class="form-select" name="filtro_condicion" style="max-width: 180px;">
                         <option value="">Condición Insegura</option>
                         <?php foreach ($condiciones as $cond): ?>
                           <option value="<?= $cond['id_cond_inseg'] ?>" <?= (isset($_GET['filtro_condicion']) && $_GET['filtro_condicion'] == $cond['id_cond_inseg']) ? 'selected' : '' ?>><?= htmlspecialchars($cond['nombre']) ?></option>
                         <?php endforeach; ?>
+                      </select>
+                      <select class="form-select" name="filtro_area" style="max-width: 150px;">
+                        <option value="">Todas las áreas</option>
+                        <?php if (isset($areas)): ?>
+                          <?php foreach ($areas as $area): ?>
+                            <option value="<?= $area['id_area'] ?>" <?= (isset($filtro_area) && $filtro_area == $area['id_area']) ? 'selected' : '' ?>>
+                              <?= htmlspecialchars($area['nombre']) ?>
+                            </option>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                      </select>
+                      <select class="form-select" name="filtro_orden" style="max-width: 160px;">
+                        <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
+                        <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
+                        <option value="tipo_asc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_asc') ? 'selected' : '' ?>>Tipo (A-Z)</option>
+                        <option value="tipo_desc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_desc') ? 'selected' : '' ?>>Tipo (Z-A)</option>
+                        <option value="area_asc" <?= (isset($filtro_orden) && $filtro_orden == 'area_asc') ? 'selected' : '' ?>>Área (A-Z)</option>
+                        <option value="area_desc" <?= (isset($filtro_orden) && $filtro_orden == 'area_desc') ? 'selected' : '' ?>>Área (Z-A)</option>
                       </select>
                       <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
                       <a href="?controller=riesgos&action=index" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Limpiar</a>
@@ -37,6 +55,7 @@
                   <th>Tipo</th>
                   <th>Descripción</th>
                   <th>Condición Insegura</th>
+                  <th>Área</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -47,6 +66,7 @@
                     <td><?= htmlspecialchars($riesgo['tipo']) ?></td>
                     <td><?= htmlspecialchars($riesgo['descripcion']) ?></td>
                     <td><?= htmlspecialchars($riesgo['condicion_nombre']) ?></td>
+                    <td><?= htmlspecialchars($riesgo['nombre_area']) ?></td>
                     <td>
                       <?php if (!$isTrabajador): ?>
                         <a href="?controller=riesgos&action=edit&id=<?= $riesgo['id_riesgo'] ?>" class="btn btn-primary btn-sm me-2" title="Editar"><i class="bi bi-pencil me-1"></i>Editar</a>

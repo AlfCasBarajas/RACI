@@ -2,6 +2,60 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Riesgo {
+    public static function getFilteredWithArea($descripcion = '', $tipo = '', $condicion = '', $area = '', $orden = 'id_asc') {
+        $db = Database::getConnection();
+        $sql = 'SELECT r.*, c.nombre as condicion_nombre, 
+                       COALESCE(a.nombre, "Sin área asignada") as nombre_area
+                FROM riesgo r 
+                LEFT JOIN condicion_insegura c ON r.condicion_insegura_id_cond_inseg = c.id_cond_inseg
+                LEFT JOIN inspeccion_locativa il ON r.id_riesgo = il.riesgo_id_riesgo
+                LEFT JOIN area a ON il.area_id_area = a.id_area';
+        $where = [];
+        $params = [];
+        if ($descripcion !== '') {
+            $where[] = 'r.descripcion LIKE ?';
+            $params[] = "%$descripcion%";
+        }
+        if ($tipo !== '') {
+            $where[] = 'r.tipo LIKE ?';
+            $params[] = "%$tipo%";
+        }
+        if ($condicion !== '') {
+            $where[] = 'r.condicion_insegura_id_cond_inseg = ?';
+            $params[] = $condicion;
+        }
+        if ($area !== '') {
+            $where[] = 'a.id_area = ?';
+            $params[] = $area;
+        }
+        if ($where) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= ' GROUP BY r.id_riesgo'; // Evitar duplicados si un riesgo está en múltiples inspecciones
+        switch ($orden) {
+            case 'tipo_asc':
+                $sql .= ' ORDER BY r.tipo ASC';
+                break;
+            case 'tipo_desc':
+                $sql .= ' ORDER BY r.tipo DESC';
+                break;
+            case 'area_asc':
+                $sql .= ' ORDER BY nombre_area ASC';
+                break;
+            case 'area_desc':
+                $sql .= ' ORDER BY nombre_area DESC';
+                break;
+            case 'id_desc':
+                $sql .= ' ORDER BY r.id_riesgo DESC';
+                break;
+            default:
+                $sql .= ' ORDER BY r.id_riesgo ASC';
+        }
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function getFiltered($descripcion = '', $tipo = '', $condicion = '') {
         $db = Database::getConnection();
         $sql = 'SELECT r.*, c.nombre as condicion_nombre FROM riesgo r LEFT JOIN condicion_insegura c ON r.condicion_insegura_id_cond_inseg = c.id_cond_inseg';

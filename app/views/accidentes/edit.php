@@ -36,20 +36,43 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="fecha_hora" class="form-label fw-semibold">Fecha y Hora</label>
                                     <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control" 
                                            value="<?= date('Y-m-d\TH:i', strtotime($accidente['fecha_hora'])) ?>">
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="lugar" class="form-label fw-semibold">Lugar</label>
                                     <input type="text" name="lugar" id="lugar" class="form-control" 
                                            value="<?= htmlspecialchars($accidente['lugar']) ?>">
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
+                                    <label for="area_id" class="form-label fw-semibold">Área *</label>
+                                    <select class="form-select" id="area_id" name="area_id" required>
+                                        <option value="">Seleccionar área...</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>" 
+                                                        <?= (isset($area_actual) && $area_actual == $area['id_area']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($area['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el área donde ocurrió el accidente</div>
+                                </div>
+                                <div class="col-md-3 mb-3">
                                     <label for="tipo_vinc_lab_" class="form-label fw-semibold">Tipo Vinculación Laboral</label>
                                     <input type="text" name="tipo_vinc_lab_" id="tipo_vinc_lab_" class="form-control" 
                                            value="<?= htmlspecialchars($accidente['tipo_vinc_lab_']) ?>">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
+                                              placeholder="Descripción detallada del accidente..."><?= htmlspecialchars($accidente['descripcion']) ?></textarea>
                                 </div>
                             </div>
                             

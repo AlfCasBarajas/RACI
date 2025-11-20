@@ -38,6 +38,21 @@
                                            value="<?= htmlspecialchars($incidente['lugar']) ?>" 
                                            placeholder="Ubicación del incidente">
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="area_id" class="form-label fw-semibold">Área *</label>
+                                    <select class="form-select" id="area_id" name="area_id" required>
+                                        <option value="">Seleccionar área...</option>
+                                        <?php if (isset($areas)): ?>
+                                            <?php foreach ($areas as $area): ?>
+                                                <option value="<?= $area['id_area'] ?>" 
+                                                        <?= (isset($area_actual) && $area_actual == $area['id_area']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($area['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el área donde ocurrió el incidente</div>
+                                </div>
                             </div>
                             
                             <div class="row">

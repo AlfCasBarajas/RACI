@@ -2,13 +2,14 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class InspeccionLocativa {
-    public static function getFiltered($id = '', $tipo_inspeccion = '', $fecha_hora = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
+    public static function getFiltered($id = '', $tipo_inspeccion = '', $fecha_hora = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $condicion_insegura = '', $orden = 'id_asc') {
         $db = Database::getConnection();
-        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, ci.nombre AS condicion_insegura_nombre, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
              . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
              . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
              . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
              . ' LEFT JOIN riesgo r ON il.riesgo_id_riesgo = r.id_riesgo'
+             . ' LEFT JOIN condicion_insegura ci ON r.condicion_insegura_id_cond_inseg = ci.id_cond_inseg'
              . ' LEFT JOIN empleado e ON il.empleado_id_empleado = e.id_empleado'
              . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area';
         $where = [];
@@ -50,6 +51,10 @@ class InspeccionLocativa {
             $where[] = 'il.riesgo_id_riesgo = ?';
             $params[] = $riesgo;
         }
+        if ($condicion_insegura !== '') {
+            $where[] = 'ci.id_cond_inseg = ?';
+            $params[] = $condicion_insegura;
+        }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
@@ -72,13 +77,14 @@ class InspeccionLocativa {
     }
     
     // Método específico para reportes que maneja rangos de fechas
-    public static function getFilteredForReports($fecha_inicio = '', $fecha_fin = '', $tipo_inspeccion = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $orden = 'id_asc') {
+    public static function getFilteredForReports($fecha_inicio = '', $fecha_fin = '', $tipo_inspeccion = '', $estado_inspeccion = '', $categoria = '', $incidente = '', $accidente = '', $riesgo = '', $condicion_insegura = '', $orden = 'id_asc') {
         $db = Database::getConnection();
-        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+        $sql = 'SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, ci.nombre AS condicion_insegura_nombre, CONCAT(e.nombres, " ", e.apellidos) AS empleado_nombre, ar.nombre AS area_nombre FROM inspeccion_locativa il'
              . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
              . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
              . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
              . ' LEFT JOIN riesgo r ON il.riesgo_id_riesgo = r.id_riesgo'
+             . ' LEFT JOIN condicion_insegura ci ON r.condicion_insegura_id_cond_inseg = ci.id_cond_inseg'
              . ' LEFT JOIN empleado e ON il.empleado_id_empleado = e.id_empleado'
              . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area';
         $where = [];
@@ -121,6 +127,10 @@ class InspeccionLocativa {
             $where[] = 'il.riesgo_id_riesgo = ?';
             $params[] = $riesgo;
         }
+        if ($condicion_insegura !== '') {
+            $where[] = 'ci.id_cond_inseg = ?';
+            $params[] = $condicion_insegura;
+        }
         
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -146,22 +156,24 @@ class InspeccionLocativa {
     }
     public static function all() {
         $db = Database::getConnection();
-        $stmt = $db->query('SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+        $stmt = $db->query('SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, ci.nombre AS condicion_insegura_nombre, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'
             . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
             . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
             . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
             . ' LEFT JOIN riesgo r ON il.riesgo_id_riesgo = r.id_riesgo'
+            . ' LEFT JOIN condicion_insegura ci ON r.condicion_insegura_id_cond_inseg = ci.id_cond_inseg'
             . ' LEFT JOIN empleado e ON il.empleado_id_empleado = e.id_empleado'
             . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area');
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public static function find($id) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'
+        $stmt = $db->prepare('SELECT il.*, c.nombre AS categoria_nombre, inc.tipo AS incidente_tipo, acc.tipo AS accidente_tipo, r.tipo AS riesgo_tipo, ci.nombre AS condicion_insegura_nombre, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, ar.nombre AS area_nombre FROM inspeccion_locativa il'
             . ' LEFT JOIN categoria c ON il.categoria_id_categoria = c.id_categoria'
             . ' LEFT JOIN incidente inc ON il.incidente_id_incidente = inc.id_incidente'
             . ' LEFT JOIN accidente acc ON il.accidente_id_accidente = acc.id_accidente'
             . ' LEFT JOIN riesgo r ON il.riesgo_id_riesgo = r.id_riesgo'
+            . ' LEFT JOIN condicion_insegura ci ON r.condicion_insegura_id_cond_inseg = ci.id_cond_inseg'
             . ' LEFT JOIN empleado e ON il.empleado_id_empleado = e.id_empleado'
             . ' LEFT JOIN area ar ON il.area_id_area = ar.id_area WHERE il.id_insp_loc = ?');
         $stmt->execute([$id]);

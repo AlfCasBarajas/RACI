@@ -61,16 +61,30 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="categoria_id_categoria" class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
                                     <select name="categoria_id_categoria" id="categoria_id_categoria" class="form-select" required>
                                         <option value="">Selecciona categoría</option>
                                         <?php if (isset($categorias)): foreach ($categorias as $cat): ?>
-                                            <option value="<?= $cat['id_categoria'] ?>" <?= ($inspeccion['categoria_id_categoria'] == $cat['id_categoria']) ? 'selected' : '' ?>><?= htmlspecialchars($cat['nombre']) ?></option>
+                                            <?php
+                                            // Manejar campos NULL
+                                            $empleadoNombre = !empty($cat['nombres']) && !empty($cat['apellidos']) 
+                                                ? $cat['nombres'] . ' ' . $cat['apellidos'] 
+                                                : 'Sin empleado asignado';
+                                            $areaNombre = !empty($cat['area_nombre']) ? $cat['area_nombre'] : 'Sin área asignada';
+                                            ?>
+                                            <option value="<?= $cat['id_categoria'] ?>" 
+                                                    data-empleado-id="<?= $cat['empleado_id_empleado'] ?? '' ?>" 
+                                                    data-empleado-nombre="<?= htmlspecialchars($empleadoNombre) ?>" 
+                                                    data-area-id="<?= $cat['area_id_area'] ?? '' ?>" 
+                                                    data-area-nombre="<?= htmlspecialchars($areaNombre) ?>"
+                                                    <?= ($inspeccion['categoria_id_categoria'] == $cat['id_categoria']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat['nombre']) ?>
+                                            </option>
                                         <?php endforeach; endif; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="incidente_id_incidente" class="form-label fw-semibold">Incidente (Opcional)</label>
                                     <select name="incidente_id_incidente" id="incidente_id_incidente" class="form-select">
                                         <option value="">Selecciona incidente</option>
@@ -79,7 +93,7 @@
                                         <?php endforeach; endif; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="accidente_id_accidente" class="form-label fw-semibold">Accidente (Opcional)</label>
                                     <select name="accidente_id_accidente" id="accidente_id_accidente" class="form-select">
                                         <option value="">Selecciona accidente</option>
@@ -88,25 +102,55 @@
                                         <?php endforeach; endif; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="riesgo_id_riesgo" class="form-label fw-semibold">Riesgo (Opcional)</label>
-                                    <select name="riesgo_id_riesgo" id="riesgo_id_riesgo" class="form-select">
-                                        <option value="">Selecciona riesgo</option>
-                                        <?php if (isset($riesgos)): foreach ($riesgos as $ries): ?>
-                                            <option value="<?= $ries['id_riesgo'] ?>" <?= ($inspeccion['riesgo_id_riesgo'] == $ries['id_riesgo']) ? 'selected' : '' ?>><?= htmlspecialchars($ries['tipo']) ?></option>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="condicion_insegura" class="form-label fw-semibold">Condición Insegura (Opcional)</label>
+                                    <select name="condicion_insegura" id="condicion_insegura" class="form-select">
+                                        <option value="">Selecciona condición insegura</option>
+                                        <?php if (isset($condiciones_inseguras)): foreach ($condiciones_inseguras as $cond): ?>
+                                            <?php
+                                            // Obtener la condición insegura asociada al riesgo actual si existe
+                                            $selected = '';
+                                            if (!empty($inspeccion['riesgo_id_riesgo'])) {
+                                                // Buscar la condición insegura del riesgo seleccionado
+                                                foreach ($riesgos as $riesgo) {
+                                                    if ($riesgo['id_riesgo'] == $inspeccion['riesgo_id_riesgo'] && 
+                                                        $riesgo['condicion_insegura_id_cond_inseg'] == $cond['id_cond_inseg']) {
+                                                        $selected = 'selected';
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <option value="<?= $cond['id_cond_inseg'] ?>" <?= $selected ?>><?= htmlspecialchars($cond['nombre']) ?></option>
                                         <?php endforeach; endif; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado (Opcional)</label>
-                                    <select name="empleado_id_empleado" id="empleado_id_empleado" class="form-select">
+                                <div class="col-md-4 mb-3">
+                                    <label for="riesgo_id_riesgo" class="form-label fw-semibold">Riesgo <span id="riesgo_required" class="text-danger" style="display: none;">*</span></label>
+                                    <select name="riesgo_id_riesgo" id="riesgo_id_riesgo" class="form-select">
+                                        <option value="">Selecciona riesgo</option>
+                                        <?php if (isset($riesgos)): foreach ($riesgos as $ries): ?>
+                                            <option value="<?= $ries['id_riesgo'] ?>" data-condicion="<?= $ries['condicion_insegura_id_cond_inseg'] ?>" <?= ($inspeccion['riesgo_id_riesgo'] == $ries['id_riesgo']) ? 'selected' : '' ?>><?= htmlspecialchars($ries['tipo']) ?></option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="empleado_id_empleado" class="form-label fw-semibold">Empleado <span class="text-danger">*</span></label>
+                                    <select name="empleado_id_empleado" id="empleado_id_empleado" class="form-select" required>
                                         <option value="">Selecciona empleado</option>
                                         <?php if (isset($empleados)): foreach ($empleados as $emp): ?>
                                             <option value="<?= $emp['id_empleado'] ?>" <?= (isset($inspeccion['empleado_id_empleado']) && $inspeccion['empleado_id_empleado'] == $emp['id_empleado']) ? 'selected' : '' ?>><?= htmlspecialchars($emp['nombres'] . ' ' . $emp['apellidos']) ?></option>
                                         <?php endforeach; endif; ?>
                                     </select>
+                                    <input type="hidden" name="empleado_id_empleado_hidden" id="empleado_id_empleado_hidden" value="<?= isset($inspeccion['empleado_id_empleado']) ? $inspeccion['empleado_id_empleado'] : '' ?>">
                                 </div>
-                                <div class="col-md-3 mb-3">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
                                     <label for="area_id_area" class="form-label fw-semibold">Área <span class="text-danger">*</span></label>
                                     <select name="area_id_area" id="area_id_area" class="form-select" required>
                                         <option value="">Selecciona área</option>
@@ -114,6 +158,7 @@
                                             <option value="<?= $area['id_area'] ?>" <?= (isset($inspeccion['area_id_area']) && $inspeccion['area_id_area'] == $area['id_area']) ? 'selected' : '' ?>><?= htmlspecialchars($area['nombre']) ?></option>
                                         <?php endforeach; endif; ?>
                                     </select>
+                                    <input type="hidden" name="area_id_area_hidden" id="area_id_area_hidden" value="<?= isset($inspeccion['area_id_area']) ? $inspeccion['area_id_area'] : '' ?>">
                                 </div>
                             </div>
 
@@ -134,5 +179,105 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('categoria_id_categoria');
+    const empleadoSelect = document.getElementById('empleado_id_empleado');
+    const empleadoHidden = document.getElementById('empleado_id_empleado_hidden');
+    const areaSelect = document.getElementById('area_id_area');
+    const areaHidden = document.getElementById('area_id_area_hidden');
+    const condicionInseguraSelect = document.getElementById('condicion_insegura');
+    const riesgoSelect = document.getElementById('riesgo_id_riesgo');
+    const riesgoRequired = document.getElementById('riesgo_required');
+    
+    // Función para actualizar empleado y área basado en categoría
+    function updateEmpleadoAndArea() {
+        if (categoriaSelect.value) {
+            const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
+            const empleadoId = selectedOption.getAttribute('data-empleado-id');
+            const empleadoNombre = selectedOption.getAttribute('data-empleado-nombre');
+            const areaId = selectedOption.getAttribute('data-area-id');
+            const areaNombre = selectedOption.getAttribute('data-area-nombre');
+            
+            if (empleadoId && areaId) {
+                // Actualizar empleado
+                empleadoSelect.value = empleadoId;
+                empleadoHidden.value = empleadoId;
+                
+                // Actualizar área
+                areaSelect.value = areaId;
+                areaHidden.value = areaId;
+            }
+        }
+    }
+    
+    // Función para actualizar requisitos de riesgo basado en condición insegura
+    function updateRiesgoRequirement() {
+        if (condicionInseguraSelect.value) {
+            // Si hay condición insegura seleccionada, hacer riesgo obligatorio
+            riesgoSelect.setAttribute('required', 'required');
+            riesgoRequired.style.display = 'inline';
+            
+            // Filtrar riesgos por condición insegura
+            const selectedCondicion = condicionInseguraSelect.value;
+            Array.from(riesgoSelect.options).forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                    return;
+                }
+                
+                const condicionRiesgo = option.getAttribute('data-condicion');
+                if (condicionRiesgo === selectedCondicion) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                    if (option.selected) {
+                        riesgoSelect.value = '';
+                    }
+                }
+            });
+        } else {
+            // Si no hay condición insegura, riesgo es opcional
+            riesgoSelect.removeAttribute('required');
+            riesgoRequired.style.display = 'none';
+            
+            // Mostrar todos los riesgos
+            Array.from(riesgoSelect.options).forEach(option => {
+                option.style.display = 'block';
+            });
+        }
+    }
+    
+    // Event listeners
+    categoriaSelect.addEventListener('change', updateEmpleadoAndArea);
+    condicionInseguraSelect.addEventListener('change', updateRiesgoRequirement);
+    
+    // También actualizar condición insegura cuando se selecciona un riesgo
+    riesgoSelect.addEventListener('change', function() {
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            const condicionId = selectedOption.getAttribute('data-condicion');
+            if (condicionId) {
+                condicionInseguraSelect.value = condicionId;
+                updateRiesgoRequirement();
+            }
+        }
+    });
+    
+    // Ejecutar validación inicial
+    updateRiesgoRequirement();
+    
+    // Interceptar envío del formulario para usar valores hidden si es necesario
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (empleadoHidden.value && empleadoSelect.value !== empleadoHidden.value) {
+            empleadoSelect.value = empleadoHidden.value;
+        }
+        if (areaHidden.value && areaSelect.value !== areaHidden.value) {
+            areaSelect.value = areaHidden.value;
+        }
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

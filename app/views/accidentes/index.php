@@ -70,12 +70,26 @@
                             <div class="col-md-3">
                                 <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>">
                             </div>
+                            <div class="col-md-3">
+                                <select class="form-select" name="filtro_area">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas)): ?>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>" <?= (isset($filtro_area) && $filtro_area == $area['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($area['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                             <div class="col-md-6">
                                 <select class="form-select" name="filtro_orden">
                                     <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                                     <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
                                     <option value="tipo_asc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_asc') ? 'selected' : '' ?>>Tipo (A-Z)</option>
                                     <option value="tipo_desc" <?= (isset($filtro_orden) && $filtro_orden == 'tipo_desc') ? 'selected' : '' ?>>Tipo (Z-A)</option>
+                                    <option value="area_asc" <?= (isset($filtro_orden) && $filtro_orden == 'area_asc') ? 'selected' : '' ?>>Área (A-Z)</option>
+                                    <option value="area_desc" <?= (isset($filtro_orden) && $filtro_orden == 'area_desc') ? 'selected' : '' ?>>Área (Z-A)</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -101,6 +115,7 @@
                                     <div class="row g-2">
                                         <div class="col-md-6"><strong>ID:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['id_accidente']) ?></div>
                                         <div class="col-md-6"><strong>Tipo:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['tipo']) ?></div>
+                                        <div class="col-md-6"><strong>Área:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['nombre_area']) ?></div>
                                         <div class="col-md-6"><strong>Descripción:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['descripcion']) ?></div>
                                         <div class="col-md-6"><strong>Clasificación:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['clasificacion']) ?></div>
                                         <div class="col-md-6"><strong>Estado:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['estado']) ?></div>

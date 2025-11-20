@@ -1495,10 +1495,11 @@ class ReportesController extends Controller {
         $incidente = isset($_GET['incidente']) ? $_GET['incidente'] : '';
         $accidente = isset($_GET['accidente']) ? $_GET['accidente'] : '';
         $riesgo = isset($_GET['riesgo']) ? $_GET['riesgo'] : '';
+        $condicion_insegura = isset($_GET['condicion_insegura']) ? $_GET['condicion_insegura'] : '';
         $orden = isset($_GET['orden']) ? $_GET['orden'] : 'id_asc';
         
         // Obtener inspecciones filtradas usando el método específico para reportes
-        $inspecciones = InspeccionLocativa::getFilteredForReports($fecha_inicio, $fecha_fin, $tipo_inspeccion, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $orden);
+        $inspecciones = InspeccionLocativa::getFilteredForReports($fecha_inicio, $fecha_fin, $tipo_inspeccion, $estado_inspeccion, $categoria, $incidente, $accidente, $riesgo, $condicion_insegura, $orden);
         
         // Manejar descarga de PDF
         if ($format === 'pdf') {
@@ -2284,7 +2285,7 @@ class ReportesController extends Controller {
         
         // Título principal
         $sheet->setCellValue('A1', 'REPORTE DE INSPECCIONES LOCATIVAS');
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:N1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
@@ -2321,7 +2322,7 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo Inspección', 'Fecha y Hora', 'Descripción', 'Estado', 'Elementos Trabajo', 'Observaciones', 'Categoría', 'Incidente', 'Accidente', 'Riesgo', 'Empleado', 'Área'];
+        $headers = ['ID', 'Tipo Inspección', 'Fecha y Hora', 'Descripción', 'Estado', 'Elementos Trabajo', 'Observaciones', 'Categoría', 'Incidente', 'Accidente', 'Riesgo', 'Condición Insegura', 'Empleado', 'Área'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
@@ -2516,6 +2517,12 @@ class ReportesController extends Controller {
                 
                 $pdf->SetX(150);
                 $pdf->SetFont('Arial', 'B', 9);
+                $pdf->Cell(40, 6, 'Condición Insegura:', 0, 0, 'L', true);
+                $pdf->SetFont('Arial', '', 9);
+                $pdf->Cell(55, 6, substr($inspeccion['condicion_insegura_nombre'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
+                
+                $pdf->SetX(150);
+                $pdf->SetFont('Arial', 'B', 9);
                 $pdf->Cell(40, 6, 'Empleado:', 0, 0, 'L', true);
                 $pdf->SetFont('Arial', '', 9);
                 $empleado = !empty($inspeccion['empleado_nombre']) ? $inspeccion['empleado_nombre'] : 'Sin empleado';
@@ -2604,7 +2611,7 @@ class ReportesController extends Controller {
         
         // Título principal
         $sheet->setCellValue('A1', 'REPORTE DE INSPECCIONES LOCATIVAS');
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:N1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
@@ -2637,7 +2644,7 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo Inspección', 'Fecha y Hora', 'Descripción', 'Estado', 'Elementos Trabajo', 'Observaciones', 'Categoría', 'Incidente', 'Accidente', 'Riesgo', 'Empleado', 'Área'];
+        $headers = ['ID', 'Tipo Inspección', 'Fecha y Hora', 'Descripción', 'Estado', 'Elementos Trabajo', 'Observaciones', 'Categoría', 'Incidente', 'Accidente', 'Riesgo', 'Condición Insegura', 'Empleado', 'Área'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
