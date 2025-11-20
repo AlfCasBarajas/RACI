@@ -65,6 +65,7 @@ include __DIR__ . '/../header.php';
                         </form>
                         
                         <!-- Botones de descarga -->
+                        <?php if (!$isTrabajador): ?>
                         <div class="mb-3">
                             <button class="btn btn-outline-danger me-2" id="descargar-pdf">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
@@ -73,6 +74,7 @@ include __DIR__ . '/../header.php';
                                 <i class="bi bi-file-earmark-excel me-1"></i>Descargar Excel
                             </button>
                         </div>
+                        <?php endif; ?>
                         
                         <!-- Tabla de incidentes -->
                         <div id="tabla-incidentes" class="table-responsive">

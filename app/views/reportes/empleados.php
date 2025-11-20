@@ -63,6 +63,7 @@ include __DIR__ . '/../header.php';
                         </form>
                         
                         <!-- Botones de descarga -->
+                        <?php if (!$isTrabajador): ?>
                         <div class="mb-3">
                             <button class="btn btn-outline-danger me-2" id="descargar-pdf">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
@@ -71,6 +72,7 @@ include __DIR__ . '/../header.php';
                                 <i class="bi bi-file-earmark-excel me-1"></i>Descargar Excel
                             </button>
                         </div>
+                        <?php endif; ?>
                         
                         <!-- Tabla de empleados -->
                         <div id="tabla-empleados" class="table-responsive">
@@ -127,6 +129,7 @@ include __DIR__ . '/../header.php';
 </div>
 
 <script>
+<?php if (!$isTrabajador): ?>
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
@@ -146,6 +149,7 @@ document.getElementById('descargar-excel').onclick = function(e) {
     if (rol) url += '&rol=' + encodeURIComponent(rol);
     window.location.href = url;
 };
+<?php endif; ?>
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

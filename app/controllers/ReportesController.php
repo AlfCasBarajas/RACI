@@ -258,10 +258,14 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/empleados', [
             'empleados' => $empleados,
             'nombre' => $nombre,
-            'rol' => $rol
+            'rol' => $rol,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -461,11 +465,15 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/incidentes', [
             'incidentes' => $incidentes,
             'tipo' => $tipo,
             'fecha_inicio' => $fecha_inicio,
-            'fecha_fin' => $fecha_fin
+            'fecha_fin' => $fecha_fin,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -667,11 +675,15 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/accidentes', [
             'accidentes' => $accidentes,
             'tipo' => $tipo,
             'fecha_inicio' => $fecha_inicio,
-            'fecha_fin' => $fecha_fin
+            'fecha_fin' => $fecha_fin,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -947,9 +959,13 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/areas', [
             'areas' => $areas,
-            'nombre' => $nombre
+            'nombre' => $nombre,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1118,9 +1134,13 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/categorias', [
             'categorias' => $categorias,
-            'nombre' => $nombre
+            'nombre' => $nombre,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1297,9 +1317,13 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/riesgos', [
             'riesgos' => $riesgos,
-            'tipo' => $tipo
+            'tipo' => $tipo,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1496,6 +1520,9 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $tipos_inspeccion = InspeccionLocativa::getTiposInspeccion();
         
         $this->view('reportes/inspecciones', [
@@ -1503,7 +1530,8 @@ class ReportesController extends Controller {
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'tipo_inspeccion' => $tipo_inspeccion,
-            'tipos_inspeccion' => $tipos_inspeccion
+            'tipos_inspeccion' => $tipos_inspeccion,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1525,9 +1553,13 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/condicionesinseguras', [
             'condiciones' => $condiciones,
-            'nombre' => $nombre
+            'nombre' => $nombre,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1700,9 +1732,13 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/roles', [
             'roles' => $roles,
-            'nombre' => $nombre
+            'nombre' => $nombre,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     
@@ -1934,10 +1970,14 @@ class ReportesController extends Controller {
             return;
         }
         
+        $userRole = $_SESSION['user']['rol'];
+        $isTrabajador = ($userRole == 4);
+        
         $this->view('reportes/usuarios', [
             'usuarios' => $usuarios,
             'usuario' => $usuario,
-            'rol' => $rol
+            'rol' => $rol,
+            'isTrabajador' => $isTrabajador
         ]);
     }
     

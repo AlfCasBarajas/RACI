@@ -74,6 +74,7 @@ include __DIR__ . '/../header.php';
                         </form>
                         
                         <!-- Botones de descarga -->
+                        <?php if (!$isTrabajador): ?>
                         <div class="mb-3">
                             <button class="btn btn-outline-danger me-2" id="descargar-pdf">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
@@ -82,6 +83,7 @@ include __DIR__ . '/../header.php';
                                 <i class="bi bi-file-earmark-excel me-1"></i>Descargar Excel
                             </button>
                         </div>
+                        <?php endif; ?>
                         
                         <!-- Tabla de inspecciones -->
                         <div id="tabla-inspecciones" class="table-responsive">
@@ -144,6 +146,7 @@ include __DIR__ . '/../header.php';
 </div>
 
 <script>
+<?php if (!$isTrabajador): ?>
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const fecha_inicio = document.getElementById('fecha_inicio').value;
@@ -167,6 +170,7 @@ document.getElementById('descargar-excel').onclick = function(e) {
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;
 };
+<?php endif; ?>
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>
