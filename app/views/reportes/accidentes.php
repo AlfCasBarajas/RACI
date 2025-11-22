@@ -109,7 +109,7 @@ include __DIR__ . '/../header.php';
                                                     <div class="row g-2">
                                                         <div class="col-12">
                                                             <strong>Tipo:</strong><br>
-                                                            <span class="badge bg-secondary"><?= htmlspecialchars($accidente['tipo']) ?></span>
+                                                            <small><?= htmlspecialchars($accidente['tipo']) ?></small>
                                                         </div>
                                                         <div class="col-12">
                                                             <strong>Fecha y Hora:</strong><br>
@@ -133,11 +133,11 @@ include __DIR__ . '/../header.php';
                                                         </div>
                                                         <div class="col-6">
                                                             <strong>Estado:</strong><br>
-                                                            <span class="badge bg-info"><?= htmlspecialchars($accidente['estado'] ?? 'Sin estado') ?></span>
+                                                            <small><?= htmlspecialchars($accidente['estado'] ?? 'Sin estado') ?></small>
                                                         </div>
                                                         <div class="col-6">
                                                             <strong>Gravedad:</strong><br>
-                                                            <span class="badge bg-warning"><?= htmlspecialchars($accidente['gravedad'] ?? 'Sin evaluar') ?></span>
+                                                            <small><?= htmlspecialchars($accidente['gravedad'] ?? 'Sin evaluar') ?></small>
                                                         </div>
                                                         <div class="col-6">
                                                             <strong>Tipo Lesión:</strong><br>
