@@ -14,6 +14,25 @@
                     </h2>
                 </div>
 
+                <!-- Mensajes de error -->
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php
+                        switch($_GET['error']) {
+                            case 'area_required':
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Por favor seleccione un área para el accidente.';
+                                break;
+                            case 'database_error':
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Error al actualizar el accidente. Por favor inténtelo nuevamente.';
+                                break;
+                            default:
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Ha ocurrido un error. Por favor inténtelo nuevamente.';
+                        }
+                        ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
                 <div class="row justify-content-center">
                     <div class="col-md-11">
                         <form method="post" action="?controller=accidentes&action=update&id=<?= $accidente['id_accidente'] ?>">

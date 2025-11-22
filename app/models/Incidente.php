@@ -7,8 +7,7 @@ class Incidente {
         $sql = 'SELECT i.*, 
                        COALESCE(a.nombre, "Sin área asignada") as nombre_area
                 FROM incidente i
-                LEFT JOIN inspeccion_locativa il ON i.id_incidente = il.incidente_id_incidente
-                LEFT JOIN area a ON il.area_id_area = a.id_area';
+                LEFT JOIN area a ON i.area_id_area = a.id_area';
         $where = [];
         $params = [];
         if ($tipo !== '') {
@@ -27,13 +26,12 @@ class Incidente {
             $params[] = $fecha_fin;
         }
         if ($area !== '') {
-            $where[] = 'a.id_area = ?';
+            $where[] = 'i.area_id_area = ?';
             $params[] = $area;
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $sql .= ' GROUP BY i.id_incidente'; // Evitar duplicados si un incidente está en múltiples inspecciones
         switch ($orden) {
             case 'tipo_asc':
                 $sql .= ' ORDER BY i.tipo ASC';
@@ -111,22 +109,24 @@ class Incidente {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO incidente (tipo, descripcion, fecha_hora, lugar) VALUES (?, ?, ?, ?)');
-        return $stmt->execute([
-            $data['tipo'],
-            $data['descripcion'],
-            $data['fecha'],
-            $data['lugar']
-        ]);
-    }
-    public static function update($id, $data) {
-        $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE incidente SET tipo=?, descripcion=?, fecha_hora=?, lugar=? WHERE id_incidente=?');
+        $stmt = $db->prepare('INSERT INTO incidente (tipo, descripcion, fecha_hora, lugar, area_id_area) VALUES (?, ?, ?, ?, ?)');
         return $stmt->execute([
             $data['tipo'],
             $data['descripcion'],
             $data['fecha'],
             $data['lugar'],
+            $data['area_id']
+        ]);
+    }
+    public static function update($id, $data) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare('UPDATE incidente SET tipo=?, descripcion=?, fecha_hora=?, lugar=?, area_id_area=? WHERE id_incidente=?');
+        return $stmt->execute([
+            $data['tipo'],
+            $data['descripcion'],
+            $data['fecha'],
+            $data['lugar'],
+            $data['area_id'],
             $id
         ]);
     }
@@ -139,7 +139,7 @@ class Incidente {
         $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($inspecciones['total'] > 0) {
-            throw new Exception("No se puede eliminar este incidente porque está vinculado a {$inspecciones['total']} inspección(es) locativa(s). Reasigne o elimine primero estos registros.");
+            throw new Exception("No se puede eliminar este incidente porque está referenciado en {$inspecciones['total']} inspección(es) locativa(s). Elimine primero las referencias en inspecciones locativas.");
         }
         
         // Si no hay dependencias, proceder con la eliminación

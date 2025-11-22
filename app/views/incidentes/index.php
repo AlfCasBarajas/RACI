@@ -59,6 +59,24 @@
             <div class="w-100 text-center mb-3">
               <h2 class="incidentes-title mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Gestión de Incidentes</h2>
             </div>
+            
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i><?= $_SESSION['success'] ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+            
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <div><?= nl2br(htmlspecialchars($_SESSION['error'])) ?></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+            
             <form class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2" method="get" action="">
               <input type="hidden" name="controller" value="incidentes">
               <input type="hidden" name="action" value="index">

@@ -78,39 +78,26 @@ class CondicionesInsegurasController extends Controller {
         $data = [
             'nombre' => $_POST['nombre'],
             'descripcion' => $_POST['descripcion'],
-            'lugar' => $_POST['lugar']
+            'lugar' => $_POST['lugar'],
+            'area_id' => $_POST['area_id']
         ];
         
-        // Crear la condición insegura
-        $condicionCreated = CondicionInsegura::create($data);
-        
-        $db = Database::getConnection();
-        // Obtener el ID de la condición recién creada
-        $condicionId = $db->lastInsertId();
-        
-        // Crear riesgo automático para vincular condición con área
-        $stmt = $db->prepare('INSERT INTO riesgo (tipo, descripcion, condicion_insegura_id_cond_inseg) VALUES (?, ?, ?)');
-        $stmt->execute([
-            'Riesgo automático',
-            'Riesgo creado automáticamente para vincular condición insegura con área',
-            $condicionId
-        ]);
-        
-        $riesgoId = $db->lastInsertId();
-        
-        // Crear inspección locativa para vincular riesgo con área
-        $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, riesgo_id_riesgo, area_id_area) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([
-            'Vinculación automática',
-            date('Y-m-d H:i:s'),
-            'Inspección creada automáticamente para vincular condición insegura con área',
-            'Pendiente',
-            $riesgoId,
-            $_POST['area_id']
-        ]);
-        
-        header('Location: ?controller=condicionesinseguras&action=index');
-        exit;
+        try {
+            // Crear la condición insegura con área directamente
+            $success = CondicionInsegura::create($data);
+            
+            if (!$success) {
+                throw new Exception('Error al crear la condición insegura');
+            }
+            
+            header('Location: ?controller=condicionesinseguras&action=index');
+            exit;
+            
+        } catch (Exception $e) {
+            error_log('Error en store condiciones inseguras: ' . $e->getMessage());
+            header('Location: ?controller=condicionesinseguras&action=create&error=database_error');
+            exit;
+        }
     }
     public function edit() {
         $this->onlyLogged();
@@ -119,19 +106,10 @@ class CondicionesInsegurasController extends Controller {
         $condicion = CondicionInsegura::find($id);
         $areas = Area::all();
         
-        // Obtener área actual de la condición insegura si existe
-        $db = Database::getConnection();
-        $stmt = $db->prepare('SELECT il.area_id_area FROM riesgo r 
-                             LEFT JOIN inspeccion_locativa il ON r.id_riesgo = il.riesgo_id_riesgo 
-                             WHERE r.condicion_insegura_id_cond_inseg = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $inspeccion = $stmt->fetch(PDO::FETCH_ASSOC);
-        $areaActual = $inspeccion ? $inspeccion['area_id_area'] : null;
-        
         $this->view('condicionesinseguras/edit', [
             'condicion' => $condicion,
             'areas' => $areas,
-            'area_actual' => $areaActual
+            'area_actual' => $condicion['area_id_area'] ?? null
         ]);
     }
     public function update() {
@@ -148,68 +126,26 @@ class CondicionesInsegurasController extends Controller {
         $data = [
             'nombre' => $_POST['nombre'],
             'descripcion' => $_POST['descripcion'],
-            'lugar' => $_POST['lugar']
+            'lugar' => $_POST['lugar'],
+            'area_id' => $_POST['area_id']
         ];
         
-        // Actualizar la condición insegura
-        CondicionInsegura::update($id, $data);
-        
-        // Manejar la relación con área a través de riesgo e inspección locativa
-        $db = Database::getConnection();
-        
-        // Verificar si ya existe un riesgo para esta condición
-        $stmt = $db->prepare('SELECT r.id_riesgo FROM riesgo r WHERE r.condicion_insegura_id_cond_inseg = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $riesgoExistente = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($riesgoExistente) {
-            $riesgoId = $riesgoExistente['id_riesgo'];
+        try {
+            // Actualizar la condición insegura con área directamente
+            $success = CondicionInsegura::update($id, $data);
             
-            // Verificar si ya existe inspección locativa para este riesgo
-            $stmt = $db->prepare('SELECT id_insp_loc FROM inspeccion_locativa WHERE riesgo_id_riesgo = ? LIMIT 1');
-            $stmt->execute([$riesgoId]);
-            $inspeccionExistente = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($inspeccionExistente) {
-                // Actualizar inspección existente
-                $stmt = $db->prepare('UPDATE inspeccion_locativa SET area_id_area = ?, fecha_hora = ? WHERE riesgo_id_riesgo = ?');
-                $stmt->execute([$_POST['area_id'], date('Y-m-d H:i:s'), $riesgoId]);
-            } else {
-                // Crear nueva inspección locativa
-                $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, riesgo_id_riesgo, area_id_area) VALUES (?, ?, ?, ?, ?, ?)');
-                $stmt->execute([
-                    'Vinculación automática',
-                    date('Y-m-d H:i:s'),
-                    'Inspección creada automáticamente para vincular condición insegura con área',
-                    'Pendiente',
-                    $riesgoId,
-                    $_POST['area_id']
-                ]);
+            if (!$success) {
+                throw new Exception('Error al actualizar la condición insegura');
             }
-        } else {
-            // Crear nuevo riesgo e inspección locativa
-            $stmt = $db->prepare('INSERT INTO riesgo (tipo, descripcion, condicion_insegura_id_cond_inseg) VALUES (?, ?, ?)');
-            $stmt->execute([
-                'Riesgo automático',
-                'Riesgo creado automáticamente para vincular condición insegura con área',
-                $id
-            ]);
             
-            $riesgoId = $db->lastInsertId();
+            header('Location: ?controller=condicionesinseguras&action=index');
+            exit;
             
-            $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, riesgo_id_riesgo, area_id_area) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([
-                'Vinculación automática',
-                date('Y-m-d H:i:s'),
-                'Inspección creada automáticamente para vincular condición insegura con área',
-                'Pendiente',
-                $riesgoId,
-                $_POST['area_id']
-            ]);
+        } catch (Exception $e) {
+            error_log('Error en update condiciones inseguras: ' . $e->getMessage());
+            header('Location: ?controller=condicionesinseguras&action=edit&id=' . $id . '&error=database_error');
+            exit;
         }
-        
-        header('Location: ?controller=condicionesinseguras&action=index');
-        exit;
     }
     public function delete() {
         $this->checkNotCoordinadorForDelete();

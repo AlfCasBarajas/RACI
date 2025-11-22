@@ -91,7 +91,14 @@ class AreasController extends Controller {
             Area::delete($id);
             $_SESSION['success'] = 'Área eliminada correctamente';
         } catch (Exception $e) {
-            $_SESSION['error'] = $e->getMessage();
+            // Verificar si es un error de constraint de clave foránea
+            $errorMessage = $e->getMessage();
+            if (strpos($errorMessage, 'Integrity constraint violation') !== false || 
+                strpos($errorMessage, 'foreign key constraint fails') !== false) {
+                $_SESSION['error'] = 'Esta área no se puede eliminar porque está siendo utilizada por otros registros en el sistema.\n\nPara poder eliminarla, primero debe reasignar o eliminar todos los registros que la utilizan.';
+            } else {
+                $_SESSION['error'] = $errorMessage;
+            }
         }
         
         header('Location: ?controller=areas&action=index');

@@ -73,7 +73,9 @@ CREATE TABLE condicion_insegura (
     id_cond_inseg INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    lugar VARCHAR(100)
+    lugar VARCHAR(100),
+    area_id_area INT,
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 -- Tabla riesgo
@@ -82,7 +84,9 @@ CREATE TABLE riesgo (
     tipo VARCHAR(50) NOT NULL,
     descripcion TEXT,
     condicion_insegura_id_cond_inseg INT,
-    FOREIGN KEY (condicion_insegura_id_cond_inseg) REFERENCES condicion_insegura(id_cond_inseg)
+    area_id_area INT,
+    FOREIGN KEY (condicion_insegura_id_cond_inseg) REFERENCES condicion_insegura(id_cond_inseg),
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 -- Tabla incidente
@@ -95,7 +99,9 @@ CREATE TABLE incidente (
     tipo_vinc_lab VARCHAR(50),
     jornada_laboral VARCHAR(50),
     turno_mom_inc VARCHAR(50),
-    uso_epp TEXT
+    uso_epp TEXT,
+    area_id_area INT,
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 -- Tabla accidente
@@ -117,7 +123,9 @@ CREATE TABLE accidente (
     parte_cuerpo_afect VARCHAR(50),
     incapacidad_lab VARCHAR(50),
     aten_med_recibida TEXT,
-    persona_informo VARCHAR(100)
+    persona_informo VARCHAR(100),
+    area_id_area INT,
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 

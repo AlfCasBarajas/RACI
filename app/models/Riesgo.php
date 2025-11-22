@@ -8,8 +8,7 @@ class Riesgo {
                        COALESCE(a.nombre, "Sin área asignada") as nombre_area
                 FROM riesgo r 
                 LEFT JOIN condicion_insegura c ON r.condicion_insegura_id_cond_inseg = c.id_cond_inseg
-                LEFT JOIN inspeccion_locativa il ON r.id_riesgo = il.riesgo_id_riesgo
-                LEFT JOIN area a ON il.area_id_area = a.id_area';
+                LEFT JOIN area a ON r.area_id_area = a.id_area';
         $where = [];
         $params = [];
         if ($descripcion !== '') {
@@ -25,13 +24,12 @@ class Riesgo {
             $params[] = $condicion;
         }
         if ($area !== '') {
-            $where[] = 'a.id_area = ?';
+            $where[] = 'r.area_id_area = ?';
             $params[] = $area;
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $sql .= ' GROUP BY r.id_riesgo'; // Evitar duplicados si un riesgo está en múltiples inspecciones
         switch ($orden) {
             case 'tipo_asc':
                 $sql .= ' ORDER BY r.tipo ASC';
@@ -94,20 +92,22 @@ class Riesgo {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO riesgo (tipo, descripcion, condicion_insegura_id_cond_inseg) VALUES (?, ?, ?)');
-        return $stmt->execute([
-            $data['tipo'],
-            $data['descripcion'],
-            $data['condicion_insegura_id_cond_inseg']
-        ]);
-    }
-    public static function update($id, $data) {
-        $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE riesgo SET tipo=?, descripcion=?, condicion_insegura_id_cond_inseg=? WHERE id_riesgo=?');
+        $stmt = $db->prepare('INSERT INTO riesgo (tipo, descripcion, condicion_insegura_id_cond_inseg, area_id_area) VALUES (?, ?, ?, ?)');
         return $stmt->execute([
             $data['tipo'],
             $data['descripcion'],
             $data['condicion_insegura_id_cond_inseg'],
+            $data['area_id']
+        ]);
+    }
+    public static function update($id, $data) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare('UPDATE riesgo SET tipo=?, descripcion=?, condicion_insegura_id_cond_inseg=?, area_id_area=? WHERE id_riesgo=?');
+        return $stmt->execute([
+            $data['tipo'],
+            $data['descripcion'],
+            $data['condicion_insegura_id_cond_inseg'],
+            $data['area_id'],
             $id
         ]);
     }
@@ -120,7 +120,7 @@ class Riesgo {
         $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($inspecciones['total'] > 0) {
-            throw new Exception("No se puede eliminar este riesgo porque está vinculado a {$inspecciones['total']} inspección(es) locativa(s). Reasigne o elimine primero estos registros.");
+            throw new Exception("No se puede eliminar este riesgo porque está referenciado en {$inspecciones['total']} inspección(es) locativa(s). Elimine primero las referencias en inspecciones locativas.");
         }
         
         // Si no hay dependencias, proceder con la eliminación

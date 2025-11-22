@@ -98,30 +98,26 @@ class AccidentesController extends Controller {
             'parte_cuerpo_afect' => $_POST['parte_cuerpo_afect'],
             'incapacidad_lab' => $_POST['incapacidad_lab'],
             'aten_med_recibida' => $_POST['aten_med_recibida'],
-            'persona_informo' => $_POST['persona_informo']
+            'persona_informo' => $_POST['persona_informo'],
+            'area_id' => $_POST['area_id']
         ];
         
-        // Crear el accidente
-        $accidenteCreated = Accidente::create($data);
-        
-        // Crear inspección locativa para vincular accidente con área (ahora siempre obligatorio)
-        $db = Database::getConnection();
-        // Obtener el ID del accidente recién creado
-        $accidenteId = $db->lastInsertId();
-        
-        // Crear inspección locativa para vincular accidente con área
-        $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, accidente_id_accidente, area_id_area) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([
-            'Vinculación automática',
-            $_POST['fecha_hora'],
-            'Inspección creada automáticamente para vincular accidente con área',
-            'Pendiente',
-            $accidenteId,
-            $_POST['area_id']
-        ]);
-        
-        header('Location: ?controller=accidentes&action=index');
-        exit;
+        try {
+            // Crear el accidente con área directamente
+            $success = Accidente::create($data);
+            
+            if (!$success) {
+                throw new Exception('Error al crear el accidente');
+            }
+            
+            header('Location: ?controller=accidentes&action=index');
+            exit;
+            
+        } catch (Exception $e) {
+            error_log('Error en store accidentes: ' . $e->getMessage());
+            header('Location: ?controller=accidentes&action=create&error=database_error');
+            exit;
+        }
     }
     public function edit() {
         $this->onlyLogged();
@@ -130,17 +126,10 @@ class AccidentesController extends Controller {
         $accidente = Accidente::find($id);
         $areas = Area::all();
         
-        // Obtener área actual del accidente si existe
-        $db = Database::getConnection();
-        $stmt = $db->prepare('SELECT area_id_area FROM inspeccion_locativa WHERE accidente_id_accidente = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $inspeccion = $stmt->fetch(PDO::FETCH_ASSOC);
-        $areaActual = $inspeccion ? $inspeccion['area_id_area'] : null;
-        
         $this->view('accidentes/edit', [
             'accidente' => $accidente,
             'areas' => $areas,
-            'area_actual' => $areaActual
+            'area_actual' => $accidente['area_id_area'] ?? null
         ]);
     }
     public function update() {
@@ -171,39 +160,26 @@ class AccidentesController extends Controller {
             'parte_cuerpo_afect' => $_POST['parte_cuerpo_afect'],
             'incapacidad_lab' => $_POST['incapacidad_lab'],
             'aten_med_recibida' => $_POST['aten_med_recibida'],
-            'persona_informo' => $_POST['persona_informo']
+            'persona_informo' => $_POST['persona_informo'],
+            'area_id' => $_POST['area_id']
         ];
         
-        // Actualizar el accidente
-        Accidente::update($id, $data);
-        
-        // Manejar la relación con área a través de inspección locativa
-        $db = Database::getConnection();
-        
-        // Verificar si ya existe una inspección locativa para este accidente
-        $stmt = $db->prepare('SELECT id_insp_loc FROM inspeccion_locativa WHERE accidente_id_accidente = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $inspeccionExistente = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($inspeccionExistente) {
-            // Actualizar inspección existente
-            $stmt = $db->prepare('UPDATE inspeccion_locativa SET area_id_area = ?, fecha_hora = ? WHERE accidente_id_accidente = ?');
-            $stmt->execute([$_POST['area_id'], $_POST['fecha_hora'], $id]);
-        } else {
-            // Crear nueva inspección locativa
-            $stmt = $db->prepare('INSERT INTO inspeccion_locativa (tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, accidente_id_accidente, area_id_area) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([
-                'Vinculación automática',
-                $_POST['fecha_hora'],
-                'Inspección creada automáticamente para vincular accidente con área',
-                'Pendiente',
-                $id,
-                $_POST['area_id']
-            ]);
+        try {
+            // Actualizar el accidente con área directamente
+            $success = Accidente::update($id, $data);
+            
+            if (!$success) {
+                throw new Exception('Error al actualizar el accidente');
+            }
+            
+            header('Location: ?controller=accidentes&action=index');
+            exit;
+            
+        } catch (Exception $e) {
+            error_log('Error en update accidentes: ' . $e->getMessage());
+            header('Location: ?controller=accidentes&action=edit&id=' . $id . '&error=database_error');
+            exit;
         }
-        
-        header('Location: ?controller=accidentes&action=index');
-        exit;
     }
     public function delete() {
         $this->checkNotCoordinadorForDelete();

@@ -14,6 +14,25 @@
                     </h2>
                 </div>
 
+                <!-- Mensajes de error -->
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php
+                        switch($_GET['error']) {
+                            case 'area_required':
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Por favor seleccione un área para la condición insegura.';
+                                break;
+                            case 'database_error':
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Error al actualizar la condición insegura. Por favor inténtelo nuevamente.';
+                                break;
+                            default:
+                                echo '<i class="bi bi-exclamation-triangle me-2"></i>Ha ocurrido un error. Por favor inténtelo nuevamente.';
+                        }
+                        ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <form method="post" action="?controller=condicionesinseguras&action=update&id=<?= $condicion['id_cond_inseg'] ?>">

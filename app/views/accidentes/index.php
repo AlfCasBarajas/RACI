@@ -53,6 +53,24 @@
 
             <div class="accidentes-card">
                 <h2 class="accidentes-title text-center"><i class="bi bi-activity me-2"></i>Gestión de Accidentes</h2>
+                
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i><?= $_SESSION['success'] ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <div><?= nl2br(htmlspecialchars($_SESSION['error'])) ?></div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+                
                 <div class="row mb-3">
                     <div class="col-md-8">
                         <form method="get" action="" class="row g-2">

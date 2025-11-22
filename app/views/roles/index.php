@@ -18,7 +18,8 @@
                 
                 <?php if (isset($_SESSION['error'])): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle me-2"></i><?= $_SESSION['error'] ?>
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <div><?= nl2br(htmlspecialchars($_SESSION['error'])) ?></div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                     <?php unset($_SESSION['error']); ?>
