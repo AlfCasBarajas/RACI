@@ -18,6 +18,7 @@ require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../models/Incidente.php';
 require_once __DIR__ . '/../models/Accidente.php';
 require_once __DIR__ . '/../models/InspeccionLocativa.php';
+require_once __DIR__ . '/../models/Area.php';
 
 class ReportesController extends Controller {
     
@@ -451,19 +452,25 @@ class ReportesController extends Controller {
         $tipo = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
         $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
         $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
+        $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
-        $incidentes = Incidente::getFiltered($tipo, $fecha_inicio, $fecha_fin);
+        // Usar getFilteredWithArea para incluir información del área
+        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $area);
         
         if ($format === 'pdf') {
-            $this->generateIncidentesPDF($incidentes, $tipo, $fecha_inicio, $fecha_fin);
+            $this->generateIncidentesPDF($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateIncidentesExcel($incidentes, $tipo, $fecha_inicio, $fecha_fin);
+            $this->generateIncidentesExcel($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
             return;
         }
+        
+        // Obtener áreas para el filtro
+        require_once __DIR__ . '/../models/Area.php';
+        $areas = Area::all();
         
         $userRole = $_SESSION['user']['rol'];
         $isTrabajador = ($userRole == 4);
@@ -473,11 +480,13 @@ class ReportesController extends Controller {
             'tipo' => $tipo,
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
+            'area' => $area,
+            'areas' => $areas,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateIncidentesPDF($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '') {
+    private function generateIncidentesPDF($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('L', 'mm', 'A4'); // Orientación horizontal para más columnas
@@ -498,6 +507,7 @@ class ReportesController extends Controller {
         if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
         if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
         if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
+        if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
         if (!empty($filtros)) {
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
@@ -506,28 +516,30 @@ class ReportesController extends Controller {
         
         // Encabezados de tabla
         $pdf->SetFont('Arial', 'B', 7);
-        $pdf->Cell(12, 8, 'ID', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Tipo', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Fecha/Hora', 1, 0, 'C');
-        $pdf->Cell(40, 8, utf8_decode('Descripción'), 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Lugar', 1, 0, 'C');
-        $pdf->Cell(30, 8, 'Vinc. Laboral', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Jornada', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Turno', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Uso EPP', 1, 1, 'C');
+        $pdf->Cell(10, 8, 'ID', 1, 0, 'C');
+        $pdf->Cell(25, 8, 'Tipo', 1, 0, 'C');
+        $pdf->Cell(20, 8, 'Fecha/Hora', 1, 0, 'C');
+        $pdf->Cell(35, 8, utf8_decode('Descripción'), 1, 0, 'C');
+        $pdf->Cell(20, 8, 'Lugar', 1, 0, 'C');
+        $pdf->Cell(20, 8, utf8_decode('Área'), 1, 0, 'C');
+        $pdf->Cell(25, 8, 'Vinc. Laboral', 1, 0, 'C');
+        $pdf->Cell(20, 8, 'Jornada', 1, 0, 'C');
+        $pdf->Cell(20, 8, 'Turno', 1, 0, 'C');
+        $pdf->Cell(20, 8, 'Uso EPP', 1, 1, 'C');
         
         // Datos de la tabla
         $pdf->SetFont('Arial', '', 6);
         foreach ($incidentes as $incidente) {
-            $pdf->Cell(12, 8, $incidente['id_incidente'] ?? '', 1, 0, 'C');
-            $pdf->Cell(20, 8, utf8_decode($incidente['tipo'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, isset($incidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($incidente['fecha_hora'])) : '', 1, 0, 'C');
-            $pdf->Cell(40, 8, utf8_decode(substr($incidente['descripcion'] ?? '', 0, 30) . '...'), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode($incidente['lugar'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(30, 8, utf8_decode($incidente['tipo_vinc_lab'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode($incidente['jornada_laboral'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode($incidente['turno_mom_inc'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode($incidente['uso_epp'] ?? ''), 1, 1, 'L');
+            $pdf->Cell(10, 8, $incidente['id_incidente'] ?? '', 1, 0, 'C');
+            $pdf->Cell(25, 8, utf8_decode(substr($incidente['tipo'] ?? '', 0, 20)), 1, 0, 'L');
+            $pdf->Cell(20, 8, isset($incidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($incidente['fecha_hora'])) : '', 1, 0, 'C');
+            $pdf->Cell(35, 8, utf8_decode(substr($incidente['descripcion'] ?? '', 0, 25) . '...'), 1, 0, 'L');
+            $pdf->Cell(20, 8, utf8_decode(substr($incidente['lugar'] ?? '', 0, 15)), 1, 0, 'L');
+            $pdf->Cell(20, 8, utf8_decode(substr($incidente['nombre_area'] ?? 'Sin área', 0, 15)), 1, 0, 'L');
+            $pdf->Cell(25, 8, utf8_decode(substr($incidente['tipo_vinc_lab'] ?? '', 0, 18)), 1, 0, 'L');
+            $pdf->Cell(20, 8, utf8_decode(substr($incidente['jornada_laboral'] ?? '', 0, 15)), 1, 0, 'L');
+            $pdf->Cell(20, 8, utf8_decode(substr($incidente['turno_mom_inc'] ?? '', 0, 15)), 1, 0, 'L');
+            $pdf->Cell(20, 8, utf8_decode(substr($incidente['uso_epp'] ?? '', 0, 15)), 1, 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -548,20 +560,20 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateIncidentesExcel($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '') {
+    private function generateIncidentesExcel($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Incidentes');
         
         // Título principal
         $sheet->setCellValue('A1', 'Reporte de Incidentes');
-        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A1:J1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A2:J2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
@@ -571,9 +583,10 @@ class ReportesController extends Controller {
         if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
         if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
         if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
+        if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
         if (!empty($filtros)) {
             $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
-            $sheet->mergeCells('A' . $currentRow . ':I' . $currentRow);
+            $sheet->mergeCells('A' . $currentRow . ':J' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
@@ -581,16 +594,16 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Tipo Vinc. Laboral', 'Jornada Laboral', 'Turno/Momento', 'Uso EPP'];
+        $headers = ['ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área', 'Tipo Vinc. Laboral', 'Jornada Laboral', 'Turno/Momento', 'Uso EPP'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I
+            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I, J
             $sheet->setCellValue($column . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':I' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':J' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -606,10 +619,11 @@ class ReportesController extends Controller {
             $sheet->setCellValue('C' . $dataRow, isset($incidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($incidente['fecha_hora'])) : '');
             $sheet->setCellValue('D' . $dataRow, $incidente['descripcion'] ?? '');
             $sheet->setCellValue('E' . $dataRow, $incidente['lugar'] ?? '');
-            $sheet->setCellValue('F' . $dataRow, $incidente['tipo_vinc_lab'] ?? '');
-            $sheet->setCellValue('G' . $dataRow, $incidente['jornada_laboral'] ?? '');
-            $sheet->setCellValue('H' . $dataRow, $incidente['turno_mom_inc'] ?? '');
-            $sheet->setCellValue('I' . $dataRow, $incidente['uso_epp'] ?? '');
+            $sheet->setCellValue('F' . $dataRow, $incidente['nombre_area'] ?? 'Sin área asignada');
+            $sheet->setCellValue('G' . $dataRow, $incidente['tipo_vinc_lab'] ?? '');
+            $sheet->setCellValue('H' . $dataRow, $incidente['jornada_laboral'] ?? '');
+            $sheet->setCellValue('I' . $dataRow, $incidente['turno_mom_inc'] ?? '');
+            $sheet->setCellValue('J' . $dataRow, $incidente['uso_epp'] ?? '');
             
             $dataRow++;
         }
@@ -623,16 +637,17 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('F')->setWidth(18);
         $sheet->getColumnDimension('G')->setWidth(18);
         $sheet->getColumnDimension('H')->setWidth(18);
-        $sheet->getColumnDimension('I')->setWidth(15);
+        $sheet->getColumnDimension('I')->setWidth(18);
+        $sheet->getColumnDimension('J')->setWidth(15);
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':I' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':J' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':J' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }
@@ -659,19 +674,22 @@ class ReportesController extends Controller {
     public function accidentes() {
         $this->onlyLogged();
         $tipo = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
+        $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
         $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
-        $accidentes = Accidente::getFiltered($tipo, $fecha_inicio, $fecha_fin);
+        // Usar getFilteredWithArea para incluir información del área
+        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $area);
+        $areas = Area::all();
         
         if ($format === 'pdf') {
-            $this->generateAccidentesPDF($accidentes, $tipo, $fecha_inicio, $fecha_fin);
+            $this->generateAccidentesPDF($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateAccidentesExcel($accidentes, $tipo, $fecha_inicio, $fecha_fin);
+            $this->generateAccidentesExcel($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
             return;
         }
         
@@ -680,14 +698,16 @@ class ReportesController extends Controller {
         
         $this->view('reportes/accidentes', [
             'accidentes' => $accidentes,
+            'areas' => $areas,
             'tipo' => $tipo,
+            'area' => $area,
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateAccidentesPDF($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '') {
+    private function generateAccidentesPDF($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('P', 'mm', 'A4'); // Orientación vertical para formato detallado
@@ -711,9 +731,10 @@ class ReportesController extends Controller {
             $pdf->Ln(10);
             
             // Filtros aplicados
-            if ($filtroTipo || $fechaInicio || $fechaFin) {
+            if ($filtroTipo || $area || $fechaInicio || $fechaFin) {
                 $filtros = [];
                 if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
+                if ($area) $filtros[] = 'Área: ' . $area;
                 if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
                 if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
                 $pdf->SetFont('Arial', 'I', 8);
@@ -734,6 +755,9 @@ class ReportesController extends Controller {
             
             $pdf->Cell(40, 6, utf8_decode('Lugar:'), 0, 0, 'L');
             $pdf->Cell(0, 6, utf8_decode($accidente['lugar'] ?? 'Sin especificar'), 0, 1, 'L');
+            
+            $pdf->Cell(40, 6, utf8_decode('Área:'), 0, 0, 'L');
+            $pdf->Cell(0, 6, utf8_decode($accidente['nombre_area'] ?? 'Sin área asignada'), 0, 1, 'L');
             
             $pdf->Cell(40, 6, utf8_decode('Clasificación:'), 0, 0, 'L');
             $pdf->Cell(0, 6, utf8_decode($accidente['clasificacion'] ?? 'Sin clasificar'), 0, 1, 'L');
@@ -819,7 +843,7 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateAccidentesExcel($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '') {
+    private function generateAccidentesExcel($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Accidentes');
@@ -851,22 +875,22 @@ class ReportesController extends Controller {
         
         $currentRow++; // Espacio en blanco
         
-        // Encabezados - Todos los 17 campos
+        // Encabezados - Todos los campos incluyendo área
         $headers = [
-            'ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 
+            'ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área',
             'Clasificación', 'Estado', 'Gravedad', 'Tipo Lesión', 'Parte Afectada',
             'Consecuencias', 'Vinculación Laboral', 'Jornada Laboral', 'Turno/Momento', 
             'Uso EPP', 'Incapacidad Laboral', 'Atención Médica', 'Persona Informó'
         ];
         $headerRow = $currentRow;
         
-        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'];
         foreach ($headers as $index => $header) {
             $sheet->setCellValue($columns[$index] . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':R' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':S' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -882,42 +906,44 @@ class ReportesController extends Controller {
             $sheet->setCellValue('C' . $dataRow, isset($accidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($accidente['fecha_hora'])) : '');
             $sheet->setCellValue('D' . $dataRow, $accidente['descripcion'] ?? '');
             $sheet->setCellValue('E' . $dataRow, $accidente['lugar'] ?? '');
-            $sheet->setCellValue('F' . $dataRow, $accidente['clasificacion'] ?? 'Sin clasificar');
-            $sheet->setCellValue('G' . $dataRow, $accidente['estado'] ?? 'Sin estado');
-            $sheet->setCellValue('H' . $dataRow, $accidente['gravedad'] ?? 'Sin evaluar');
-            $sheet->setCellValue('I' . $dataRow, $accidente['tipo_lesion'] ?? 'Sin especificar');
-            $sheet->setCellValue('J' . $dataRow, $accidente['parte_cuerpo_afect'] ?? 'Sin especificar');
-            $sheet->setCellValue('K' . $dataRow, $accidente['consecuencias'] ?? 'Sin especificar');
-            $sheet->setCellValue('L' . $dataRow, $accidente['tipo_vinc_lab_'] ?? 'Sin especificar');
-            $sheet->setCellValue('M' . $dataRow, $accidente['jornada_laboral'] ?? 'Sin especificar');
-            $sheet->setCellValue('N' . $dataRow, $accidente['turno_mom_acc'] ?? 'Sin especificar');
-            $sheet->setCellValue('O' . $dataRow, $accidente['uso_epp'] ?? 'Sin especificar');
-            $sheet->setCellValue('P' . $dataRow, $accidente['incapacidad_lab'] ?? 'Sin especificar');
-            $sheet->setCellValue('Q' . $dataRow, $accidente['aten_med_recibida'] ?? 'Sin especificar');
-            $sheet->setCellValue('R' . $dataRow, $accidente['persona_informo'] ?? 'Sin especificar');
+            $sheet->setCellValue('F' . $dataRow, $accidente['nombre_area'] ?? 'Sin área asignada');
+            $sheet->setCellValue('G' . $dataRow, $accidente['clasificacion'] ?? 'Sin clasificar');
+            $sheet->setCellValue('H' . $dataRow, $accidente['estado'] ?? 'Sin estado');
+            $sheet->setCellValue('I' . $dataRow, $accidente['gravedad'] ?? 'Sin evaluar');
+            $sheet->setCellValue('J' . $dataRow, $accidente['tipo_lesion'] ?? 'Sin especificar');
+            $sheet->setCellValue('K' . $dataRow, $accidente['parte_cuerpo_afect'] ?? 'Sin especificar');
+            $sheet->setCellValue('L' . $dataRow, $accidente['consecuencias'] ?? 'Sin especificar');
+            $sheet->setCellValue('M' . $dataRow, $accidente['tipo_vinc_lab_'] ?? 'Sin especificar');
+            $sheet->setCellValue('N' . $dataRow, $accidente['jornada_laboral'] ?? 'Sin especificar');
+            $sheet->setCellValue('O' . $dataRow, $accidente['turno_mom_acc'] ?? 'Sin especificar');
+            $sheet->setCellValue('P' . $dataRow, $accidente['uso_epp'] ?? 'Sin especificar');
+            $sheet->setCellValue('Q' . $dataRow, $accidente['incapacidad_lab'] ?? 'Sin especificar');
+            $sheet->setCellValue('R' . $dataRow, $accidente['aten_med_recibida'] ?? 'Sin especificar');
+            $sheet->setCellValue('S' . $dataRow, $accidente['persona_informo'] ?? 'Sin especificar');
             
             $dataRow++;
         }
         
         // Ajustar ancho de columnas
-        foreach (range('A', 'R') as $col) {
+        foreach (range('A', 'S') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
         
         // Establecer anchos mínimos y máximos
         $sheet->getColumnDimension('A')->setWidth(8);   // ID
         $sheet->getColumnDimension('D')->setWidth(40);  // Descripción
-        $sheet->getColumnDimension('K')->setWidth(30);  // Consecuencias
-        $sheet->getColumnDimension('Q')->setWidth(35);  // Atención Médica
+        $sheet->getColumnDimension('F')->setWidth(15);  // Área
+        $sheet->getColumnDimension('L')->setWidth(30);  // Consecuencias
+        $sheet->getColumnDimension('R')->setWidth(35);  // Atención Médica
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':R' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':S' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':R' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':S' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }
@@ -1302,18 +1328,21 @@ class ReportesController extends Controller {
     public function riesgos() {
         $this->onlyLogged();
         $tipo = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
+        $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
         require_once __DIR__ . '/../models/Riesgo.php';
-        $riesgos = Riesgo::getFiltered('', $tipo);
+        // Usar getFilteredWithArea para incluir información del área
+        $riesgos = Riesgo::getFilteredWithArea('', $tipo, '', $area);
+        $areas = Area::all();
         
         if ($format === 'pdf') {
-            $this->generateRiesgosPDF($riesgos, $tipo);
+            $this->generateRiesgosPDF($riesgos, $tipo, $area);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateRiesgosExcel($riesgos, $tipo);
+            $this->generateRiesgosExcel($riesgos, $tipo, $area);
             return;
         }
         
@@ -1322,12 +1351,14 @@ class ReportesController extends Controller {
         
         $this->view('reportes/riesgos', [
             'riesgos' => $riesgos,
+            'areas' => $areas,
             'tipo' => $tipo,
+            'area' => $area,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateRiesgosPDF($riesgos, $filtroTipo = '') {
+    private function generateRiesgosPDF($riesgos, $filtroTipo = '', $area = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('P', 'mm', 'A4');
@@ -1344,26 +1375,31 @@ class ReportesController extends Controller {
         $pdf->Ln(5);
         
         // Filtros aplicados
-        if ($filtroTipo) {
+        if ($filtroTipo || $area) {
+            $filtros = [];
+            if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
+            if ($area) $filtros[] = 'Área: ' . $area;
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - Tipo: ' . $filtroTipo), 0, 1, 'L');
+            $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
             $pdf->Ln(5);
         }
         
         // Encabezados de tabla
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(15, 8, 'ID', 1, 0, 'C');
-        $pdf->Cell(40, 8, 'Tipo', 1, 0, 'C');
-        $pdf->Cell(75, 8, utf8_decode('Descripción'), 1, 0, 'C');
-        $pdf->Cell(60, 8, utf8_decode('Condición Insegura'), 1, 1, 'C');
+        $pdf->Cell(10, 8, 'ID', 1, 0, 'C');
+        $pdf->Cell(30, 8, 'Tipo', 1, 0, 'C');
+        $pdf->Cell(55, 8, utf8_decode('Descripción'), 1, 0, 'C');
+        $pdf->Cell(50, 8, utf8_decode('Condición Insegura'), 1, 0, 'C');
+        $pdf->Cell(35, 8, utf8_decode('Área'), 1, 1, 'C');
         
         // Datos de la tabla
         $pdf->SetFont('Arial', '', 9);
         foreach ($riesgos as $riesgo) {
-            $pdf->Cell(15, 8, $riesgo['id_riesgo'] ?? '', 1, 0, 'C');
-            $pdf->Cell(40, 8, utf8_decode(substr($riesgo['tipo'] ?? '', 0, 25)), 1, 0, 'L');
-            $pdf->Cell(75, 8, utf8_decode(substr($riesgo['descripcion'] ?? 'Sin descripción', 0, 50)), 1, 0, 'L');
-            $pdf->Cell(60, 8, utf8_decode(substr($riesgo['condicion_nombre'] ?? 'Sin condición asociada', 0, 35)), 1, 1, 'L');
+            $pdf->Cell(10, 8, $riesgo['id_riesgo'] ?? '', 1, 0, 'C');
+            $pdf->Cell(30, 8, utf8_decode(substr($riesgo['tipo'] ?? '', 0, 20)), 1, 0, 'L');
+            $pdf->Cell(55, 8, utf8_decode(substr($riesgo['descripcion'] ?? 'Sin descripción', 0, 35)), 1, 0, 'L');
+            $pdf->Cell(50, 8, utf8_decode(substr($riesgo['condicion_nombre'] ?? 'Sin condición asociada', 0, 30)), 1, 0, 'L');
+            $pdf->Cell(35, 8, utf8_decode(substr($riesgo['nombre_area'] ?? 'Sin área', 0, 25)), 1, 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -1384,28 +1420,31 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateRiesgosExcel($riesgos, $filtroTipo = '') {
+    private function generateRiesgosExcel($riesgos, $filtroTipo = '', $area = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Riesgos');
         
         // Título principal
         $sheet->setCellValue('A1', 'Reporte de Riesgos');
-        $sheet->mergeCells('A1:D1');
+        $sheet->mergeCells('A1:E1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:D2');
+        $sheet->mergeCells('A2:E2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
         
         // Filtros aplicados
-        if ($filtroTipo) {
-            $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - Tipo: ' . $filtroTipo);
-            $sheet->mergeCells('A' . $currentRow . ':D' . $currentRow);
+        if ($filtroTipo || $area) {
+            $filtros = [];
+            if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
+            if ($area) $filtros[] = 'Área: ' . $area;
+            $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
+            $sheet->mergeCells('A' . $currentRow . ':E' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
@@ -1413,16 +1452,16 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo', 'Descripción', 'Condición Insegura'];
+        $headers = ['ID', 'Tipo', 'Descripción', 'Condición Insegura', 'Área'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D
+            $column = chr(65 + $index); // A, B, C, D, E
             $sheet->setCellValue($column . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':D' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':E' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -1437,6 +1476,7 @@ class ReportesController extends Controller {
             $sheet->setCellValue('B' . $dataRow, $riesgo['tipo'] ?? '');
             $sheet->setCellValue('C' . $dataRow, $riesgo['descripcion'] ?? 'Sin descripción');
             $sheet->setCellValue('D' . $dataRow, $riesgo['condicion_nombre'] ?? 'Sin condición asociada');
+            $sheet->setCellValue('E' . $dataRow, $riesgo['nombre_area'] ?? 'Sin área asignada');
             
             $dataRow++;
         }
@@ -1446,15 +1486,16 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('B')->setWidth(25);
         $sheet->getColumnDimension('C')->setWidth(50);
         $sheet->getColumnDimension('D')->setWidth(35);
+        $sheet->getColumnDimension('E')->setWidth(20);
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':D' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':E' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':D' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':E' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }
@@ -1539,18 +1580,21 @@ class ReportesController extends Controller {
     public function condicionesinseguras() {
         $this->onlyLogged();
         $nombre = isset($_GET['nombre']) ? trim($_GET['nombre']) : '';
+        $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
         require_once __DIR__ . '/../models/CondicionInsegura.php';
-        $condiciones = CondicionInsegura::getFiltered('', $nombre, 'id_asc');
+        // Usar getFilteredWithArea para incluir información del área
+        $condiciones = CondicionInsegura::getFilteredWithArea('', $nombre, $area, 'nombre_asc');
+        $areas = Area::all();
         
         if ($format === 'pdf') {
-            $this->generateCondicionesInsegurasPDF($condiciones, $nombre);
+            $this->generateCondicionesInsegurasPDF($condiciones, $nombre, $area);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateCondicionesInsegurasExcel($condiciones, $nombre);
+            $this->generateCondicionesInsegurasExcel($condiciones, $nombre, $area);
             return;
         }
         
@@ -1559,12 +1603,14 @@ class ReportesController extends Controller {
         
         $this->view('reportes/condicionesinseguras', [
             'condiciones' => $condiciones,
+            'areas' => $areas,
             'nombre' => $nombre,
+            'area' => $area,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateCondicionesInsegurasPDF($condiciones, $filtroNombre = '') {
+    private function generateCondicionesInsegurasPDF($condiciones, $filtroNombre = '', $area = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('P', 'mm', 'A4');
@@ -1581,26 +1627,31 @@ class ReportesController extends Controller {
         $pdf->Ln(5);
         
         // Filtros aplicados
-        if ($filtroNombre) {
+        if ($filtroNombre || $area) {
+            $filtros = [];
+            if ($filtroNombre) $filtros[] = 'Nombre: ' . $filtroNombre;
+            if ($area) $filtros[] = 'Área: ' . $area;
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - Nombre: ' . $filtroNombre), 0, 1, 'L');
+            $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
             $pdf->Ln(5);
         }
         
         // Encabezados de tabla
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(15, 8, 'ID', 1, 0, 'C');
-        $pdf->Cell(50, 8, 'Nombre', 1, 0, 'C');
-        $pdf->Cell(75, 8, utf8_decode('Descripción'), 1, 0, 'C');
-        $pdf->Cell(50, 8, 'Lugar', 1, 1, 'C');
+        $pdf->Cell(10, 8, 'ID', 1, 0, 'C');
+        $pdf->Cell(40, 8, 'Nombre', 1, 0, 'C');
+        $pdf->Cell(60, 8, utf8_decode('Descripción'), 1, 0, 'C');
+        $pdf->Cell(35, 8, 'Lugar', 1, 0, 'C');
+        $pdf->Cell(35, 8, utf8_decode('Área'), 1, 1, 'C');
         
         // Datos de la tabla
         $pdf->SetFont('Arial', '', 9);
         foreach ($condiciones as $condicion) {
-            $pdf->Cell(15, 8, $condicion['id_cond_inseg'] ?? '', 1, 0, 'C');
-            $pdf->Cell(50, 8, utf8_decode(substr($condicion['nombre'] ?? '', 0, 35)), 1, 0, 'L');
-            $pdf->Cell(75, 8, utf8_decode(substr($condicion['descripcion'] ?? 'Sin descripción', 0, 50)), 1, 0, 'L');
-            $pdf->Cell(50, 8, utf8_decode(substr($condicion['lugar'] ?? 'Sin especificar', 0, 35)), 1, 1, 'L');
+            $pdf->Cell(10, 8, $condicion['id_cond_inseg'] ?? '', 1, 0, 'C');
+            $pdf->Cell(40, 8, utf8_decode(substr($condicion['nombre'] ?? '', 0, 30)), 1, 0, 'L');
+            $pdf->Cell(60, 8, utf8_decode(substr($condicion['descripcion'] ?? 'Sin descripción', 0, 40)), 1, 0, 'L');
+            $pdf->Cell(35, 8, utf8_decode(substr($condicion['lugar'] ?? 'Sin especificar', 0, 25)), 1, 0, 'L');
+            $pdf->Cell(35, 8, utf8_decode(substr($condicion['nombre_area'] ?? 'Sin área', 0, 25)), 1, 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -1621,28 +1672,31 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateCondicionesInsegurasExcel($condiciones, $filtroNombre = '') {
+    private function generateCondicionesInsegurasExcel($condiciones, $filtroNombre = '', $area = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Condiciones Inseguras');
         
         // Título principal
         $sheet->setCellValue('A1', 'Reporte de Condiciones Inseguras');
-        $sheet->mergeCells('A1:D1');
+        $sheet->mergeCells('A1:E1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:D2');
+        $sheet->mergeCells('A2:E2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
         
         // Filtros aplicados
-        if ($filtroNombre) {
-            $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - Nombre: ' . $filtroNombre);
-            $sheet->mergeCells('A' . $currentRow . ':D' . $currentRow);
+        if ($filtroNombre || $area) {
+            $filtros = [];
+            if ($filtroNombre) $filtros[] = 'Nombre: ' . $filtroNombre;
+            if ($area) $filtros[] = 'Área: ' . $area;
+            $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
+            $sheet->mergeCells('A' . $currentRow . ':E' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
@@ -1650,16 +1704,16 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Nombre', 'Descripción', 'Lugar'];
+        $headers = ['ID', 'Nombre', 'Descripción', 'Lugar', 'Área'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D
+            $column = chr(65 + $index); // A, B, C, D, E
             $sheet->setCellValue($column . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':D' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':E' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -1674,6 +1728,7 @@ class ReportesController extends Controller {
             $sheet->setCellValue('B' . $dataRow, $condicion['nombre'] ?? '');
             $sheet->setCellValue('C' . $dataRow, $condicion['descripcion'] ?? 'Sin descripción');
             $sheet->setCellValue('D' . $dataRow, $condicion['lugar'] ?? 'Sin especificar');
+            $sheet->setCellValue('E' . $dataRow, $condicion['nombre_area'] ?? 'Sin área asignada');
             
             $dataRow++;
         }
@@ -1683,9 +1738,10 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(50);
         $sheet->getColumnDimension('D')->setWidth(25);
+        $sheet->getColumnDimension('E')->setWidth(20);
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':D' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':E' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         

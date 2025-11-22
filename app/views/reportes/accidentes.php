@@ -43,6 +43,22 @@ include __DIR__ . '/../header.php';
                                        placeholder="Tipo de accidente" value="<?= htmlspecialchars($tipo ?? '') ?>">
                             </div>
                             <div class="col-auto">
+                                <label for="area" class="form-label">Área</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="area" name="area" class="form-select">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas) && !empty($areas)): ?>
+                                        <?php foreach ($areas as $areaOption): ?>
+                                            <option value="<?= htmlspecialchars($areaOption['id_area']) ?>" 
+                                                    <?= (isset($area) && $area == $areaOption['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($areaOption['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <label for="fecha_inicio" class="form-label">Fecha inicio</label>
                             </div>
                             <div class="col-auto">
@@ -106,6 +122,10 @@ include __DIR__ . '/../header.php';
                                                         <div class="col-6">
                                                             <strong>Lugar:</strong><br>
                                                             <small><?= htmlspecialchars($accidente['lugar'] ?? 'Sin especificar') ?></small>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <strong>Área:</strong><br>
+                                                            <small><?= htmlspecialchars($accidente['nombre_area'] ?? 'Sin área asignada') ?></small>
                                                         </div>
                                                         <div class="col-6">
                                                             <strong>Clasificación:</strong><br>
@@ -190,10 +210,12 @@ include __DIR__ . '/../header.php';
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=accidentes&format=pdf';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;
@@ -202,10 +224,12 @@ document.getElementById('descargar-pdf').onclick = function(e) {
 document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=accidentes&format=excel';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;

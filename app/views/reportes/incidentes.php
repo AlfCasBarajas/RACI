@@ -43,6 +43,22 @@ include __DIR__ . '/../header.php';
                                        placeholder="Tipo de incidente" value="<?= htmlspecialchars($tipo ?? '') ?>">
                             </div>
                             <div class="col-auto">
+                                <label for="area" class="form-label">Área</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="area" name="area" class="form-select">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas) && !empty($areas)): ?>
+                                        <?php foreach ($areas as $areaOption): ?>
+                                            <option value="<?= htmlspecialchars($areaOption['id_area']) ?>" 
+                                                    <?= (isset($area) && $area == $areaOption['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($areaOption['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <label for="fecha_inicio" class="form-label">Fecha inicio</label>
                             </div>
                             <div class="col-auto">
@@ -86,6 +102,7 @@ include __DIR__ . '/../header.php';
                                         <th>Fecha y Hora</th>
                                         <th>Descripción</th>
                                         <th>Lugar</th>
+                                        <th>Área</th>
                                         <th>Tipo Vinc. Laboral</th>
                                         <th>Jornada Laboral</th>
                                         <th>Turno/Momento</th>
@@ -101,6 +118,7 @@ include __DIR__ . '/../header.php';
                                                 <td><?= htmlspecialchars($incidente['fecha_hora']) ?></td>
                                                 <td><?= htmlspecialchars($incidente['descripcion']) ?></td>
                                                 <td><?= htmlspecialchars($incidente['lugar']) ?></td>
+                                                <td><?= htmlspecialchars($incidente['nombre_area'] ?? 'Sin área asignada') ?></td>
                                                 <td><?= htmlspecialchars($incidente['tipo_vinc_lab'] ?? 'Sin especificar') ?></td>
                                                 <td><?= htmlspecialchars($incidente['jornada_laboral'] ?? 'Sin especificar') ?></td>
                                                 <td><?= htmlspecialchars($incidente['turno_mom_inc'] ?? 'Sin especificar') ?></td>
@@ -109,7 +127,7 @@ include __DIR__ . '/../header.php';
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="9" class="text-center">No hay incidentes para mostrar</td>
+                                            <td colspan="10" class="text-center">No hay incidentes para mostrar</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -132,10 +150,12 @@ include __DIR__ . '/../header.php';
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=incidentes&format=pdf';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;
@@ -144,10 +164,12 @@ document.getElementById('descargar-pdf').onclick = function(e) {
 document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=incidentes&format=excel';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;

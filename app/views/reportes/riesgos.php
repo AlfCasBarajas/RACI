@@ -43,6 +43,22 @@ include __DIR__ . '/../header.php';
                                        placeholder="Tipo de riesgo" value="<?= htmlspecialchars($tipo ?? '') ?>">
                             </div>
                             <div class="col-auto">
+                                <label for="area" class="form-label">Área</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="area" name="area" class="form-select">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas) && !empty($areas)): ?>
+                                        <?php foreach ($areas as $areaOption): ?>
+                                            <option value="<?= htmlspecialchars($areaOption['id_area']) ?>" 
+                                                    <?= (isset($area) && $area == $areaOption['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($areaOption['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <button type="submit" class="btn btn-primary">Filtrar</button>
                             </div>
                             <div class="col-auto">
@@ -71,6 +87,7 @@ include __DIR__ . '/../header.php';
                                         <th>Tipo</th>
                                         <th>Descripción</th>
                                         <th>Condición Insegura</th>
+                                        <th>Área</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -81,11 +98,12 @@ include __DIR__ . '/../header.php';
                                                 <td><?= htmlspecialchars($riesgo['tipo']) ?></td>
                                                 <td><?= htmlspecialchars($riesgo['descripcion']) ?></td>
                                                 <td><?= htmlspecialchars($riesgo['condicion_nombre'] ?? 'Sin condición asociada') ?></td>
+                                                <td><?= htmlspecialchars($riesgo['nombre_area'] ?? 'Sin área asignada') ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="4" class="text-center">No hay riesgos para mostrar</td>
+                                            <td colspan="5" class="text-center">No hay riesgos para mostrar</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -108,16 +126,20 @@ include __DIR__ . '/../header.php';
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=riesgos&format=pdf';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 
 document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=riesgos&format=excel';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 </script>

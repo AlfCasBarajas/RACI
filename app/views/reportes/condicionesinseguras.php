@@ -43,6 +43,22 @@ include __DIR__ . '/../header.php';
                                        placeholder="Nombre de la condición" value="<?= htmlspecialchars($nombre ?? '') ?>">
                             </div>
                             <div class="col-auto">
+                                <label for="area" class="form-label">Área</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="area" name="area" class="form-select">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas) && !empty($areas)): ?>
+                                        <?php foreach ($areas as $areaOption): ?>
+                                            <option value="<?= htmlspecialchars($areaOption['id_area']) ?>" 
+                                                    <?= (isset($area) && $area == $areaOption['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($areaOption['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <button type="submit" class="btn btn-primary">Filtrar</button>
                             </div>
                             <div class="col-auto">
@@ -71,6 +87,7 @@ include __DIR__ . '/../header.php';
                                         <th>Nombre</th>
                                         <th>Descripción</th>
                                         <th>Lugar</th>
+                                        <th>Área</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -81,11 +98,12 @@ include __DIR__ . '/../header.php';
                                                 <td><?= htmlspecialchars($condicion['nombre']) ?></td>
                                                 <td><?= htmlspecialchars($condicion['descripcion'] ?? 'Sin descripción') ?></td>
                                                 <td><?= htmlspecialchars($condicion['lugar'] ?? 'Sin especificar') ?></td>
+                                                <td><?= htmlspecialchars($condicion['nombre_area'] ?? 'Sin área asignada') ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="4" class="text-center">No hay condiciones inseguras para mostrar</td>
+                                            <td colspan="5" class="text-center">No hay condiciones inseguras para mostrar</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -108,16 +126,20 @@ include __DIR__ . '/../header.php';
 document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=condicionesinseguras&format=pdf';
     if (nombre) url += '&nombre=' + encodeURIComponent(nombre);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 
 document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=condicionesinseguras&format=excel';
     if (nombre) url += '&nombre=' + encodeURIComponent(nombre);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 </script>
