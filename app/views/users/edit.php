@@ -16,6 +16,8 @@ include __DIR__ . '/../header.php'; ?>
                     </h2>
                 </div>
 
+                <?php include __DIR__ . '/../messages.php'; ?>
+
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <form method="post" action="?controller=users&action=update&id=<?= $usuario['num_doc'] ?>">

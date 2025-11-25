@@ -4,32 +4,41 @@ require_once __DIR__ . '/../core/Database.php';
 
 class User {
     public static function getFiltered($filtro_usuario = '', $filtro_rol = '', $filtro_doc = '', $orden = '') {
-        $db = Database::getConnection();
-        $sql = 'SELECT u.*, r.nombre as rol_nombre FROM user u JOIN rol r ON u.rol = r.id_Rol';
-        $where = [];
-        $params = [];
-        if ($filtro_usuario !== '') {
-            $where[] = 'u.usuario LIKE ?';
-            $params[] = "%$filtro_usuario%";
+        try {
+            $db = Database::getConnection();
+            $sql = 'SELECT u.*, r.nombre as rol_nombre FROM user u JOIN rol r ON u.rol = r.id_Rol';
+            $where = [];
+            $params = [];
+            
+            if ($filtro_usuario !== '') {
+                $where[] = 'u.usuario LIKE ?';
+                $params[] = "%$filtro_usuario%";
+            }
+            if ($filtro_doc !== '') {
+                $where[] = 'u.num_doc LIKE ?';
+                $params[] = "%$filtro_doc%";
+            }
+            if ($filtro_rol !== '') {
+                $where[] = 'u.rol = ?';
+                $params[] = $filtro_rol;
+            }
+            
+            if ($where) {
+                $sql .= ' WHERE ' . implode(' AND ', $where);
+            }
+            
+            $ordenes = ['num_doc' => 'u.num_doc', 'usuario' => 'u.usuario', 'rol' => 'r.nombre'];
+            if ($orden && isset($ordenes[$orden])) {
+                $sql .= ' ORDER BY ' . $ordenes[$orden] . ' ASC';
+            }
+            
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en getFiltered: " . $e->getMessage());
+            return [];
         }
-        if ($filtro_doc !== '') {
-            $where[] = 'u.num_doc LIKE ?';
-            $params[] = "%$filtro_doc%";
-        }
-        if ($filtro_rol !== '') {
-            $where[] = 'u.rol = ?';
-            $params[] = $filtro_rol;
-        }
-        if ($where) {
-            $sql .= ' WHERE ' . implode(' AND ', $where);
-        }
-        $ordenes = ['num_doc' => 'u.num_doc', 'usuario' => 'u.usuario', 'rol' => 'r.nombre'];
-        if ($orden && isset($ordenes[$orden])) {
-            $sql .= ' ORDER BY ' . $ordenes[$orden] . ' ASC';
-        }
-        $stmt = $db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public static function all() {
         $db = Database::getConnection();
@@ -44,18 +53,37 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public static function findByUsername($username) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare('SELECT * FROM user WHERE usuario = ?');
+        $stmt->execute([$username]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO user (num_doc, tipo_doc, usuario, rol, contrasena, telefono) VALUES (?, ?, ?, ?, ?, ?)');
-        $hashed = password_hash($data['contrasena'], PASSWORD_DEFAULT);
-        return $stmt->execute([
-            $data['num_doc'],
-            $data['tipo_doc'],
-            $data['usuario'],
-            $data['rol'],
-            $hashed,
-            $data['telefono']
-        ]);
+        
+        try {
+            $stmt = $db->prepare('INSERT INTO user (num_doc, tipo_doc, usuario, rol, contrasena, telefono) VALUES (?, ?, ?, ?, ?, ?)');
+            $hashed = password_hash($data['contrasena'], PASSWORD_DEFAULT);
+            return $stmt->execute([
+                $data['num_doc'],
+                $data['tipo_doc'],
+                $data['usuario'],
+                $data['rol'],
+                $hashed,
+                $data['telefono']
+            ]);
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) { // Integrity constraint violation
+                if (strpos($e->getMessage(), 'PRIMARY') !== false) {
+                    throw new Exception("Ya existe un usuario con el número de documento {$data['num_doc']}");
+                } else {
+                    throw new Exception("Error de integridad en la base de datos: " . $e->getMessage());
+                }
+            }
+            throw $e;
+        }
     }
 
     public static function update($num_doc, $data) {

@@ -44,24 +44,38 @@ class Empleado {
 
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-        return $stmt->execute([
-            $data['id_empleado'],
-            $data['tipo_doc'],
-            $data['nombres'],
-            $data['apellidos'],
-            $data['telefono'],
-            $data['eps'],
-            $data['arl'],
-            $data['cargo_funcion'],
-            $data['antig_cargo'],
-            $data['rol']
-        ]);
+        
+        try {
+            $stmt = $db->prepare('INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            return $stmt->execute([
+                $data['id_empleado'],
+                $data['tipo_doc'],
+                $data['nombres'],
+                $data['apellidos'],
+                $data['telefono'],
+                $data['eps'],
+                $data['arl'],
+                $data['cargo_funcion'],
+                $data['antig_cargo'],
+                $data['rol']
+            ]);
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) { // Integrity constraint violation
+                if (strpos($e->getMessage(), 'PRIMARY') !== false) {
+                    throw new Exception("Ya existe un empleado con el ID {$data['id_empleado']}");
+                } else {
+                    throw new Exception("Error de integridad en la base de datos: " . $e->getMessage());
+                }
+            }
+            throw $e;
+        }
     }
 
     public static function update($id, $data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE empleado SET id_empleado = ?, tipo_doc = ?, nombres = ?, apellidos = ?, telefono = ?, eps = ?, arl = ?, cargo_funcion = ?, antig_cargo = ?, rol = ? WHERE id_empleado = ?');
+        
+        try {
+            $stmt = $db->prepare('UPDATE empleado SET id_empleado = ?, tipo_doc = ?, nombres = ?, apellidos = ?, telefono = ?, eps = ?, arl = ?, cargo_funcion = ?, antig_cargo = ?, rol = ? WHERE id_empleado = ?');
             return $stmt->execute([
                 $data['id_empleado'],
                 $data['tipo_doc'],
@@ -75,6 +89,16 @@ class Empleado {
                 $data['rol'],
                 $id
             ]);
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) { // Integrity constraint violation
+                if (strpos($e->getMessage(), 'PRIMARY') !== false) {
+                    throw new Exception("Ya existe un empleado con el ID {$data['id_empleado']}");
+                } else {
+                    throw new Exception("Error de integridad en la base de datos: " . $e->getMessage());
+                }
+            }
+            throw $e;
+        }
     }
 
     public static function delete($id) {

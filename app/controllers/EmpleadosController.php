@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../models/Rol.php';
 require_once __DIR__ . '/../core/Controller.php';
+require_once __DIR__ . '/../core/Database.php';
 
 class EmpleadosController extends Controller {
     private function onlyLogged() {
@@ -57,6 +58,15 @@ class EmpleadosController extends Controller {
     public function store() {
         $this->onlyLogged();
         $this->checkNotTrabajador();
+        
+        // Verificar si el empleado ya existe por ID
+        $existing_empleado = Empleado::find($_POST['id_empleado']);
+        if ($existing_empleado) {
+            $_SESSION['error'] = "Error: Ya existe un empleado con el ID {$_POST['id_empleado']}.";
+            header('Location: ?controller=empleados&action=create');
+            exit;
+        }
+        
         $data = [
             'id_empleado' => $_POST['id_empleado'],
             'tipo_doc' => $_POST['tipo_doc'],
@@ -69,7 +79,16 @@ class EmpleadosController extends Controller {
             'antig_cargo' => $_POST['antig_cargo'],
             'rol' => $_POST['rol']
         ];
-        Empleado::create($data);
+        
+        try {
+            Empleado::create($data);
+            $_SESSION['success'] = "Empleado creado exitosamente.";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error al crear el empleado: " . $e->getMessage();
+            header('Location: ?controller=empleados&action=create');
+            exit;
+        }
+        
         header('Location: ?controller=empleados&action=index');
         exit;
     }
@@ -87,8 +106,9 @@ class EmpleadosController extends Controller {
         $this->checkNotCoordinadorForEdit();
         $this->checkNotTrabajador();
         $id = $_GET['id'];
+        
         $data = [
-            'id_empleado' => $_POST['id_empleado'],
+            'id_empleado' => $id, // Mantener el ID original ya que el campo es readonly
             'tipo_doc' => $_POST['tipo_doc'],
             'nombres' => $_POST['nombres'],
             'apellidos' => $_POST['apellidos'],
@@ -99,7 +119,16 @@ class EmpleadosController extends Controller {
             'antig_cargo' => $_POST['antig_cargo'],
             'rol' => $_POST['rol']
         ];
-        Empleado::update($id, $data);
+        
+        try {
+            Empleado::update($id, $data);
+            $_SESSION['success'] = "Empleado actualizado exitosamente.";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error al actualizar el empleado: " . $e->getMessage();
+            header("Location: ?controller=empleados&action=edit&id=$id");
+            exit;
+        }
+        
         header('Location: ?controller=empleados&action=index');
         exit;
     }

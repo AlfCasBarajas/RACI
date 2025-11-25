@@ -17,6 +17,8 @@ require_once __DIR__ . '../../../models/Rol.php';
                     </h2>
                 </div>
 
+                <?php include __DIR__ . '/../messages.php'; ?>
+
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <form method="post" action="?controller=users&action=store">

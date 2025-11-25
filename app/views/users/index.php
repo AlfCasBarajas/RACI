@@ -61,6 +61,8 @@ include __DIR__ . '/../header.php'; ?>
             </style>
 
             <div class="users-card">
+                <?php include __DIR__ . '/../messages.php'; ?>
+                
                 <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center w-100 gap-5">
                     <div class="w-100" style="max-width:350px;">
                         <h2 class="users-title text-center"><i class="bi bi-people me-2"></i>Gestión de Usuarios</h2>
@@ -68,17 +70,28 @@ include __DIR__ . '/../header.php'; ?>
                             <input type="hidden" name="controller" value="users">
                             <input type="hidden" name="action" value="index">
                             <div class="row g-2 mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="text" class="form-control" name="filtro_doc" placeholder="Nº Documento" value="<?= isset($_GET['filtro_doc']) ? htmlspecialchars($_GET['filtro_doc']) : '' ?>">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="text" class="form-control" name="filtro_usuario" placeholder="Usuario" value="<?= isset($_GET['filtro_usuario']) ? htmlspecialchars($_GET['filtro_usuario']) : '' ?>">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <select class="form-select" name="filtro_rol">
+                                        <option value="">Todos los roles</option>
+                                        <?php foreach ($roles as $rol): ?>
+                                            <option value="<?= $rol['id_Rol'] ?>" <?= (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] == $rol['id_Rol']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($rol['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
                                     <select class="form-select" name="orden">
                                         <option value="">Ordenar por</option>
-                                        <option value="asc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'asc') ? 'selected' : '' ?>>A-Z</option>
-                                        <option value="desc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'desc') ? 'selected' : '' ?>>Z-A</option>
+                                        <option value="num_doc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'num_doc') ? 'selected' : '' ?>>Nº Documento</option>
+                                        <option value="usuario" <?= (isset($_GET['orden']) && $_GET['orden'] == 'usuario') ? 'selected' : '' ?>>Usuario</option>
+                                        <option value="rol" <?= (isset($_GET['orden']) && $_GET['orden'] == 'rol') ? 'selected' : '' ?>>Rol</option>
                                     </select>
                                 </div>
                             </div>
