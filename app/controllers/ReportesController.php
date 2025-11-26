@@ -2199,24 +2199,8 @@ class ReportesController extends Controller {
         exit;
     }
 
-    public function generateInspeccionesPDF() {
-        $this->onlyLogged();
+    private function generateInspeccionesPDFReporte($inspecciones, $filtros = []) {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
-        require_once __DIR__ . '/../models/InspeccionLocativa.php';
-        
-        // Obtener filtros
-        $filtro_id = isset($_GET['filtro_id']) ? trim($_GET['filtro_id']) : '';
-        $filtro_tipo_inspeccion = isset($_GET['filtro_tipo_inspeccion']) ? trim($_GET['filtro_tipo_inspeccion']) : '';
-        $filtro_fecha_hora = isset($_GET['filtro_fecha_hora']) ? $_GET['filtro_fecha_hora'] : '';
-        $filtro_estado_inspeccion = isset($_GET['filtro_estado_inspeccion']) ? trim($_GET['filtro_estado_inspeccion']) : '';
-        $filtro_categoria = isset($_GET['filtro_categoria']) ? trim($_GET['filtro_categoria']) : '';
-        $filtro_incidente = isset($_GET['filtro_incidente']) ? trim($_GET['filtro_incidente']) : '';
-        $filtro_accidente = isset($_GET['filtro_accidente']) ? trim($_GET['filtro_accidente']) : '';
-        $filtro_riesgo = isset($_GET['filtro_riesgo']) ? trim($_GET['filtro_riesgo']) : '';
-        $filtro_orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        
-        // Obtener datos filtrados
-        $inspecciones = InspeccionLocativa::getFiltered($filtro_id, $filtro_tipo_inspeccion, $filtro_fecha_hora, $filtro_estado_inspeccion, $filtro_categoria, $filtro_incidente, $filtro_accidente, $filtro_riesgo, $filtro_orden);
         
         // Crear PDF
         $pdf = new FPDF();
@@ -2224,44 +2208,43 @@ class ReportesController extends Controller {
         $pdf->SetFont('Arial', 'B', 16);
         
         // Título
-        $pdf->Cell(0, 15, 'REPORTE DE INSPECCIONES LOCATIVAS', 0, 1, 'C');
+        $pdf->Cell(0, 15, utf8_decode('REPORTE DE INSPECCIONES LOCATIVAS'), 0, 1, 'C');
         $pdf->Ln(5);
         
         // Información del reporte
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 8, 'Generado el: ' . date('d/m/Y H:i:s'), 0, 1, 'R');
-        $pdf->Cell(0, 8, 'Total de registros: ' . count($inspecciones), 0, 1, 'R');
+        $pdf->Cell(0, 8, utf8_decode('Generado el: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+        $pdf->Cell(0, 8, utf8_decode('Total de registros: ' . count($inspecciones)), 0, 1, 'R');
         $pdf->Ln(5);
         
         // Mostrar filtros aplicados si existen
-        if (!empty($filtro_id) || !empty($filtro_tipo_inspeccion) || !empty($filtro_fecha_hora) || !empty($filtro_estado_inspeccion)) {
+        if (!empty($filtros['fecha_inicio']) || !empty($filtros['fecha_fin']) || !empty($filtros['tipo_inspeccion'])) {
             $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(0, 8, 'Filtros aplicados:', 0, 1, 'L');
+            $pdf->Cell(0, 8, utf8_decode('Filtros aplicados:'), 0, 1, 'L');
             $pdf->SetFont('Arial', '', 9);
-            if (!empty($filtro_id)) $pdf->Cell(0, 6, '- ID: ' . $filtro_id, 0, 1, 'L');
-            if (!empty($filtro_tipo_inspeccion)) $pdf->Cell(0, 6, '- Tipo de Inspeccion: ' . $filtro_tipo_inspeccion, 0, 1, 'L');
-            if (!empty($filtro_fecha_hora)) $pdf->Cell(0, 6, '- Fecha: ' . $filtro_fecha_hora, 0, 1, 'L');
-            if (!empty($filtro_estado_inspeccion)) $pdf->Cell(0, 6, '- Estado: ' . $filtro_estado_inspeccion, 0, 1, 'L');
+            if (!empty($filtros['fecha_inicio'])) $pdf->Cell(0, 6, utf8_decode('- Fecha inicio: ' . $filtros['fecha_inicio']), 0, 1, 'L');
+            if (!empty($filtros['fecha_fin'])) $pdf->Cell(0, 6, utf8_decode('- Fecha fin: ' . $filtros['fecha_fin']), 0, 1, 'L');
+            if (!empty($filtros['tipo_inspeccion'])) $pdf->Cell(0, 6, utf8_decode('- Tipo: ' . $filtros['tipo_inspeccion']), 0, 1, 'L');
             $pdf->Ln(5);
         }
         
         if (empty($inspecciones)) {
             $pdf->SetFont('Arial', 'I', 12);
-            $pdf->Cell(0, 20, 'No se encontraron inspecciones locativas con los filtros aplicados.', 0, 1, 'C');
+            $pdf->Cell(0, 20, utf8_decode('No se encontraron inspecciones locativas con los filtros aplicados.'), 0, 1, 'C');
         } else {
-            // Encabezados de tabla
+            // Encabezados de tabla estilo compacto
             $pdf->SetFont('Arial', 'B', 8);
             $pdf->SetFillColor(68, 114, 196);
             $pdf->SetTextColor(255, 255, 255);
             
             $pdf->Cell(15, 8, 'ID', 1, 0, 'C', true);
-            $pdf->Cell(30, 8, 'Tipo Inspeccion', 1, 0, 'C', true);
-            $pdf->Cell(35, 8, 'Fecha y Hora', 1, 0, 'C', true);
-            $pdf->Cell(25, 8, 'Estado', 1, 0, 'C', true);
-            $pdf->Cell(30, 8, 'Categoria', 1, 0, 'C', true);
+            $pdf->Cell(30, 8, utf8_decode('Tipo'), 1, 0, 'C', true);
+            $pdf->Cell(30, 8, utf8_decode('Fecha'), 1, 0, 'C', true);
+            $pdf->Cell(20, 8, 'Estado', 1, 0, 'C', true);
+            $pdf->Cell(25, 8, utf8_decode('Categoría'), 1, 0, 'C', true);
             $pdf->Cell(30, 8, 'Empleado', 1, 0, 'C', true);
-            $pdf->Cell(25, 8, 'Area', 1, 0, 'C', true);
-            $pdf->Cell(55, 8, 'Descripcion', 1, 1, 'C', true);
+            $pdf->Cell(20, 8, utf8_decode('Área'), 1, 0, 'C', true);
+            $pdf->Cell(50, 8, utf8_decode('Descripción'), 1, 1, 'C', true);
             
             // Datos de las inspecciones
             $pdf->SetFont('Arial', '', 7);
@@ -2278,17 +2261,17 @@ class ReportesController extends Controller {
                 // Truncar textos largos
                 $descripcion = substr($inspeccion['descripcion'] ?? '', 0, 40) . (strlen($inspeccion['descripcion'] ?? '') > 40 ? '...' : '');
                 $empleado = !empty($inspeccion['empleado_nombre']) ? substr($inspeccion['empleado_nombre'], 0, 20) : 'Sin empleado';
-                $area = !empty($inspeccion['area_nombre']) ? substr($inspeccion['area_nombre'], 0, 15) : 'Sin area';
+                $area = !empty($inspeccion['area_nombre']) ? substr($inspeccion['area_nombre'], 0, 15) : 'Sin área';
                 $categoria = substr($inspeccion['categoria_nombre'] ?? '', 0, 20);
                 
-                $pdf->Cell(15, 8, $inspeccion['id_insp_loc'], 1, 0, 'C', true);
-                $pdf->Cell(30, 8, substr($inspeccion['tipo_inspeccion'] ?? '', 0, 20), 1, 0, 'L', true);
-                $pdf->Cell(35, 8, date('d/m/Y H:i', strtotime($inspeccion['fecha_hora'])), 1, 0, 'C', true);
-                $pdf->Cell(25, 8, substr($inspeccion['estado_inspeccion'] ?? '', 0, 15), 1, 0, 'C', true);
-                $pdf->Cell(30, 8, $categoria, 1, 0, 'L', true);
-                $pdf->Cell(30, 8, $empleado, 1, 0, 'L', true);
-                $pdf->Cell(25, 8, $area, 1, 0, 'L', true);
-                $pdf->Cell(55, 8, $descripcion, 1, 1, 'L', true);
+                $pdf->Cell(15, 8, $inspeccion['id_insp_loc'] ?? '', 1, 0, 'C', true);
+                $pdf->Cell(30, 8, utf8_decode(substr($inspeccion['tipo_inspeccion'] ?? '', 0, 20)), 1, 0, 'L', true);
+                $pdf->Cell(30, 8, isset($inspeccion['fecha_hora']) ? date('d/m/Y H:i', strtotime($inspeccion['fecha_hora'])) : '', 1, 0, 'C', true);
+                $pdf->Cell(20, 8, utf8_decode(substr($inspeccion['estado_inspeccion'] ?? '', 0, 15)), 1, 0, 'C', true);
+                $pdf->Cell(25, 8, utf8_decode($categoria), 1, 0, 'L', true);
+                $pdf->Cell(30, 8, utf8_decode($empleado), 1, 0, 'L', true);
+                $pdf->Cell(20, 8, utf8_decode($area), 1, 0, 'L', true);
+                $pdf->Cell(50, 8, utf8_decode($descripcion), 1, 1, 'L', true);
                 
                 $fill = !$fill;
             }
@@ -2301,354 +2284,15 @@ class ReportesController extends Controller {
         }
         
         // Nombre del archivo
-        $filename = 'inspecciones_' . date('Y-m-d_H-i-s') . '.pdf';
+        $filename = 'reporte_inspecciones_' . date('Y-m-d_H-i-s') . '.pdf';
         $filepath = $dir . $filename;
         
-        // Guardar y mostrar
+        // Guardar PDF
         $pdf->Output('F', $filepath);
-        $pdf->Output('D', $filename);
-    }
-
-    public function generateInspeccionesExcel() {
-        $this->onlyLogged();
-        require_once __DIR__ . '/../models/InspeccionLocativa.php';
-        
-        // Obtener filtros
-        $filtro_id = isset($_GET['filtro_id']) ? trim($_GET['filtro_id']) : '';
-        $filtro_tipo_inspeccion = isset($_GET['filtro_tipo_inspeccion']) ? trim($_GET['filtro_tipo_inspeccion']) : '';
-        $filtro_fecha_hora = isset($_GET['filtro_fecha_hora']) ? $_GET['filtro_fecha_hora'] : '';
-        $filtro_estado_inspeccion = isset($_GET['filtro_estado_inspeccion']) ? trim($_GET['filtro_estado_inspeccion']) : '';
-        $filtro_categoria = isset($_GET['filtro_categoria']) ? trim($_GET['filtro_categoria']) : '';
-        $filtro_incidente = isset($_GET['filtro_incidente']) ? trim($_GET['filtro_incidente']) : '';
-        $filtro_accidente = isset($_GET['filtro_accidente']) ? trim($_GET['filtro_accidente']) : '';
-        $filtro_riesgo = isset($_GET['filtro_riesgo']) ? trim($_GET['filtro_riesgo']) : '';
-        $filtro_orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        
-        // Obtener datos filtrados
-        $inspecciones = InspeccionLocativa::getFiltered($filtro_id, $filtro_tipo_inspeccion, $filtro_fecha_hora, $filtro_estado_inspeccion, $filtro_categoria, $filtro_incidente, $filtro_accidente, $filtro_riesgo, $filtro_orden);
-        
-        // Crear nueva spreadsheet
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Inspecciones Locativas');
-        
-        // Configurar documento
-        $spreadsheet->getProperties()
-            ->setCreator('Sistema RACI')
-            ->setTitle('Reporte de Inspecciones Locativas')
-            ->setSubject('Inspecciones Locativas')
-            ->setDescription('Reporte generado desde el sistema RACI');
-        
-        // Título principal
-        $sheet->setCellValue('A1', 'REPORTE DE INSPECCIONES LOCATIVAS');
-        $sheet->mergeCells('A1:N1');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        
-        // Información del reporte
-        $currentRow = 3;
-        $sheet->setCellValue('A' . $currentRow, 'Generado el: ' . date('d/m/Y H:i:s'));
-        $sheet->setCellValue('A' . ($currentRow + 1), 'Total de registros: ' . count($inspecciones));
-        $currentRow += 3;
-        
-        // Mostrar filtros si existen
-        if (!empty($filtro_id) || !empty($filtro_tipo_inspeccion) || !empty($filtro_fecha_hora) || !empty($filtro_estado_inspeccion)) {
-            $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados:');
-            $sheet->getStyle('A' . $currentRow)->getFont()->setBold(true);
-            $currentRow++;
-            
-            if (!empty($filtro_id)) {
-                $sheet->setCellValue('A' . $currentRow, '- ID: ' . $filtro_id);
-                $currentRow++;
-            }
-            if (!empty($filtro_tipo_inspeccion)) {
-                $sheet->setCellValue('A' . $currentRow, '- Tipo de Inspección: ' . $filtro_tipo_inspeccion);
-                $currentRow++;
-            }
-            if (!empty($filtro_fecha_hora)) {
-                $sheet->setCellValue('A' . $currentRow, '- Fecha: ' . $filtro_fecha_hora);
-                $currentRow++;
-            }
-            if (!empty($filtro_estado_inspeccion)) {
-                $sheet->setCellValue('A' . $currentRow, '- Estado: ' . $filtro_estado_inspeccion);
-                $currentRow++;
-            }
-        }
-        
-        $currentRow++; // Espacio en blanco
-        
-        // Encabezados
-        $headers = ['ID', 'Tipo Inspección', 'Fecha y Hora', 'Descripción', 'Estado', 'Elementos Trabajo', 'Observaciones', 'Categoría', 'Incidente', 'Accidente', 'Riesgo', 'Condición Insegura', 'Empleado', 'Área'];
-        $headerRow = $currentRow;
-        
-        foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D, etc.
-            $sheet->setCellValue($column . $headerRow, $header);
-        }
-        
-        // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':M' . $headerRow;
-        $sheet->getStyle($headerRange)->getFont()->setBold(true);
-        $sheet->getStyle($headerRange)->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->getStartColor()->setRGB('4472C4');
-        $sheet->getStyle($headerRange)->getFont()->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        
-        // Datos de inspecciones
-        $dataRow = $headerRow + 1;
-        foreach ($inspecciones as $inspeccion) {
-            $sheet->setCellValue('A' . $dataRow, $inspeccion['id_insp_loc'] ?? '');
-            $sheet->setCellValue('B' . $dataRow, $inspeccion['tipo_inspeccion'] ?? '');
-            $sheet->setCellValue('C' . $dataRow, $inspeccion['fecha_hora'] ?? '');
-            $sheet->setCellValue('D' . $dataRow, $inspeccion['descripcion'] ?? '');
-            $sheet->setCellValue('E' . $dataRow, $inspeccion['estado_inspeccion'] ?? '');
-            $sheet->setCellValue('F' . $dataRow, $inspeccion['element_trab'] ?? '');
-            $sheet->setCellValue('G' . $dataRow, $inspeccion['observaciones'] ?? '');
-            $sheet->setCellValue('H' . $dataRow, $inspeccion['categoria_nombre'] ?? '');
-            $sheet->setCellValue('I' . $dataRow, $inspeccion['incidente_tipo'] ?? '');
-            $sheet->setCellValue('J' . $dataRow, $inspeccion['accidente_tipo'] ?? '');
-            $sheet->setCellValue('K' . $dataRow, $inspeccion['riesgo_tipo'] ?? '');
-            $sheet->setCellValue('L' . $dataRow, !empty($inspeccion['empleado_nombre']) ? $inspeccion['empleado_nombre'] : 'Sin empleado');
-            $sheet->setCellValue('M' . $dataRow, !empty($inspeccion['area_nombre']) ? $inspeccion['area_nombre'] : 'Sin área');
-            
-            $dataRow++;
-        }
-        
-        // Ajustar ancho de columnas
-        $sheet->getColumnDimension('A')->setWidth(8);  // ID
-        $sheet->getColumnDimension('B')->setWidth(20); // Tipo Inspección
-        $sheet->getColumnDimension('C')->setWidth(18); // Fecha y Hora
-        $sheet->getColumnDimension('D')->setWidth(35); // Descripción
-        $sheet->getColumnDimension('E')->setWidth(15); // Estado
-        $sheet->getColumnDimension('F')->setWidth(20); // Elementos Trabajo
-        $sheet->getColumnDimension('G')->setWidth(35); // Observaciones
-        $sheet->getColumnDimension('H')->setWidth(15); // Categoría
-        $sheet->getColumnDimension('I')->setWidth(15); // Incidente
-        $sheet->getColumnDimension('J')->setWidth(15); // Accidente
-        $sheet->getColumnDimension('K')->setWidth(15); // Riesgo
-        $sheet->getColumnDimension('L')->setWidth(20); // Empleado
-        $sheet->getColumnDimension('M')->setWidth(15); // Área
-        
-        // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':M' . ($dataRow - 1);
-        $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-        
-        // Alternar colores de filas
-        for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':M' . $row)->getFill()
-                ->setFillType(Fill::FILL_SOLID)
-                ->getStartColor()->setRGB('F2F2F2');
-        }
-        
-        // Crear directorio si no existe
-        $dir = __DIR__ . '/../Reportes_Excel/excels_inspecciones/';
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        
-        // Nombre del archivo
-        $filename = 'reporte_inspecciones_' . date('Y-m-d_H-i-s') . '.xlsx';
-        $filepath = $dir . $filename;
-        
-        // Guardar Excel
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filepath);
         
         // Redirigir con mensaje de éxito
-        header('Location: ?controller=inspeccionlocativa&action=index&excel_saved=' . urlencode($filename));
+        header('Location: ?controller=reportes&action=inspecciones&pdf_saved=' . urlencode($filename));
         exit;
-    }
-
-    private function generateInspeccionesPDFReporte($inspecciones, $filtros = []) {
-        require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
-        
-        // Crear PDF
-        $pdf = new FPDF();
-        $pdf->AddPage('L'); // Paisaje para más espacio
-        $pdf->SetFont('Arial', 'B', 16);
-        
-        // Título
-        $pdf->Cell(0, 15, 'REPORTE DE INSPECCIONES LOCATIVAS', 0, 1, 'C');
-        $pdf->Ln(5);
-        
-        // Información del reporte
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 8, 'Generado el: ' . date('d/m/Y H:i:s'), 0, 1, 'R');
-        $pdf->Cell(0, 8, 'Total de registros: ' . count($inspecciones), 0, 1, 'R');
-        $pdf->Ln(5);
-        
-        // Mostrar filtros aplicados si existen
-        if (!empty($filtros['fecha_inicio']) || !empty($filtros['fecha_fin']) || !empty($filtros['tipo_inspeccion'])) {
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(0, 8, 'Filtros aplicados:', 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 9);
-            if (!empty($filtros['fecha_inicio'])) $pdf->Cell(0, 6, '- Fecha inicio: ' . $filtros['fecha_inicio'], 0, 1, 'L');
-            if (!empty($filtros['fecha_fin'])) $pdf->Cell(0, 6, '- Fecha fin: ' . $filtros['fecha_fin'], 0, 1, 'L');
-            if (!empty($filtros['tipo_inspeccion'])) $pdf->Cell(0, 6, '- Tipo: ' . $filtros['tipo_inspeccion'], 0, 1, 'L');
-            $pdf->Ln(5);
-        }
-        
-        if (empty($inspecciones)) {
-            $pdf->SetFont('Arial', 'I', 12);
-            $pdf->Cell(0, 20, 'No se encontraron inspecciones locativas con los filtros aplicados.', 0, 1, 'C');
-        } else {
-            // Mostrar inspecciones en formato vertical (tarjetas)
-            $pdf->SetFont('Arial', '', 9);
-            
-            foreach ($inspecciones as $index => $inspeccion) {
-                // Agregar nueva página cada 3 inspecciones para evitar sobrecarga
-                if ($index > 0 && $index % 3 == 0) {
-                    $pdf->AddPage('L');
-                }
-                
-                // Fondo alternado para cada inspección
-                if ($index % 2 == 0) {
-                    $pdf->SetFillColor(248, 249, 250);
-                } else {
-                    $pdf->SetFillColor(255, 255, 255);
-                }
-                
-                // Encabezado de la tarjeta de inspección
-                $pdf->SetFont('Arial', 'B', 11);
-                $pdf->SetTextColor(68, 114, 196);
-                $pdf->Cell(0, 10, 'INSPECCIÓN LOCATIVA #' . ($inspeccion['id_insp_loc'] ?? 'N/A'), 0, 1, 'L', true);
-                
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->SetTextColor(0, 0, 0);
-                
-                // Información básica - Primera columna
-                $startY = $pdf->GetY();
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'ID:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, $inspeccion['id_insp_loc'] ?? 'N/A', 0, 1, 'L', true);
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Tipo Inspección:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['tipo_inspeccion'] ?? 'N/A', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Fecha y Hora:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, isset($inspeccion['fecha_hora']) ? date('d/m/Y H:i', strtotime($inspeccion['fecha_hora'])) : 'N/A', 0, 1, 'L', true);
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Estado:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, $inspeccion['estado_inspeccion'] ?? 'N/A', 0, 1, 'L', true);
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Elemento Trabajo:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['element_trab'] ?? 'N/A', 0, 25), 0, 1, 'L', true);
-                
-                // Segunda columna - Información relacional
-                $pdf->SetXY(150, $startY);
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Categoría:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['categoria_nombre'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetX(150);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Incidente:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['incidente_tipo'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetX(150);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Accidente:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['accidente_tipo'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetX(150);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Riesgo:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['riesgo_tipo'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetX(150);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Condición Insegura:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(55, 6, substr($inspeccion['condicion_insegura_nombre'] ?? 'Sin especificar', 0, 25), 0, 1, 'L', true);
-                
-                $pdf->SetX(150);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Empleado:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $empleado = !empty($inspeccion['empleado_nombre']) ? $inspeccion['empleado_nombre'] : 'Sin empleado';
-                $pdf->Cell(55, 6, substr($empleado, 0, 25), 0, 1, 'L', true);
-                
-                // Tercera fila - Información extendida
-                $pdf->SetX(10);
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Área:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $area = !empty($inspeccion['area_nombre']) ? $inspeccion['area_nombre'] : 'Sin área';
-                $pdf->Cell(55, 6, substr($area, 0, 25), 0, 1, 'L', true);
-                
-                // Descripción y observaciones en texto completo
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Descripción:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $descripcion = $inspeccion['descripcion'] ?? 'Sin descripción';
-                
-                // Dividir descripción en múltiples líneas si es muy larga
-                if (strlen($descripcion) > 80) {
-                    $pdf->Ln();
-                    $pdf->SetX(10);
-                    $descripcionLineas = str_split($descripcion, 80);
-                    foreach ($descripcionLineas as $linea) {
-                        $pdf->Cell(0, 6, $linea, 0, 1, 'L', true);
-                    }
-                } else {
-                    $pdf->Cell(0, 6, $descripcion, 0, 1, 'L', true);
-                }
-                
-                $pdf->SetFont('Arial', 'B', 9);
-                $pdf->Cell(40, 6, 'Observaciones:', 0, 0, 'L', true);
-                $pdf->SetFont('Arial', '', 9);
-                $observaciones = $inspeccion['observaciones'] ?? 'Sin observaciones';
-                
-                // Dividir observaciones en múltiples líneas si es muy larga
-                if (strlen($observaciones) > 80) {
-                    $pdf->Ln();
-                    $pdf->SetX(10);
-                    $observacionesLineas = str_split($observaciones, 80);
-                    foreach ($observacionesLineas as $linea) {
-                        $pdf->Cell(0, 6, $linea, 0, 1, 'L', true);
-                    }
-                } else {
-                    $pdf->Cell(0, 6, $observaciones, 0, 1, 'L', true);
-                }
-                
-                // Línea separadora entre inspecciones
-                $pdf->Ln(5);
-                $pdf->SetDrawColor(200, 200, 200);
-                $pdf->Line(10, $pdf->GetY(), 270, $pdf->GetY());
-                $pdf->Ln(5);
-                $pdf->SetDrawColor(0, 0, 0);
-            }
-        }
-        
-        // Crear directorio si no existe
-        $dir = __DIR__ . '/../Reportes_pdf/pdfs_inspecciones/';
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        
-        // Nombre del archivo
-        $filename = 'inspecciones_reporte_' . date('Y-m-d_H-i-s') . '.pdf';
-        $filepath = $dir . $filename;
-        
-        // Guardar y mostrar
-        $pdf->Output('F', $filepath);
-        $pdf->Output('D', $filename);
     }
 
     private function generateInspeccionesExcelReporte($inspecciones, $filtros = []) {
@@ -2709,7 +2353,7 @@ class ReportesController extends Controller {
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':M' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':N' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -2731,8 +2375,9 @@ class ReportesController extends Controller {
             $sheet->setCellValue('I' . $dataRow, $inspeccion['incidente_tipo'] ?? '');
             $sheet->setCellValue('J' . $dataRow, $inspeccion['accidente_tipo'] ?? '');
             $sheet->setCellValue('K' . $dataRow, $inspeccion['riesgo_tipo'] ?? '');
-            $sheet->setCellValue('L' . $dataRow, !empty($inspeccion['empleado_nombre']) ? $inspeccion['empleado_nombre'] : 'Sin empleado');
-            $sheet->setCellValue('M' . $dataRow, !empty($inspeccion['area_nombre']) ? $inspeccion['area_nombre'] : 'Sin área');
+            $sheet->setCellValue('L' . $dataRow, $inspeccion['condicion_insegura_nombre'] ?? '');
+            $sheet->setCellValue('M' . $dataRow, !empty($inspeccion['empleado_nombre']) ? $inspeccion['empleado_nombre'] : 'Sin empleado');
+            $sheet->setCellValue('N' . $dataRow, !empty($inspeccion['area_nombre']) ? $inspeccion['area_nombre'] : 'Sin área');
             
             $dataRow++;
         }
@@ -2749,17 +2394,18 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('I')->setWidth(15); // Incidente
         $sheet->getColumnDimension('J')->setWidth(15); // Accidente
         $sheet->getColumnDimension('K')->setWidth(15); // Riesgo
-        $sheet->getColumnDimension('L')->setWidth(20); // Empleado
-        $sheet->getColumnDimension('M')->setWidth(15); // Área
+        $sheet->getColumnDimension('L')->setWidth(25); // Condición Insegura
+        $sheet->getColumnDimension('M')->setWidth(20); // Empleado
+        $sheet->getColumnDimension('N')->setWidth(15); // Área
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':M' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':N' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':M' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':N' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }
@@ -2778,11 +2424,8 @@ class ReportesController extends Controller {
         $writer = new Xlsx($spreadsheet);
         $writer->save($filepath);
         
-        // Redirigir para descargar
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-        readfile($filepath);
+        // Redirigir con mensaje de éxito
+        header('Location: ?controller=reportes&action=inspecciones&excel_saved=' . urlencode($filename));
         exit;
     }
 }
