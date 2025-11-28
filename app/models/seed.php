@@ -77,12 +77,12 @@ function poblarTablasRACI() {
         (5, 'Almacén', 'Área de almacén')");
 
     // EMPLEADO - usar ids 1..5 para que coincidan con las referencias en CATEGORIA
-    $conn->exec("INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES
-        (1, 'CC', 'Juan', 'Pérez', 123456789, 'Sura', 'Colmena', 'Operario', '2 años', 4),
-        (2, 'CC', 'Ana', 'García', 234567890, 'Nueva EPS', 'Bolívar', 'Administrativa', '1 año', 1),
-        (3, 'CC', 'Luis', 'Martínez', 345678901, 'Sanitas', 'Sura', 'Técnico', '3 años', 3),
-        (4, 'CC', 'Sofía', 'López', 456789012, 'Compensar', 'Colmena', 'Almacenista', '1 año', 2),
-        (5, 'CC', 'Carlos', 'Ramírez', 567890123, 'Famisanar', 'Bolívar', 'RRHH', '4 años', 1)");
+    $conn->exec("INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol, area_id_area) VALUES
+        (1, 'CC', 'Juan', 'Pérez', 123456789, 'Sura', 'Colmena', 'Operario', '2 años', 4, 2),
+        (2, 'CC', 'Ana', 'García', 234567890, 'Nueva EPS', 'Bolívar', 'Administrativa', '1 año', 1, 1),
+        (3, 'CC', 'Luis', 'Martínez', 345678901, 'Sanitas', 'Sura', 'Técnico', '3 años', 3, 3),
+        (4, 'CC', 'Sofía', 'López', 456789012, 'Compensar', 'Colmena', 'Almacenista', '1 año', 2, 5),
+        (5, 'CC', 'Carlos', 'Ramírez', 567890123, 'Famisanar', 'Bolívar', 'RRHH', '4 años', 1, 4)");
 
     // CATEGORIA
     $conn->exec("INSERT INTO categoria (id_categoria, nombre, descripcion, area_id_area, user_num_doc, empleado_id_empleado) VALUES

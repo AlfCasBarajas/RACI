@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../models/Rol.php';
+require_once __DIR__ . '/../models/Area.php';
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../core/Database.php';
 
@@ -36,23 +37,26 @@ class EmpleadosController extends Controller {
         $tipo_doc = isset($_GET['filtro_tipo_doc']) ? trim($_GET['filtro_tipo_doc']) : '';
         $nombre = isset($_GET['filtro_nombre']) ? trim($_GET['filtro_nombre']) : '';
         $rol = isset($_GET['filtro_rol']) ? $_GET['filtro_rol'] : '';
+        $area = isset($_GET['filtro_area']) ? $_GET['filtro_area'] : '';
         $orden = isset($_GET['orden']) ? $_GET['orden'] : '';
-        $empleados = Empleado::getFiltered($tipo_doc, $nombre, $rol, $orden);
+        $empleados = Empleado::getFiltered($tipo_doc, $nombre, $rol, $area, $orden);
         $roles = Rol::all();
+        $areas = Area::all();
         
         // Obtener el rol del usuario actual
     $userRole = $_SESSION['user']['rol'];
     $isCoordinador = ($userRole == 3); // 3 es el ID del rol coordinador
     $isSupervisor = ($userRole == 2); // 2 es el ID del rol supervisor
     $isTrabajador = ($userRole == 4); // 4 es el ID del rol trabajador
-    $this->view('empleados/index', ['empleados' => $empleados, 'roles' => $roles, 'isCoordinador' => $isCoordinador, 'isSupervisor' => $isSupervisor, 'isTrabajador' => $isTrabajador]);
+    $this->view('empleados/index', ['empleados' => $empleados, 'roles' => $roles, 'areas' => $areas, 'isCoordinador' => $isCoordinador, 'isSupervisor' => $isSupervisor, 'isTrabajador' => $isTrabajador]);
     }
 
     public function create() {
         $this->onlyLogged();
         $this->checkNotTrabajador();
         $roles = Rol::all();
-        $this->view('empleados/create', ['roles' => $roles]);
+        $areas = Area::all();
+        $this->view('empleados/create', ['roles' => $roles, 'areas' => $areas]);
     }
 
     public function store() {
@@ -77,7 +81,8 @@ class EmpleadosController extends Controller {
             'arl' => $_POST['arl'],
             'cargo_funcion' => $_POST['cargo_funcion'],
             'antig_cargo' => $_POST['antig_cargo'],
-            'rol' => $_POST['rol']
+            'rol' => $_POST['rol'],
+            'area_id_area' => $_POST['area_id_area']
         ];
         
         try {
@@ -99,7 +104,8 @@ class EmpleadosController extends Controller {
         $id = $_GET['id'];
         $empleado = Empleado::find($id);
         $roles = Rol::all();
-        $this->view('empleados/edit', ['empleado' => $empleado, 'roles' => $roles]);
+        $areas = Area::all();
+        $this->view('empleados/edit', ['empleado' => $empleado, 'roles' => $roles, 'areas' => $areas]);
     }
 
     public function update() {
@@ -117,7 +123,8 @@ class EmpleadosController extends Controller {
             'arl' => $_POST['arl'],
             'cargo_funcion' => $_POST['cargo_funcion'],
             'antig_cargo' => $_POST['antig_cargo'],
-            'rol' => $_POST['rol']
+            'rol' => $_POST['rol'],
+            'area_id_area' => $_POST['area_id_area']
         ];
         
         try {

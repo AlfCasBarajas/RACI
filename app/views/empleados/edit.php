@@ -82,17 +82,26 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="cargo_funcion" class="form-label fw-semibold">Cargo/Función</label>
                                     <input type="text" class="form-control" id="cargo_funcion" name="cargo_funcion" 
                                            value="<?= htmlspecialchars($empleado['cargo_funcion']) ?>" 
                                            placeholder="Ej: Operario, Supervisor, etc.">
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="antig_cargo" class="form-label fw-semibold">Antigüedad en el Cargo</label>
                                     <input type="text" class="form-control" id="antig_cargo" name="antig_cargo" 
                                            value="<?= htmlspecialchars($empleado['antig_cargo']) ?>" 
                                            placeholder="Ej: 2 años, 6 meses">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="area_id_area" class="form-label fw-semibold">Área</label>
+                                    <select class="form-select" id="area_id_area" name="area_id_area" required>
+                                        <option value="">Seleccione un área</option>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>" <?= $area['id_area'] == $empleado['area_id_area'] ? 'selected' : '' ?>><?= htmlspecialchars($area['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
 

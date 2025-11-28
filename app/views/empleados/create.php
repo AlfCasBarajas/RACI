@@ -83,6 +83,15 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="area_id_area" class="form-label fw-semibold">Área</label>
+                                    <select class="form-select" id="area_id_area" name="area_id_area" required>
+                                        <option value="">Seleccione un área</option>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>"><?= htmlspecialchars($area['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="d-flex gap-3 justify-content-end mt-4">

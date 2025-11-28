@@ -95,11 +95,20 @@ include __DIR__ . '/../header.php'; ?>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
+                                    <select class="form-select" name="filtro_area">
+                                        <option value="">Área</option>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= $area['id_area'] ?>" <?= (isset($_GET['filtro_area']) && $_GET['filtro_area'] == $area['id_area']) ? 'selected' : '' ?>><?= htmlspecialchars($area['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
                                     <select class="form-select" name="orden">
                                         <option value="">Ordenar por</option>
                                         <option value="tipo_doc" <?= (isset($_GET['orden']) && $_GET['orden'] == 'tipo_doc') ? 'selected' : '' ?>>Tipo Doc</option>
                                         <option value="nombres" <?= (isset($_GET['orden']) && $_GET['orden'] == 'nombres') ? 'selected' : '' ?>>Nombre</option>
                                         <option value="rol" <?= (isset($_GET['orden']) && $_GET['orden'] == 'rol') ? 'selected' : '' ?>>Rol</option>
+                                        <option value="area" <?= (isset($_GET['orden']) && $_GET['orden'] == 'area') ? 'selected' : '' ?>>Área</option>
                                     </select>
                                 </div>
                             </div>
@@ -124,6 +133,7 @@ include __DIR__ . '/../header.php'; ?>
                                         <th>Nombres</th>
                                         <th>Apellidos</th>
                                         <th>Rol</th>
+                                        <th>Área</th>
                                         <th>Teléfono</th>
                                         <th>Cargo</th>
                                         <th>Acciones</th>
@@ -137,6 +147,7 @@ include __DIR__ . '/../header.php'; ?>
                                         <td><?= htmlspecialchars($empleado['nombres']) ?></td>
                                         <td><?= htmlspecialchars($empleado['apellidos']) ?></td>
                                         <td><?= htmlspecialchars($empleado['rol_nombre']) ?></td>
+                                        <td><?= htmlspecialchars($empleado['area_nombre'] ?? 'Sin área') ?></td>
                                         <td><?= htmlspecialchars($empleado['telefono']) ?></td>
                                         <td><?= htmlspecialchars($empleado['cargo_funcion']) ?></td>
                                         <td>

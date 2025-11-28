@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Empleado {
-    public static function getFiltered($tipo_doc = '', $nombre = '', $rol = '', $orden = '') {
+    public static function getFiltered($tipo_doc = '', $nombre = '', $rol = '', $area = '', $orden = '') {
         $db = Database::getConnection();
-        $sql = 'SELECT e.*, r.nombre as rol_nombre FROM empleado e LEFT JOIN rol r ON e.rol = r.id_Rol';
+        $sql = 'SELECT e.*, r.nombre as rol_nombre, a.nombre as area_nombre FROM empleado e LEFT JOIN rol r ON e.rol = r.id_Rol LEFT JOIN area a ON e.area_id_area = a.id_area';
         $where = [];
         $params = [];
         if ($tipo_doc !== '') {
@@ -19,10 +19,14 @@ class Empleado {
             $where[] = 'e.rol = ?';
             $params[] = $rol;
         }
+        if ($area !== '') {
+            $where[] = 'e.area_id_area = ?';
+            $params[] = $area;
+        }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $ordenes = ['tipo_doc' => 'e.tipo_doc', 'nombres' => 'e.nombres', 'rol' => 'r.nombre'];
+        $ordenes = ['tipo_doc' => 'e.tipo_doc', 'nombres' => 'e.nombres', 'rol' => 'r.nombre', 'area' => 'a.nombre'];
         if ($orden && isset($ordenes[$orden])) {
             $sql .= ' ORDER BY ' . $ordenes[$orden] . ' ASC';
         }
@@ -46,7 +50,7 @@ class Empleado {
         $db = Database::getConnection();
         
         try {
-            $stmt = $db->prepare('INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt = $db->prepare('INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol, area_id_area) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             return $stmt->execute([
                 $data['id_empleado'],
                 $data['tipo_doc'],
@@ -57,7 +61,8 @@ class Empleado {
                 $data['arl'],
                 $data['cargo_funcion'],
                 $data['antig_cargo'],
-                $data['rol']
+                $data['rol'],
+                $data['area_id_area']
             ]);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) { // Integrity constraint violation
@@ -75,7 +80,7 @@ class Empleado {
         $db = Database::getConnection();
         
         try {
-            $stmt = $db->prepare('UPDATE empleado SET id_empleado = ?, tipo_doc = ?, nombres = ?, apellidos = ?, telefono = ?, eps = ?, arl = ?, cargo_funcion = ?, antig_cargo = ?, rol = ? WHERE id_empleado = ?');
+            $stmt = $db->prepare('UPDATE empleado SET id_empleado = ?, tipo_doc = ?, nombres = ?, apellidos = ?, telefono = ?, eps = ?, arl = ?, cargo_funcion = ?, antig_cargo = ?, rol = ?, area_id_area = ? WHERE id_empleado = ?');
             return $stmt->execute([
                 $data['id_empleado'],
                 $data['tipo_doc'],
@@ -87,6 +92,7 @@ class Empleado {
                 $data['cargo_funcion'],
                 $data['antig_cargo'],
                 $data['rol'],
+                $data['area_id_area'],
                 $id
             ]);
         } catch (PDOException $e) {

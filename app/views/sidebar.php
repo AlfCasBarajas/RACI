@@ -24,9 +24,9 @@ $user = $_SESSION['user'];
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/app/views/dashboard.php"><i class="bi bi-house-door"></i>Dashboard</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=roles&action=index"><i class="bi bi-person-badge"></i>Roles</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=users&action=index"><i class="bi bi-people"></i>Usuarios</a></li>
-            <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill"></i>Empleados</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=areas&action=index"><i class="bi bi-building"></i>Áreas</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open"></i>Categorías</a></li>
+            <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill"></i>Empleados</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle"></i>Incidentes</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity"></i>Accidentes</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond"></i>Condiciones Inseguras</a></li>

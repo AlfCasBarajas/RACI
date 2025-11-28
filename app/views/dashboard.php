@@ -261,9 +261,9 @@ $user = $_SESSION['user'];
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=roles&action=index"><i class="bi bi-person-badge"></i>Roles</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=users&action=index"><i class="bi bi-people"></i>Usuarios</a></li>
-                    <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill"></i>Empleados</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=areas&action=index"><i class="bi bi-building"></i>Áreas</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=categorias&action=index"><i class="bi bi-folder2-open"></i>Categorías</a></li>
+                    <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=empleados&action=index"><i class="bi bi-person-lines-fill"></i>Empleados</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=incidentes&action=index"><i class="bi bi-exclamation-triangle"></i>Incidentes</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=accidentes&action=index"><i class="bi bi-activity"></i>Accidentes</a></li>
                     <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=condicionesinseguras&action=index"><i class="bi bi-exclamation-diamond"></i>Condiciones Inseguras</a></li>
@@ -302,12 +302,6 @@ $user = $_SESSION['user'];
                             </a>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3">
-                            <a href="/RACI/?controller=empleados&action=index" class="service-card d-block text-center py-4">
-                                <i class="bi bi-person-lines-fill mb-2" style="font-size:2.2rem;"></i>
-                                <span>Empleados</span>
-                            </a>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3">
                             <a href="/RACI/?controller=areas&action=index" class="service-card d-block text-center py-4">
                                 <i class="bi bi-building mb-2" style="font-size:2.2rem;"></i>
                                 <span>Áreas</span>
@@ -317,6 +311,12 @@ $user = $_SESSION['user'];
                             <a href="/RACI/?controller=categorias&action=index" class="service-card d-block text-center py-4">
                                 <i class="bi bi-folder2-open mb-2" style="font-size:2.2rem;"></i>
                                 <span>Categorías</span>
+                            </a>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="/RACI/?controller=empleados&action=index" class="service-card d-block text-center py-4">
+                                <i class="bi bi-person-lines-fill mb-2" style="font-size:2.2rem;"></i>
+                                <span>Empleados</span>
                             </a>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3">

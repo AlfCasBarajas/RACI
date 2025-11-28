@@ -33,6 +33,13 @@ INSERT INTO user (num_doc,  tipo_doc, usuario, rol, contrasena, telefono) VALUES
 (1546465465, 'CC', 'coord', 3, '$2y$10$Vyduy9Ox9TY.s02w0EMHEumTy5XYSsbvccZ9nG4LZx5UcLuKtiJiS', 345678901),
 (3256464454, 'CC', 'traba', 4, '$2y$10$/.wA7NEbAJ3mgmBtrIS7J.E1LowpW./bPM0zlbEyT.rrgLOoEwa6q', 456789012);
 
+-- Tabla area
+CREATE TABLE area (
+    id_area INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT
+);
+
 -- Tabla empleado
 CREATE TABLE empleado (
     id_empleado INT PRIMARY KEY,
@@ -45,14 +52,9 @@ CREATE TABLE empleado (
     cargo_funcion VARCHAR(100),
     antig_cargo VARCHAR(50),
     rol INT,
-    FOREIGN KEY (rol) REFERENCES rol(id_Rol)
-);
-
--- Tabla area
-CREATE TABLE area (
-    id_area INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT
+    area_id_area INT,
+    FOREIGN KEY (rol) REFERENCES rol(id_Rol),
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
 );
 
 -- Tabla categoria
