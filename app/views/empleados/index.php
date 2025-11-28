@@ -26,7 +26,6 @@ include __DIR__ . '/../header.php'; ?>
                     padding-bottom: 0.5rem;
                     font-size: 1.5rem;
                 }
-                }
                 .btn-empleados {
                     background: #3949ab;
                     color: #fff;
