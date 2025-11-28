@@ -55,6 +55,21 @@ include __DIR__ . '/../header.php';
                                 </select>
                             </div>
                             <div class="col-auto">
+                                <label for="area" class="form-label">Área</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="area" name="area" class="form-select">
+                                    <option value="">Todas las áreas</option>
+                                    <?php if (isset($areas) && !empty($areas)): ?>
+                                        <?php foreach ($areas as $areaItem): ?>
+                                            <option value="<?= $areaItem['id_area'] ?>" <?= (isset($area) && $area == $areaItem['id_area']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($areaItem['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <button type="submit" class="btn btn-primary">Filtrar</button>
                             </div>
                             <div class="col-auto">
@@ -89,6 +104,7 @@ include __DIR__ . '/../header.php';
                                         <th>Cargo/Función</th>
                                         <th>Antigüedad</th>
                                         <th>Rol</th>
+                                        <th>Área</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -105,11 +121,12 @@ include __DIR__ . '/../header.php';
                                                 <td><?= htmlspecialchars($empleado['cargo_funcion']) ?></td>
                                                 <td><?= htmlspecialchars($empleado['antig_cargo']) ?></td>
                                                 <td><?= htmlspecialchars($empleado['rol_nombre'] ?? 'Sin asignar') ?></td>
+                                                <td><?= htmlspecialchars($empleado['area_nombre'] ?? 'Sin área') ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="10" class="text-center">No hay empleados para mostrar</td>
+                                            <td colspan="11" class="text-center">No hay empleados para mostrar</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -134,9 +151,11 @@ document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
     const rol = document.getElementById('rol').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=empleados&format=pdf';
     if (nombre) url += '&nombre=' + encodeURIComponent(nombre);
     if (rol) url += '&rol=' + encodeURIComponent(rol);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 
@@ -144,9 +163,11 @@ document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
     const rol = document.getElementById('rol').value;
+    const area = document.getElementById('area').value;
     let url = '?controller=reportes&action=empleados&format=excel';
     if (nombre) url += '&nombre=' + encodeURIComponent(nombre);
     if (rol) url += '&rol=' + encodeURIComponent(rol);
+    if (area) url += '&area=' + encodeURIComponent(area);
     window.location.href = url;
 };
 <?php endif; ?>

@@ -245,19 +245,24 @@ class ReportesController extends Controller {
         $this->onlyLogged();
         $nombre = isset($_GET['nombre']) ? trim($_GET['nombre']) : '';
         $rol = isset($_GET['rol']) ? trim($_GET['rol']) : '';
+        $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
-        $empleados = Empleado::getFiltered('', $nombre, $rol);
+        $empleados = Empleado::getFiltered('', $nombre, $rol, $area);
         
         if ($format === 'pdf') {
-            $this->generateEmpleadosPDF($empleados, $nombre, $rol);
+            $this->generateEmpleadosPDF($empleados, $nombre, $rol, $area);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateEmpleadosExcel($empleados, $nombre, $rol);
+            $this->generateEmpleadosExcel($empleados, $nombre, $rol, $area);
             return;
         }
+        
+        // Obtener áreas para el filtro
+        require_once __DIR__ . '/../models/Area.php';
+        $areas = Area::all();
         
         $userRole = $_SESSION['user']['rol'];
         $isTrabajador = ($userRole == 4);
@@ -266,11 +271,13 @@ class ReportesController extends Controller {
             'empleados' => $empleados,
             'nombre' => $nombre,
             'rol' => $rol,
+            'area' => $area,
+            'areas' => $areas,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateEmpleadosPDF($empleados, $filtroNombre = '', $filtroRol = '') {
+    private function generateEmpleadosPDF($empleados, $filtroNombre = '', $filtroRol = '', $filtroArea = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('L', 'mm', 'A4'); // Orientación horizontal para más columnas
@@ -287,39 +294,44 @@ class ReportesController extends Controller {
         $pdf->Ln(5);
         
         // Filtros aplicados
-        if ($filtroNombre || $filtroRol) {
+        if ($filtroNombre || $filtroRol || $filtroArea) {
             $pdf->SetFont('Arial', 'I', 8);
             $filtros = [];
             if ($filtroNombre) $filtros[] = 'Nombre: ' . $filtroNombre;
             if ($filtroRol) $filtros[] = 'Rol: ' . $filtroRol;
+            if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
             $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
             $pdf->Ln(5);
         }
         
         // Encabezados de tabla
-        $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 8, 'ID', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Tipo Doc', 1, 0, 'C');
-        $pdf->Cell(40, 8, 'Nombres', 1, 0, 'C');
-        $pdf->Cell(40, 8, 'Apellidos', 1, 0, 'C');
-        $pdf->Cell(25, 8, utf8_decode('Teléfono'), 1, 0, 'C');
-        $pdf->Cell(25, 8, 'EPS', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'ARL', 1, 0, 'C');
-        $pdf->Cell(35, 8, 'Cargo', 1, 0, 'C');
-        $pdf->Cell(25, 8, utf8_decode('Antigüedad'), 1, 1, 'C');
+        $pdf->SetFont('Arial', 'B', 7);
+        $pdf->Cell(10, 8, 'ID', 1, 0, 'C');
+        $pdf->Cell(12, 8, 'Tipo', 1, 0, 'C');
+        $pdf->Cell(25, 8, 'Nombres', 1, 0, 'C');
+        $pdf->Cell(25, 8, 'Apellidos', 1, 0, 'C');
+        $pdf->Cell(18, 8, utf8_decode('Teléfono'), 1, 0, 'C');
+        $pdf->Cell(18, 8, 'EPS', 1, 0, 'C');
+        $pdf->Cell(18, 8, 'ARL', 1, 0, 'C');
+        $pdf->Cell(25, 8, 'Cargo', 1, 0, 'C');
+        $pdf->Cell(15, 8, 'Antig.', 1, 0, 'C');
+        $pdf->Cell(18, 8, 'Rol', 1, 0, 'C');
+        $pdf->Cell(20, 8, utf8_decode('Área'), 1, 1, 'C');
         
         // Datos de la tabla
-        $pdf->SetFont('Arial', '', 7);
+        $pdf->SetFont('Arial', '', 6);
         foreach ($empleados as $empleado) {
-            $pdf->Cell(15, 8, $empleado['id_empleado'] ?? '', 1, 0, 'C');
-            $pdf->Cell(20, 8, utf8_decode($empleado['tipo_doc'] ?? ''), 1, 0, 'C');
-            $pdf->Cell(40, 8, utf8_decode($empleado['nombres'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(40, 8, utf8_decode($empleado['apellidos'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, $empleado['telefono'] ?? '', 1, 0, 'C');
-            $pdf->Cell(25, 8, utf8_decode($empleado['eps'] ?? ''), 1, 0, 'C');
-            $pdf->Cell(25, 8, utf8_decode($empleado['arl'] ?? ''), 1, 0, 'C');
-            $pdf->Cell(35, 8, utf8_decode($empleado['cargo_funcion'] ?? ''), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode($empleado['antig_cargo'] ?? ''), 1, 1, 'C');
+            $pdf->Cell(10, 8, $empleado['id_empleado'] ?? '', 1, 0, 'C');
+            $pdf->Cell(12, 8, utf8_decode($empleado['tipo_doc'] ?? ''), 1, 0, 'C');
+            $pdf->Cell(25, 8, utf8_decode(substr($empleado['nombres'] ?? '', 0, 12)), 1, 0, 'L');
+            $pdf->Cell(25, 8, utf8_decode(substr($empleado['apellidos'] ?? '', 0, 12)), 1, 0, 'L');
+            $pdf->Cell(18, 8, $empleado['telefono'] ?? '', 1, 0, 'C');
+            $pdf->Cell(18, 8, utf8_decode(substr($empleado['eps'] ?? '', 0, 8)), 1, 0, 'C');
+            $pdf->Cell(18, 8, utf8_decode(substr($empleado['arl'] ?? '', 0, 8)), 1, 0, 'C');
+            $pdf->Cell(25, 8, utf8_decode(substr($empleado['cargo_funcion'] ?? '', 0, 12)), 1, 0, 'L');
+            $pdf->Cell(15, 8, utf8_decode(substr($empleado['antig_cargo'] ?? '', 0, 6)), 1, 0, 'C');
+            $pdf->Cell(18, 8, utf8_decode(substr($empleado['rol_nombre'] ?? 'Sin rol', 0, 8)), 1, 0, 'C');
+            $pdf->Cell(20, 8, utf8_decode(substr($empleado['area_nombre'] ?? 'Sin área', 0, 10)), 1, 1, 'C');
         }
         
         // Crear directorio si no existe
@@ -340,31 +352,32 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateEmpleadosExcel($empleados, $filtroNombre = '', $filtroRol = '') {
+    private function generateEmpleadosExcel($empleados, $filtroNombre = '', $filtroRol = '', $filtroArea = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Empleados');
         
         // Título principal
         $sheet->setCellValue('A1', 'Reporte de Empleados');
-        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A1:K1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A2:K2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
         
         // Filtros aplicados
-        if ($filtroNombre || $filtroRol) {
+        if ($filtroNombre || $filtroRol || $filtroArea) {
             $filtros = [];
             if ($filtroNombre) $filtros[] = 'Nombre: ' . $filtroNombre;
             if ($filtroRol) $filtros[] = 'Rol: ' . $filtroRol;
+            if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
             $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
-            $sheet->mergeCells('A' . $currentRow . ':I' . $currentRow);
+            $sheet->mergeCells('A' . $currentRow . ':K' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
@@ -372,16 +385,16 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo Doc', 'Nombres', 'Apellidos', 'Teléfono', 'EPS', 'ARL', 'Cargo/Función', 'Antigüedad'];
+        $headers = ['ID', 'Tipo Doc', 'Nombres', 'Apellidos', 'Teléfono', 'EPS', 'ARL', 'Cargo/Función', 'Antigüedad', 'Rol', 'Área'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I
+            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I, J, K
             $sheet->setCellValue($column . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':I' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':K' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -401,6 +414,8 @@ class ReportesController extends Controller {
             $sheet->setCellValue('G' . $dataRow, $empleado['arl'] ?? '');
             $sheet->setCellValue('H' . $dataRow, $empleado['cargo_funcion'] ?? '');
             $sheet->setCellValue('I' . $dataRow, $empleado['antig_cargo'] ?? '');
+            $sheet->setCellValue('J' . $dataRow, $empleado['rol_nombre'] ?? 'Sin rol');
+            $sheet->setCellValue('K' . $dataRow, $empleado['area_nombre'] ?? 'Sin área');
             
             $dataRow++;
         }
@@ -415,15 +430,17 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('G')->setWidth(15);
         $sheet->getColumnDimension('H')->setWidth(25);
         $sheet->getColumnDimension('I')->setWidth(15);
+        $sheet->getColumnDimension('J')->setWidth(18);
+        $sheet->getColumnDimension('K')->setWidth(20);
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':I' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':K' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':J' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }

@@ -26,7 +26,14 @@ class Empleado {
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $ordenes = ['tipo_doc' => 'e.tipo_doc', 'nombres' => 'e.nombres', 'rol' => 'r.nombre', 'area' => 'a.nombre'];
+        $ordenes = [
+            'tipo_doc' => 'e.tipo_doc', 
+            'nombres' => 'e.nombres', 
+            'apellidos' => 'e.apellidos',
+            'cargo' => 'e.cargo_funcion',
+            'rol' => 'r.nombre', 
+            'area' => 'a.nombre'
+        ];
         if ($orden && isset($ordenes[$orden])) {
             $sql .= ' ORDER BY ' . $ordenes[$orden] . ' ASC';
         }
