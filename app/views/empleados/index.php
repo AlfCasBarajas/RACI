@@ -49,13 +49,27 @@
                     color: #fff;
                     border: 2px solid #ffd600;
                 }
+                @media (max-width: 991.98px) {
+                    .empleados-card {
+                        padding: 1rem;
+                        margin-top: 1rem;
+                    }
+                }
+                @media (max-width: 767.98px) {
+                    .empleados-card {
+                        padding: 0.5rem;
+                    }
+                    .empleados-title {
+                        font-size: 1.3rem;
+                        padding-bottom: 0.3rem;
+                    }
+                }
             </style>
 
             <div class="empleados-card">
-                <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center w-100 gap-5">
-                    <div class="w-100" style="max-width:450px;">
-                        <h2 class="empleados-title text-center"><i class="bi bi-person-lines-fill me-2"></i>Gestión de Empleados</h2>
-                        
+                <div class="row g-4 flex-lg-row flex-column-reverse align-items-stretch justify-content-center w-100">
+                    <div class="col-12 col-lg-5 d-flex flex-column align-items-center" style="max-width:450px;">
+                        <h2 class="empleados-title text-center w-100"><i class="bi bi-person-lines-fill me-2"></i>Gestión de Empleados</h2>
                         <!-- Mensajes de éxito y error -->
                         <?php if (isset($_SESSION['success'])): ?>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -74,7 +88,7 @@
                             <?php unset($_SESSION['error']); ?>
                         <?php endif; ?>
                         
-                        <form method="get" action="" class="mb-3">
+                        <form method="get" action="" class="mb-3 w-100">
                             <input type="hidden" name="controller" value="empleados">
                             <input type="hidden" name="action" value="index">
                             <div class="mb-3">
@@ -121,21 +135,32 @@
                                     <option value="area" <?= (isset($_GET['orden']) && $_GET['orden'] == 'area') ? 'selected' : '' ?>>Área</option>
                                 </select>
                             </div>
-                            <div class="d-flex gap-2 justify-content-between">
-                                <button type="submit" class="btn btn-empleados-outline w-50"><i class="bi bi-funnel"></i> Filtrar</button>
-                                <a href="?controller=empleados&action=index" class="btn btn-secondary w-50"><i class="bi bi-x-circle"></i> Limpiar</a>
+                            <div class="row g-2">
+                                <div class="col-12 col-sm-6">
+                                    <button type="submit" class="btn btn-empleados-outline w-100"><i class="bi bi-funnel"></i> Filtrar</button>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <a href="?controller=empleados&action=index" class="btn btn-secondary w-100"><i class="bi bi-x-circle"></i> Limpiar</a>
+                                </div>
                             </div>
                         </form>
-                        <div class="text-center">
+                        <div class="text-center w-100 mb-3">
                             <?php if (!$isTrabajador): ?>
                                 <a href="?controller=empleados&action=create" class="btn btn-empleados w-100"><i class="bi bi-plus-circle me-1"></i>Nuevo Empleado</a>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="w-100" style="max-width:1200px;">
+                    <div class="col-12 col-lg-7" style="max-width:1200px;">
                         <h3 class="mb-3 text-center" style="color:#3949ab;font-weight:700;"><i class="bi bi-list-ul me-2"></i>Lista de Empleados</h3>
-                        <div class="table-responsive">
+                        <div class="empleados-table-responsive">
                             <table class="table align-middle table-hover">
+                                            <style>
+                                                /* ...existing code... */
+                                                .empleados-table-responsive {
+                                                    width: 100%;
+                                                    overflow-x: auto;
+                                                }
+                                            </style>
                                 <thead class="table-light">
                                     <tr>
                                         <th>ID</th>
@@ -168,10 +193,10 @@
                                         <td><span class="badge bg-info"><?= htmlspecialchars($empleado['area_nombre'] ?? 'Sin área') ?></span></td>
                                         <td>
                                             <?php if (!$isCoordinador && !$isSupervisor && !$isTrabajador): ?>
-                                                <a href="?controller=empleados&action=edit&id=<?= $empleado['id_empleado'] ?>" class="btn btn-empleados-outline btn-sm me-1" title="Editar"><i class="bi bi-pencil"></i></a>
-                                                <a href="?controller=empleados&action=delete&id=<?= $empleado['id_empleado'] ?>" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar este empleado?');" style="border-radius:2rem;"><i class="bi bi-trash"></i></a>
+                                                <a href="?controller=empleados&action=edit&id=<?= $empleado['id_empleado'] ?>" class="btn btn-empleados-outline btn-sm me-1 mb-1" title="Editar"><i class="bi bi-pencil"></i></a>
+                                                <a href="?controller=empleados&action=delete&id=<?= $empleado['id_empleado'] ?>" class="btn btn-danger btn-sm mb-1" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar este empleado?');" style="border-radius:2rem;"><i class="bi bi-trash"></i></a>
                                             <?php elseif (!$isCoordinador && $isSupervisor && !$isTrabajador): ?>
-                                                <a href="?controller=empleados&action=edit&id=<?= $empleado['id_empleado'] ?>" class="btn btn-empleados-outline btn-sm" title="Editar"><i class="bi bi-pencil"></i></a>
+                                                <a href="?controller=empleados&action=edit&id=<?= $empleado['id_empleado'] ?>" class="btn btn-empleados-outline btn-sm mb-1" title="Editar"><i class="bi bi-pencil"></i></a>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
