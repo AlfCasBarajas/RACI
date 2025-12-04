@@ -83,7 +83,10 @@
                                 <input type="text" class="form-control" name="filtro_tipo" placeholder="Tipo" value="<?= isset($_GET['filtro_tipo']) ? htmlspecialchars($_GET['filtro_tipo']) : '' ?>">
                             </div>
                             <div class="col-md-3">
-                                <input type="date" class="form-control" name="filtro_fecha" value="<?= isset($_GET['filtro_fecha']) ? htmlspecialchars($_GET['filtro_fecha']) : '' ?>">
+                                <input type="date" class="form-control" name="filtro_fecha_inicio" placeholder="Fecha inicio" value="<?= isset($_GET['filtro_fecha_inicio']) ? htmlspecialchars($_GET['filtro_fecha_inicio']) : '' ?>">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" name="filtro_fecha_fin" placeholder="Fecha fin" value="<?= isset($_GET['filtro_fecha_fin']) ? htmlspecialchars($_GET['filtro_fecha_fin']) : '' ?>">
                             </div>
                             <div class="col-md-3">
                                 <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>">
@@ -95,6 +98,18 @@
                                         <?php foreach ($areas as $area): ?>
                                             <option value="<?= $area['id_area'] ?>" <?= (isset($filtro_area) && $filtro_area == $area['id_area']) ? 'selected' : '' ?>>
                                                 <?= htmlspecialchars($area['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" name="filtro_gravedad">
+                                    <option value="">Todas las gravedades</option>
+                                    <?php if (isset($gravedades)): ?>
+                                        <?php foreach ($gravedades as $grav): ?>
+                                            <option value="<?= htmlspecialchars($grav) ?>" <?= (isset($filtro_gravedad) && $filtro_gravedad == $grav) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($grav) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

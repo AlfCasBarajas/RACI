@@ -2,7 +2,13 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Accidente {
-    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $area = '', $orden = 'id_asc', $id = '') {
+    public static function getGravedades() {
+        $db = Database::getConnection();
+        $stmt = $db->query('SELECT DISTINCT gravedad FROM accidente WHERE gravedad IS NOT NULL AND gravedad != "" ORDER BY gravedad');
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+    
+    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $lugar = '', $area = '', $gravedad = '', $orden = 'id_asc', $id = '') {
         $db = Database::getConnection();
         $sql = 'SELECT a.*, 
                        COALESCE(ar.nombre, "Sin área asignada") as nombre_area
@@ -29,9 +35,17 @@ class Accidente {
             $where[] = 'DATE(a.fecha_hora) <= ?';
             $params[] = $fecha_fin;
         }
+        if ($lugar !== '') {
+            $where[] = 'a.lugar LIKE ?';
+            $params[] = "%$lugar%";
+        }
         if ($area !== '') {
             $where[] = 'a.area_id_area = ?';
             $params[] = $area;
+        }
+        if ($gravedad !== '') {
+            $where[] = 'a.gravedad = ?';
+            $params[] = $gravedad;
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);

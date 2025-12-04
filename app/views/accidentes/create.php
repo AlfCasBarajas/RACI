@@ -87,12 +87,17 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <label for="jornada_laboral" class="form-label fw-semibold">Jornada Laboral</label>
+                                    <input type="text" name="jornada_laboral" id="jornada_laboral" class="form-control" 
+                                           placeholder="Ej: Diurna, Nocturna">
+                                </div>
+                                <div class="col-md-4 mb-3">
                                     <label for="tipo_vinc_lab" class="form-label fw-semibold">Tipo Vinculación Laboral</label>
                                     <input type="text" name="tipo_vinc_lab_" id="tipo_vinc_lab" class="form-control" 
                                            placeholder="Ej: Directo, Contratista">
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="turno_mom_acc" class="form-label fw-semibold">Turno Momento Accidente</label>
                                     <input type="text" name="turno_mom_acc" id="turno_mom_acc" class="form-control" 
                                            placeholder="Ej: Diurno, Nocturno">

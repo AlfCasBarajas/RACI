@@ -35,14 +35,19 @@ class AccidentesController extends Controller {
         $this->onlyLogged();
         $id = isset($_GET['filtro_id']) ? trim($_GET['filtro_id']) : '';
         $tipo = isset($_GET['filtro_tipo']) ? trim($_GET['filtro_tipo']) : '';
-        $fecha = isset($_GET['filtro_fecha']) ? $_GET['filtro_fecha'] : '';
+        $fecha_inicio = isset($_GET['filtro_fecha_inicio']) ? $_GET['filtro_fecha_inicio'] : '';
+        $fecha_fin = isset($_GET['filtro_fecha_fin']) ? $_GET['filtro_fecha_fin'] : '';
         $lugar = isset($_GET['filtro_lugar']) ? trim($_GET['filtro_lugar']) : '';
         $area = isset($_GET['filtro_area']) ? $_GET['filtro_area'] : '';
+        $gravedad = isset($_GET['filtro_gravedad']) ? $_GET['filtro_gravedad'] : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha, $lugar, $area, $orden, $id);
+        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $gravedad, $orden, $id);
         
         // Obtener todas las áreas para el filtro
         $areas = Area::all();
+        
+        // Obtener todas las gravedades registradas para el filtro
+        $gravedades = Accidente::getGravedades();
         
         // Obtener el rol del usuario actual
         $userRole = $_SESSION['user']['rol'];
@@ -53,11 +58,14 @@ class AccidentesController extends Controller {
             'accidentes' => $accidentes,
             'filtro_id' => $id,
             'filtro_tipo' => $tipo,
-            'filtro_fecha' => $fecha,
+            'filtro_fecha_inicio' => $fecha_inicio,
+            'filtro_fecha_fin' => $fecha_fin,
             'filtro_lugar' => $lugar,
             'filtro_area' => $area,
+            'filtro_gravedad' => $gravedad,
             'filtro_orden' => $orden,
             'areas' => $areas,
+            'gravedades' => $gravedades,
             'isCoordinador' => $isCoordinador,
             'isSupervisor' => $isSupervisor,
             'isTrabajador' => $isTrabajador

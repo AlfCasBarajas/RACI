@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../core/Database.php';
 
 class Incidente {
-    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $area = '', $orden = 'id_asc') {
+    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $lugar = '', $area = '', $orden = 'id_asc') {
         $db = Database::getConnection();
         $sql = 'SELECT i.*, 
                        COALESCE(a.nombre, "Sin área asignada") as nombre_area
@@ -24,6 +24,10 @@ class Incidente {
         } elseif ($fecha_fin !== '') {
             $where[] = 'DATE(i.fecha_hora) <= ?';
             $params[] = $fecha_fin;
+        }
+        if ($lugar !== '') {
+            $where[] = 'i.lugar LIKE ?';
+            $params[] = "%$lugar%";
         }
         if ($area !== '') {
             $where[] = 'i.area_id_area = ?';

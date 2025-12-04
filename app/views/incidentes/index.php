@@ -81,7 +81,8 @@
               <input type="hidden" name="controller" value="incidentes">
               <input type="hidden" name="action" value="index">
               <input type="text" class="form-control" name="filtro_tipo" placeholder="Tipo" value="<?= isset($_GET['filtro_tipo']) ? htmlspecialchars($_GET['filtro_tipo']) : '' ?>" style="max-width: 120px;">
-              <input type="date" class="form-control" name="filtro_fecha" value="<?= isset($_GET['filtro_fecha']) ? htmlspecialchars($_GET['filtro_fecha']) : '' ?>" style="max-width: 150px;">
+              <input type="date" class="form-control" name="filtro_fecha_inicio" placeholder="Fecha inicio" value="<?= isset($_GET['filtro_fecha_inicio']) ? htmlspecialchars($_GET['filtro_fecha_inicio']) : '' ?>" style="max-width: 150px;">
+              <input type="date" class="form-control" name="filtro_fecha_fin" placeholder="Fecha fin" value="<?= isset($_GET['filtro_fecha_fin']) ? htmlspecialchars($_GET['filtro_fecha_fin']) : '' ?>" style="max-width: 150px;">
               <input type="text" class="form-control" name="filtro_lugar" placeholder="Lugar" value="<?= isset($_GET['filtro_lugar']) ? htmlspecialchars($_GET['filtro_lugar']) : '' ?>" style="max-width: 120px;">
               <select class="form-select" name="filtro_area" style="max-width: 150px;">
                 <option value="">Todas las áreas</option>

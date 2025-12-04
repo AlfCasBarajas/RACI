@@ -34,11 +34,12 @@ class IncidentesController extends Controller {
     public function index() {
         $this->onlyLogged();
         $tipo = isset($_GET['filtro_tipo']) ? trim($_GET['filtro_tipo']) : '';
-        $fecha = isset($_GET['filtro_fecha']) ? $_GET['filtro_fecha'] : '';
+        $fecha_inicio = isset($_GET['filtro_fecha_inicio']) ? $_GET['filtro_fecha_inicio'] : '';
+        $fecha_fin = isset($_GET['filtro_fecha_fin']) ? $_GET['filtro_fecha_fin'] : '';
         $lugar = isset($_GET['filtro_lugar']) ? trim($_GET['filtro_lugar']) : '';
         $area = isset($_GET['filtro_area']) ? $_GET['filtro_area'] : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha, $lugar, $area, $orden);
+        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $orden);
         
         // Obtener todas las áreas para el filtro
         $areas = Area::all();
@@ -51,7 +52,8 @@ class IncidentesController extends Controller {
         $this->view('incidentes/index', [
             'incidentes' => $incidentes,
             'filtro_tipo' => $tipo,
-            'filtro_fecha' => $fecha,
+            'filtro_fecha_inicio' => $fecha_inicio,
+            'filtro_fecha_fin' => $fecha_fin,
             'filtro_lugar' => $lugar,
             'filtro_area' => $area,
             'filtro_orden' => $orden,
