@@ -71,6 +71,15 @@
                                            value="<?= htmlspecialchars($empleado['arl']) ?>" 
                                            placeholder="Ej: SURA ARL, Positiva, etc.">
                                 </div>
+                                <?php 
+                                // Solo iniciar sesión si no está ya iniciada
+                                if (session_status() == PHP_SESSION_NONE) {
+                                    session_start();
+                                }
+                                // Obtener el rol del usuario actual
+                                $userRole = $_SESSION['user']['rol'] ?? null;
+                                // Solo mostrar el campo de rol si el usuario no es supervisor (rol 2)
+                                if ($userRole != 2): ?>
                                 <div class="col-md-4 mb-3">
                                     <label for="rol" class="form-label fw-semibold">Rol</label>
                                     <select class="form-select" id="rol" name="rol" required>
@@ -79,6 +88,10 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                                <?php else: ?>
+                                <!-- Campo oculto para mantener el rol actual si el usuario es supervisor -->
+                                <input type="hidden" name="rol" value="<?= $empleado['rol'] ?>">
+                                <?php endif; ?>
                             </div>
                             
                             <div class="row">

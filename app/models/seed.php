@@ -77,7 +77,9 @@ function poblarTablasRACI() {
         (5, 'Almacén', 'Área de almacenamiento y logística'),
         (6, 'Calidad', 'Área de control de calidad'),
         (7, 'Seguridad', 'Área de seguridad industrial'),
-        (8, 'Cafetería', 'Área de alimentación y descanso')");
+        (8, 'Cafetería', 'Área de alimentación y descanso'),
+        (9, 'Patio', 'Área de dispersión'),
+        (10, 'Finanzas', 'Área de finanzas')");
 
     // EMPLEADO - usar ids 1..10 para mayor variedad
     $conn->exec("INSERT INTO empleado (id_empleado, tipo_doc, nombres, apellidos, telefono, eps, arl, cargo_funcion, antig_cargo, rol, area_id_area) VALUES
@@ -143,7 +145,9 @@ function poblarTablasRACI() {
         (5, 'Estrés laboral', 'Estrés por sobrecarga de trabajo', '2025-08-05 12:45:00', 'Oficina RRHH', 'Directo', 'Diurna', 'Tarde', 'Ninguno', 4, 5),
         (6, 'Resbalón menor', 'Resbalón en área de mantenimiento', '2025-08-06 14:20:00', 'Sala de máquinas', 'Directo', 'Diurna', 'Tarde', 'Botas antideslizantes', 3, 3),
         (7, 'Atrapamiento menor', 'Dedo atrapado en puerta', '2025-08-07 07:30:00', 'Entrada principal', 'Directo', 'Diurna', 'Mañana', 'Ninguno', 1, 2),
-        (8, 'Exposición química', 'Exposición menor a productos de limpieza', '2025-08-08 16:15:00', 'Baños', 'Contratista', 'Diurna', 'Tarde', 'Guantes y mascarilla', 1, 2)");
+        (8, 'Exposición química', 'Exposición menor a productos de limpieza', '2025-08-08 16:15:00', 'Baños', 'Contratista', 'Diurna', 'Tarde', 'Guantes y mascarilla', 1, 2),
+        (9, 'Exposición química', 'Exposición menor a productos de limpieza', '2025-08-08 16:15:00', 'Baños', 'Contratista', 'Diurna', 'Tarde', 'Guantes y mascarilla', 1, 2),
+        (10, 'Exposición química', 'Exposición menor a productos de limpieza', '2025-08-08 16:15:00', 'Baños', 'Contratista', 'Diurna', 'Tarde', 'Guantes y mascarilla', 1, 2)");
 
     // ACCIDENTE
     $conn->exec("INSERT INTO accidente (id_accidente, tipo, descripcion, clasificacion, estado, fecha_hora, lugar, tipo_vinc_lab_, jornada_laboral, turno_mom_acc, uso_epp, consecuencias, gravedad, tipo_lesion, parte_cuerpo_afect, incapacidad_lab, aten_med_recibida, persona_informo, area_id_area, empleado_id_empleado) VALUES
@@ -153,7 +157,10 @@ function poblarTablasRACI() {
         (4, 'Resbalón', 'Resbalón en oficina administrativa', 'Leve', 'Cerrado', '2025-09-04 11:00:00', 'Oficina administrativa', 'Directo', 'Diurna', 'Mañana', 'Zapatos de oficina', 'Contusión menor', 'Leve', 'Contusión', 'Brazo derecho', 'No', 'Hielo y reposo', 'Ana García', 1, 2),
         (5, 'Lesión ergonómica', 'Lesión muscular por mala postura', 'Moderado', 'Abierto', '2025-09-05 12:45:00', 'Oficina RRHH', 'Directo', 'Diurna', 'Tarde', 'Ninguno', 'Distensión muscular', 'Moderada', 'Distensión', 'Espalda baja', 'Sí', 'Fisioterapia y analgésicos', 'Carlos Ramírez', 4, 5),
         (6, 'Quemadura', 'Quemadura con líquido caliente', 'Leve', 'Cerrado', '2025-09-06 13:20:00', 'Cocina', 'Directo', 'Diurna', 'Tarde', 'Delantal', 'Quemadura primer grado', 'Leve', 'Quemadura', 'Antebrazo', 'No', 'Pomada y vendaje', 'Juan Pérez', 1, 1),
-        (7, 'Atrapamiento', 'Dedo atrapado en maquinaria', 'Grave', 'Abierto', '2025-09-07 08:45:00', 'Área de producción', 'Directo', 'Diurna', 'Mañana', 'Guantes industriales', 'Fractura menor', 'Grave', 'Fractura', 'Dedo índice', 'Sí', 'Radiografía e inmovilización', 'Luis Martínez', 2, 1)");
+        (7, 'Atrapamiento', 'Dedo atrapado en maquinaria', 'Grave', 'Abierto', '2025-09-07 08:45:00', 'Área de producción', 'Directo', 'Diurna', 'Mañana', 'Guantes industriales', 'Fractura menor', 'Grave', 'Fractura', 'Dedo índice', 'Sí', 'Radiografía e inmovilización', 'Luis Martínez', 2, 1),
+        (8, 'Atrapamiento', 'Dedo atrapado en maquinaria', 'Grave', 'Abierto', '2025-09-07 08:45:00', 'Área de producción', 'Directo', 'Diurna', 'Mañana', 'Guantes industriales', 'Fractura menor', 'Grave', 'Fractura', 'Dedo índice', 'Sí', 'Radiografía e inmovilización', 'Luis Martínez', 2, 1),
+        (9, 'Atrapamiento', 'Dedo atrapado en maquinaria', 'Grave', 'Abierto', '2025-09-07 08:45:00', 'Área de producción', 'Directo', 'Diurna', 'Mañana', 'Guantes industriales', 'Fractura menor', 'Grave', 'Fractura', 'Dedo índice', 'Sí', 'Radiografía e inmovilización', 'Luis Martínez', 2, 1),
+        (10, 'Atrapamiento', 'Dedo atrapado en maquinaria', 'Grave', 'Abierto', '2025-09-07 08:45:00', 'Área de producción', 'Directo', 'Diurna', 'Mañana', 'Guantes industriales', 'Fractura menor', 'Grave', 'Fractura', 'Dedo índice', 'Sí', 'Radiografía e inmovilización', 'Luis Martínez', 2, 1)");
 
     // INSPECCION_LOCATIVA
     $conn->exec("INSERT INTO inspeccion_locativa (id_insp_loc, tipo_inspeccion, fecha_hora, descripcion, estado_inspeccion, element_trab, observaciones, categoria_id_categoria, incidente_id_incidente, accidente_id_accidente, riesgo_id_riesgo, empleado_id_empleado, area_id_area) VALUES
