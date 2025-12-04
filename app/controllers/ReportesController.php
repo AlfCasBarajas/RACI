@@ -470,24 +470,26 @@ class ReportesController extends Controller {
         $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
         $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
         $area = isset($_GET['area']) ? trim($_GET['area']) : '';
+        $empleado = isset($_GET['empleado']) ? $_GET['empleado'] : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
-        // Usar getFilteredWithArea para incluir información del área
-        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $area);
+        // Usar getFilteredWithArea incluyendo el parámetro empleado
+        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, '', $area, $empleado);
         
         if ($format === 'pdf') {
-            $this->generateIncidentesPDF($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
+            $this->generateIncidentesPDF($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area, $empleado);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateIncidentesExcel($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
+            $this->generateIncidentesExcel($incidentes, $tipo, $fecha_inicio, $fecha_fin, $area, $empleado);
             return;
         }
         
-        // Obtener áreas para el filtro
+        // Obtener áreas y empleados para los filtros
         require_once __DIR__ . '/../models/Area.php';
         $areas = Area::all();
+        $empleados = Empleado::all();
         
         $userRole = $_SESSION['user']['rol'];
         $isTrabajador = ($userRole == 4);
@@ -498,65 +500,97 @@ class ReportesController extends Controller {
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'area' => $area,
+            'empleado' => $empleado,
             'areas' => $areas,
+            'empleados' => $empleados,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateIncidentesPDF($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '') {
+    private function generateIncidentesPDF($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '', $filtroEmpleado = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
-        $pdf = new FPDF('L', 'mm', 'A4'); // Orientación horizontal para más columnas
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf = new FPDF('P', 'mm', 'A4'); // Orientación vertical para formato detallado
         
-        // Título
-        $pdf->Cell(0, 10, utf8_decode('Reporte de Incidentes'), 0, 1, 'C');
-        $pdf->Ln(5);
-        
-        // Fecha de generación
-        $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(0, 5, utf8_decode('Generado el: ' . date('d/m/Y H:i')), 0, 1, 'R');
-        $pdf->Ln(5);
-        
-        // Filtros aplicados
-        $filtros = [];
-        if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
-        if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
-        if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
-        if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
-        if (!empty($filtros)) {
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
-            $pdf->Ln(5);
-        }
-        
-        // Encabezados de tabla
-        $pdf->SetFont('Arial', 'B', 7);
-        $pdf->Cell(10, 8, 'ID', 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Tipo', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Fecha/Hora', 1, 0, 'C');
-        $pdf->Cell(35, 8, utf8_decode('Descripción'), 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Lugar', 1, 0, 'C');
-        $pdf->Cell(20, 8, utf8_decode('Área'), 1, 0, 'C');
-        $pdf->Cell(25, 8, 'Vinc. Laboral', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Jornada', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Turno', 1, 0, 'C');
-        $pdf->Cell(20, 8, 'Uso EPP', 1, 1, 'C');
-        
-        // Datos de la tabla
-        $pdf->SetFont('Arial', '', 6);
         foreach ($incidentes as $incidente) {
-            $pdf->Cell(10, 8, $incidente['id_incidente'] ?? '', 1, 0, 'C');
-            $pdf->Cell(25, 8, utf8_decode(substr($incidente['tipo'] ?? '', 0, 20)), 1, 0, 'L');
-            $pdf->Cell(20, 8, isset($incidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($incidente['fecha_hora'])) : '', 1, 0, 'C');
-            $pdf->Cell(35, 8, utf8_decode(substr($incidente['descripcion'] ?? '', 0, 25) . '...'), 1, 0, 'L');
-            $pdf->Cell(20, 8, utf8_decode(substr($incidente['lugar'] ?? '', 0, 15)), 1, 0, 'L');
-            $pdf->Cell(20, 8, utf8_decode(substr($incidente['nombre_area'] ?? 'Sin área', 0, 15)), 1, 0, 'L');
-            $pdf->Cell(25, 8, utf8_decode(substr($incidente['tipo_vinc_lab'] ?? '', 0, 18)), 1, 0, 'L');
-            $pdf->Cell(20, 8, utf8_decode(substr($incidente['jornada_laboral'] ?? '', 0, 15)), 1, 0, 'L');
-            $pdf->Cell(20, 8, utf8_decode(substr($incidente['turno_mom_inc'] ?? '', 0, 15)), 1, 0, 'L');
-            $pdf->Cell(20, 8, utf8_decode(substr($incidente['uso_epp'] ?? '', 0, 15)), 1, 1, 'L');
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', 'B', 16);
+            
+            // Título
+            $pdf->Cell(0, 10, utf8_decode('Ficha Detallada de Incidente'), 0, 1, 'C');
+            $pdf->Ln(5);
+            
+            // ID del incidente
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 8, utf8_decode('Incidente #' . ($incidente['id_incidente'] ?? '')), 0, 1, 'C');
+            $pdf->Ln(5);
+            
+            // Fecha de generación
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->Cell(0, 5, utf8_decode('Generado el: ' . date('d/m/Y H:i')), 0, 1, 'R');
+            $pdf->Ln(10);
+            
+            // Información básica
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('INFORMACIÓN BÁSICA'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Tipo:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['tipo'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Fecha y Hora:'), 0, 0, 'L');
+            $fechaHora = isset($incidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($incidente['fecha_hora'])) : '';
+            $pdf->Cell(140, 6, utf8_decode($fechaHora), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Lugar:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['lugar'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Área:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['nombre_area'] ?? 'Sin área asignada'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Empleado Involucrado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['nombre_empleado'] ?? 'Sin empleado asignado'), 0, 1, 'L');
+            $pdf->Ln(5);
+            
+            // Descripción
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('DESCRIPCIÓN DEL INCIDENTE'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $descripcion = $incidente['descripcion'] ?? 'Sin descripción';
+            $pdf->MultiCell(0, 6, utf8_decode($descripcion), 1, 'L');
+            $pdf->Ln(5);
+            
+            // Detalles laborales
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('DETALLES LABORALES'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Tipo Vinculación:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['tipo_vinc_lab'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Jornada Laboral:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['jornada_laboral'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Turno/Momento:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($incidente['turno_mom_inc'] ?? ''), 0, 1, 'L');
+            $pdf->Ln(5);
+            
+            // Elementos de protección
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('ELEMENTOS DE PROTECCIÓN'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $usoEpp = $incidente['uso_epp'] ?? 'No especificado';
+            $pdf->MultiCell(0, 6, utf8_decode('Uso de EPP: ' . $usoEpp), 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -566,7 +600,7 @@ class ReportesController extends Controller {
         }
         
         // Nombre del archivo
-        $filename = 'reporte_incidentes_' . date('Y-m-d_H-i-s') . '.pdf';
+        $filename = 'ficha_incidentes_' . date('Y-m-d_H-i-s') . '.pdf';
         $filepath = $dir . $filename;
         
         // Guardar PDF
@@ -577,20 +611,20 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateIncidentesExcel($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '') {
+    private function generateIncidentesExcel($incidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $filtroArea = '', $filtroEmpleado = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Incidentes');
         
         // Título principal
-        $sheet->setCellValue('A1', 'Reporte de Incidentes');
-        $sheet->mergeCells('A1:J1');
+        $sheet->setCellValue('A1', 'Reporte Detallado de Incidentes');
+        $sheet->mergeCells('A1:K1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:J2');
+        $sheet->mergeCells('A2:K2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
@@ -601,9 +635,10 @@ class ReportesController extends Controller {
         if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
         if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
         if ($filtroArea) $filtros[] = 'Área: ' . $filtroArea;
+        if ($filtroEmpleado) $filtros[] = 'Empleado: ' . $filtroEmpleado;
         if (!empty($filtros)) {
             $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
-            $sheet->mergeCells('A' . $currentRow . ':J' . $currentRow);
+            $sheet->mergeCells('A' . $currentRow . ':K' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
@@ -611,16 +646,16 @@ class ReportesController extends Controller {
         $currentRow++; // Espacio en blanco
         
         // Encabezados
-        $headers = ['ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área', 'Tipo Vinc. Laboral', 'Jornada Laboral', 'Turno/Momento', 'Uso EPP'];
+        $headers = ['ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área', 'Empleado', 'Tipo Vinc. Laboral', 'Jornada Laboral', 'Turno/Momento', 'Uso EPP'];
         $headerRow = $currentRow;
         
         foreach ($headers as $index => $header) {
-            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I, J
+            $column = chr(65 + $index); // A, B, C, D, E, F, G, H, I, J, K
             $sheet->setCellValue($column . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':J' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':K' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -637,10 +672,11 @@ class ReportesController extends Controller {
             $sheet->setCellValue('D' . $dataRow, $incidente['descripcion'] ?? '');
             $sheet->setCellValue('E' . $dataRow, $incidente['lugar'] ?? '');
             $sheet->setCellValue('F' . $dataRow, $incidente['nombre_area'] ?? 'Sin área asignada');
-            $sheet->setCellValue('G' . $dataRow, $incidente['tipo_vinc_lab'] ?? '');
-            $sheet->setCellValue('H' . $dataRow, $incidente['jornada_laboral'] ?? '');
-            $sheet->setCellValue('I' . $dataRow, $incidente['turno_mom_inc'] ?? '');
-            $sheet->setCellValue('J' . $dataRow, $incidente['uso_epp'] ?? '');
+            $sheet->setCellValue('G' . $dataRow, $incidente['nombre_empleado'] ?? 'Sin empleado asignado');
+            $sheet->setCellValue('H' . $dataRow, $incidente['tipo_vinc_lab'] ?? '');
+            $sheet->setCellValue('I' . $dataRow, $incidente['jornada_laboral'] ?? '');
+            $sheet->setCellValue('J' . $dataRow, $incidente['turno_mom_inc'] ?? '');
+            $sheet->setCellValue('K' . $dataRow, $incidente['uso_epp'] ?? '');
             
             $dataRow++;
         }
@@ -652,19 +688,20 @@ class ReportesController extends Controller {
         $sheet->getColumnDimension('D')->setWidth(40);
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(18);
-        $sheet->getColumnDimension('G')->setWidth(18);
+        $sheet->getColumnDimension('G')->setWidth(25);
         $sheet->getColumnDimension('H')->setWidth(18);
         $sheet->getColumnDimension('I')->setWidth(18);
-        $sheet->getColumnDimension('J')->setWidth(15);
+        $sheet->getColumnDimension('J')->setWidth(18);
+        $sheet->getColumnDimension('K')->setWidth(20);
         
         // Aplicar bordes a toda la tabla
-        $tableRange = 'A' . $headerRow . ':J' . ($dataRow - 1);
+        $tableRange = 'A' . $headerRow . ':K' . ($dataRow - 1);
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
         
         // Alternar colores de filas
         for ($row = $headerRow + 1; $row < $dataRow; $row += 2) {
-            $sheet->getStyle('A' . $row . ':J' . $row)->getFill()
+            $sheet->getStyle('A' . $row . ':K' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('F2F2F2');
         }
@@ -694,19 +731,21 @@ class ReportesController extends Controller {
         $area = isset($_GET['area']) ? trim($_GET['area']) : '';
         $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
         $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
+        $empleado = isset($_GET['empleado']) ? $_GET['empleado'] : '';
         $format = isset($_GET['format']) ? $_GET['format'] : '';
         
-        // Usar getFilteredWithArea para incluir información del área
-        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $area);
+        // Usar getFilteredWithArea incluyendo el parámetro empleado
+        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, '', $area, $empleado);
         $areas = Area::all();
+        $empleados = Empleado::all();
         
         if ($format === 'pdf') {
-            $this->generateAccidentesPDF($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
+            $this->generateAccidentesPDF($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area, $empleado);
             return;
         }
         
         if ($format === 'excel') {
-            $this->generateAccidentesExcel($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area);
+            $this->generateAccidentesExcel($accidentes, $tipo, $fecha_inicio, $fecha_fin, $area, $empleado);
             return;
         }
         
@@ -716,15 +755,17 @@ class ReportesController extends Controller {
         $this->view('reportes/accidentes', [
             'accidentes' => $accidentes,
             'areas' => $areas,
+            'empleados' => $empleados,
             'tipo' => $tipo,
             'area' => $area,
+            'empleado' => $empleado,
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'isTrabajador' => $isTrabajador
         ]);
     }
     
-    private function generateAccidentesPDF($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '') {
+    private function generateAccidentesPDF($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '', $filtroEmpleado = '') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
         $pdf = new FPDF('P', 'mm', 'A4'); // Orientación vertical para formato detallado
@@ -734,7 +775,7 @@ class ReportesController extends Controller {
             $pdf->SetFont('Arial', 'B', 16);
             
             // Título
-            $pdf->Cell(0, 10, utf8_decode('Reporte Detallado de Accidente'), 0, 1, 'C');
+            $pdf->Cell(0, 10, utf8_decode('Ficha Detallada de Accidente'), 0, 1, 'C');
             $pdf->Ln(5);
             
             // ID del accidente
@@ -747,99 +788,121 @@ class ReportesController extends Controller {
             $pdf->Cell(0, 5, utf8_decode('Generado el: ' . date('d/m/Y H:i')), 0, 1, 'R');
             $pdf->Ln(10);
             
-            // Filtros aplicados
-            if ($filtroTipo || $area || $fechaInicio || $fechaFin) {
-                $filtros = [];
-                if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
-                if ($area) $filtros[] = 'Área: ' . $area;
-                if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
-                if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
-                $pdf->SetFont('Arial', 'I', 8);
-                $pdf->Cell(0, 5, utf8_decode('Filtros aplicados - ' . implode(', ', $filtros)), 0, 1, 'L');
-                $pdf->Ln(5);
-            }
-            
             // Información básica
             $pdf->SetFont('Arial', 'B', 12);
             $pdf->Cell(0, 8, utf8_decode('INFORMACIÓN BÁSICA'), 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            
-            $pdf->Cell(40, 6, utf8_decode('Tipo:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['tipo'] ?? 'Sin especificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Fecha y Hora:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, isset($accidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($accidente['fecha_hora'])) : 'Sin especificar', 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Lugar:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['lugar'] ?? 'Sin especificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Área:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['nombre_area'] ?? 'Sin área asignada'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Clasificación:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['clasificacion'] ?? 'Sin clasificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Estado:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['estado'] ?? 'Sin estado'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Gravedad:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['gravedad'] ?? 'Sin evaluar'), 0, 1, 'L');
-            
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
             $pdf->Ln(5);
             
-            // Información laboral
-            $pdf->SetFont('Arial', 'B', 12);
-            $pdf->Cell(0, 8, utf8_decode('INFORMACIÓN LABORAL'), 0, 1, 'L');
             $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Tipo:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['tipo'] ?? ''), 0, 1, 'L');
             
-            $pdf->Cell(40, 6, utf8_decode('Vinculación:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['tipo_vinc_lab_'] ?? 'Sin especificar'), 0, 1, 'L');
+            $pdf->Cell(50, 6, utf8_decode('Fecha y Hora:'), 0, 0, 'L');
+            $fechaHora = isset($accidente['fecha_hora']) ? date('d/m/Y H:i', strtotime($accidente['fecha_hora'])) : '';
+            $pdf->Cell(140, 6, utf8_decode($fechaHora), 0, 1, 'L');
             
-            $pdf->Cell(40, 6, utf8_decode('Jornada:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['jornada_laboral'] ?? 'Sin especificar'), 0, 1, 'L');
+            $pdf->Cell(50, 6, utf8_decode('Lugar:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['lugar'] ?? ''), 0, 1, 'L');
             
-            $pdf->Cell(40, 6, utf8_decode('Turno/Momento:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['turno_mom_acc'] ?? 'Sin especificar'), 0, 1, 'L');
+            $pdf->Cell(50, 6, utf8_decode('Área:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['nombre_area'] ?? 'Sin área asignada'), 0, 1, 'L');
             
-            $pdf->Cell(40, 6, utf8_decode('Uso EPP:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['uso_epp'] ?? 'Sin especificar'), 0, 1, 'L');
+            $pdf->Cell(50, 6, utf8_decode('Empleado Involucrado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['nombre_empleado'] ?? 'Sin empleado asignado'), 0, 1, 'L');
             
+            $pdf->Cell(50, 6, utf8_decode('Clasificación:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['clasificacion'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Estado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['estado'] ?? ''), 0, 1, 'L');
             $pdf->Ln(5);
             
-            // Información médica
+            // Descripción
             $pdf->SetFont('Arial', 'B', 12);
-            $pdf->Cell(0, 8, utf8_decode('INFORMACIÓN MÉDICA'), 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            
-            $pdf->Cell(40, 6, utf8_decode('Tipo Lesión:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['tipo_lesion'] ?? 'Sin especificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Parte Afectada:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['parte_cuerpo_afect'] ?? 'Sin especificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Incapacidad:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['incapacidad_lab'] ?? 'Sin especificar'), 0, 1, 'L');
-            
-            $pdf->Cell(40, 6, utf8_decode('Persona Informó:'), 0, 0, 'L');
-            $pdf->Cell(0, 6, utf8_decode($accidente['persona_informo'] ?? 'Sin especificar'), 0, 1, 'L');
-            
+            $pdf->Cell(0, 8, utf8_decode('DESCRIPCIÓN DEL ACCIDENTE'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
             $pdf->Ln(5);
             
-            // Descripciones extensas
-            $pdf->SetFont('Arial', 'B', 12);
-            $pdf->Cell(0, 8, utf8_decode('DESCRIPCIÓN DETALLADA'), 0, 1, 'L');
             $pdf->SetFont('Arial', '', 10);
+            $descripcion = $accidente['descripcion'] ?? 'Sin descripción';
+            $pdf->MultiCell(0, 6, utf8_decode($descripcion), 1, 'L');
+            $pdf->Ln(5);
             
-            $pdf->Cell(0, 6, utf8_decode('Descripción del accidente:'), 0, 1, 'L');
-            $pdf->MultiCell(0, 5, utf8_decode($accidente['descripcion'] ?? 'Sin descripción disponible'));
+            // Detalles laborales
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('DETALLES LABORALES'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Tipo Vinculación:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['tipo_vinc_lab_'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Jornada Laboral:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['jornada_laboral'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Turno/Momento:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['turno_mom_acc'] ?? ''), 0, 1, 'L');
+            $pdf->Ln(5);
+            
+            // Lesiones y consecuencias
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('LESIONES Y CONSECUENCIAS'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Gravedad:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['gravedad'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Tipo de Lesión:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['tipo_lesion'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Parte del Cuerpo:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['parte_cuerpo_afect'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Incapacidad Laboral:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['incapacidad_lab'] ?? ''), 0, 1, 'L');
             $pdf->Ln(3);
             
-            $pdf->Cell(0, 6, utf8_decode('Consecuencias:'), 0, 1, 'L');
-            $pdf->MultiCell(0, 5, utf8_decode($accidente['consecuencias'] ?? 'Sin especificar'));
-            $pdf->Ln(3);
+            $pdf->Cell(50, 6, utf8_decode('Consecuencias:'), 0, 0, 'L');
+            $consecuencias = $accidente['consecuencias'] ?? 'Sin especificar';
+            if (strlen($consecuencias) > 40) {
+                $pdf->Ln(6);
+                $pdf->MultiCell(0, 6, utf8_decode($consecuencias), 1, 'L');
+            } else {
+                $pdf->Cell(140, 6, utf8_decode($consecuencias), 0, 1, 'L');
+            }
+            $pdf->Ln(5);
             
-            $pdf->Cell(0, 6, utf8_decode('Atención Médica Recibida:'), 0, 1, 'L');
-            $pdf->MultiCell(0, 5, utf8_decode($accidente['aten_med_recibida'] ?? 'Sin especificar'));
+            // Atención médica y EPP
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('ATENCIÓN Y PROTECCIÓN'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Atención Médica:'), 0, 0, 'L');
+            $atencion = $accidente['aten_med_recibida'] ?? 'No especificado';
+            if (strlen($atencion) > 40) {
+                $pdf->Ln(6);
+                $pdf->MultiCell(0, 6, utf8_decode($atencion), 1, 'L');
+            } else {
+                $pdf->Cell(140, 6, utf8_decode($atencion), 0, 1, 'L');
+            }
+            
+            $pdf->Cell(50, 6, utf8_decode('Uso de EPP:'), 0, 0, 'L');
+            $usoEpp = $accidente['uso_epp'] ?? 'No especificado';
+            if (strlen($usoEpp) > 40) {
+                $pdf->Ln(6);
+                $pdf->MultiCell(0, 6, utf8_decode($usoEpp), 1, 'L');
+            } else {
+                $pdf->Cell(140, 6, utf8_decode($usoEpp), 0, 1, 'L');
+            }
+            
+            $pdf->Cell(50, 6, utf8_decode('Persona que Informó:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($accidente['persona_informo'] ?? ''), 0, 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -849,7 +912,7 @@ class ReportesController extends Controller {
         }
         
         // Nombre del archivo
-        $filename = 'reporte_accidentes_' . date('Y-m-d_H-i-s') . '.pdf';
+        $filename = 'ficha_accidentes_' . date('Y-m-d_H-i-s') . '.pdf';
         $filepath = $dir . $filename;
         
         // Guardar PDF
@@ -860,20 +923,20 @@ class ReportesController extends Controller {
         exit;
     }
     
-    private function generateAccidentesExcel($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '') {
+    private function generateAccidentesExcel($accidentes, $filtroTipo = '', $fechaInicio = '', $fechaFin = '', $area = '', $filtroEmpleado = '') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de Accidentes');
         
         // Título principal
-        $sheet->setCellValue('A1', 'Reporte Completo de Accidentes');
-        $sheet->mergeCells('A1:Q1');
+        $sheet->setCellValue('A1', 'Reporte Detallado de Accidentes');
+        $sheet->mergeCells('A1:T1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         
         // Fecha de generación
         $sheet->setCellValue('A2', 'Generado el: ' . date('d/m/Y H:i'));
-        $sheet->mergeCells('A2:Q2');
+        $sheet->mergeCells('A2:T2');
         $sheet->getStyle('A2')->getFont()->setItalic(true);
         
         $currentRow = 3;
@@ -883,31 +946,33 @@ class ReportesController extends Controller {
         if ($filtroTipo) $filtros[] = 'Tipo: ' . $filtroTipo;
         if ($fechaInicio) $filtros[] = 'Desde: ' . $fechaInicio;
         if ($fechaFin) $filtros[] = 'Hasta: ' . $fechaFin;
+        if ($area) $filtros[] = 'Área: ' . $area;
+        if ($filtroEmpleado) $filtros[] = 'Empleado: ' . $filtroEmpleado;
         if (!empty($filtros)) {
             $sheet->setCellValue('A' . $currentRow, 'Filtros aplicados - ' . implode(', ', $filtros));
-            $sheet->mergeCells('A' . $currentRow . ':Q' . $currentRow);
+            $sheet->mergeCells('A' . $currentRow . ':T' . $currentRow);
             $sheet->getStyle('A' . $currentRow)->getFont()->setItalic(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('666666'));
             $currentRow++;
         }
         
         $currentRow++; // Espacio en blanco
         
-        // Encabezados - Todos los campos incluyendo área
+        // Encabezados - Todos los campos incluyendo empleado
         $headers = [
-            'ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área',
+            'ID', 'Tipo', 'Fecha y Hora', 'Descripción', 'Lugar', 'Área', 'Empleado',
             'Clasificación', 'Estado', 'Gravedad', 'Tipo Lesión', 'Parte Afectada',
             'Consecuencias', 'Vinculación Laboral', 'Jornada Laboral', 'Turno/Momento', 
             'Uso EPP', 'Incapacidad Laboral', 'Atención Médica', 'Persona Informó'
         ];
         $headerRow = $currentRow;
         
-        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'];
         foreach ($headers as $index => $header) {
             $sheet->setCellValue($columns[$index] . $headerRow, $header);
         }
         
         // Estilo de encabezados
-        $headerRange = 'A' . $headerRow . ':S' . $headerRow;
+        $headerRange = 'A' . $headerRow . ':T' . $headerRow;
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()
             ->setFillType(Fill::FILL_SOLID)
@@ -924,17 +989,20 @@ class ReportesController extends Controller {
             $sheet->setCellValue('D' . $dataRow, $accidente['descripcion'] ?? '');
             $sheet->setCellValue('E' . $dataRow, $accidente['lugar'] ?? '');
             $sheet->setCellValue('F' . $dataRow, $accidente['nombre_area'] ?? 'Sin área asignada');
-            $sheet->setCellValue('G' . $dataRow, $accidente['clasificacion'] ?? 'Sin clasificar');
-            $sheet->setCellValue('H' . $dataRow, $accidente['estado'] ?? 'Sin estado');
-            $sheet->setCellValue('I' . $dataRow, $accidente['gravedad'] ?? 'Sin evaluar');
-            $sheet->setCellValue('J' . $dataRow, $accidente['tipo_lesion'] ?? 'Sin especificar');
-            $sheet->setCellValue('K' . $dataRow, $accidente['parte_cuerpo_afect'] ?? 'Sin especificar');
-            $sheet->setCellValue('L' . $dataRow, $accidente['consecuencias'] ?? 'Sin especificar');
-            $sheet->setCellValue('M' . $dataRow, $accidente['tipo_vinc_lab_'] ?? 'Sin especificar');
-            $sheet->setCellValue('N' . $dataRow, $accidente['jornada_laboral'] ?? 'Sin especificar');
-            $sheet->setCellValue('O' . $dataRow, $accidente['turno_mom_acc'] ?? 'Sin especificar');
-            $sheet->setCellValue('P' . $dataRow, $accidente['uso_epp'] ?? 'Sin especificar');
-            $sheet->setCellValue('Q' . $dataRow, $accidente['incapacidad_lab'] ?? 'Sin especificar');
+            $sheet->setCellValue('G' . $dataRow, $accidente['nombre_empleado'] ?? 'Sin empleado asignado');
+            $sheet->setCellValue('H' . $dataRow, $accidente['clasificacion'] ?? 'Sin clasificar');
+            $sheet->setCellValue('I' . $dataRow, $accidente['estado'] ?? 'Sin estado');
+            $sheet->setCellValue('J' . $dataRow, $accidente['gravedad'] ?? 'Sin evaluar');
+            $sheet->setCellValue('K' . $dataRow, $accidente['tipo_lesion'] ?? 'Sin especificar');
+            $sheet->setCellValue('L' . $dataRow, $accidente['parte_cuerpo_afect'] ?? 'Sin especificar');
+            $sheet->setCellValue('M' . $dataRow, $accidente['consecuencias'] ?? 'Sin especificar');
+            $sheet->setCellValue('N' . $dataRow, $accidente['tipo_vinc_lab_'] ?? 'Sin especificar');
+            $sheet->setCellValue('O' . $dataRow, $accidente['jornada_laboral'] ?? 'Sin especificar');
+            $sheet->setCellValue('P' . $dataRow, $accidente['turno_mom_acc'] ?? 'Sin especificar');
+            $sheet->setCellValue('Q' . $dataRow, $accidente['uso_epp'] ?? 'Sin especificar');
+            $sheet->setCellValue('R' . $dataRow, $accidente['incapacidad_lab'] ?? 'Sin especificar');
+            $sheet->setCellValue('S' . $dataRow, $accidente['aten_med_recibida'] ?? 'Sin especificar');
+            $sheet->setCellValue('T' . $dataRow, $accidente['persona_informo'] ?? 'Sin especificar');
             $sheet->setCellValue('R' . $dataRow, $accidente['aten_med_recibida'] ?? 'Sin especificar');
             $sheet->setCellValue('S' . $dataRow, $accidente['persona_informo'] ?? 'Sin especificar');
             

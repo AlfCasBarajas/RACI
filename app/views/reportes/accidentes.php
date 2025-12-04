@@ -59,6 +59,22 @@ include __DIR__ . '/../header.php';
                                 </select>
                             </div>
                             <div class="col-auto">
+                                <label for="empleado" class="form-label">Empleado</label>
+                            </div>
+                            <div class="col-auto">
+                                <select id="empleado" name="empleado" class="form-select">
+                                    <option value="">Todos los empleados</option>
+                                    <?php if (isset($empleados) && !empty($empleados)): ?>
+                                        <?php foreach ($empleados as $empleadoOption): ?>
+                                            <option value="<?= htmlspecialchars($empleadoOption['id_empleado']) ?>" 
+                                                    <?= (isset($empleado) && $empleado == $empleadoOption['id_empleado']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($empleadoOption['nombres'] . ' ' . $empleadoOption['apellidos']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <label for="fecha_inicio" class="form-label">Fecha inicio</label>
                             </div>
                             <div class="col-auto">
@@ -126,6 +142,10 @@ include __DIR__ . '/../header.php';
                                                         <div class="col-6">
                                                             <strong>Área:</strong><br>
                                                             <small><?= htmlspecialchars($accidente['nombre_area'] ?? 'Sin área asignada') ?></small>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <strong>Empleado:</strong><br>
+                                                            <small><?= htmlspecialchars(($accidente['nombre_empleado'] ?? 'Sin empleado asignado')) ?></small>
                                                         </div>
                                                         <div class="col-6">
                                                             <strong>Clasificación:</strong><br>
@@ -211,11 +231,13 @@ document.getElementById('descargar-pdf').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
     const area = document.getElementById('area').value;
+    const empleado = document.getElementById('empleado').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=accidentes&format=pdf';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
     if (area) url += '&area=' + encodeURIComponent(area);
+    if (empleado) url += '&empleado=' + encodeURIComponent(empleado);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;
@@ -225,15 +247,53 @@ document.getElementById('descargar-excel').onclick = function(e) {
     e.preventDefault();
     const tipo = document.getElementById('tipo').value;
     const area = document.getElementById('area').value;
+    const empleado = document.getElementById('empleado').value;
     const fecha_inicio = document.getElementById('fecha_inicio').value;
     const fecha_fin = document.getElementById('fecha_fin').value;
     let url = '?controller=reportes&action=accidentes&format=excel';
     if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
     if (area) url += '&area=' + encodeURIComponent(area);
+    if (empleado) url += '&empleado=' + encodeURIComponent(empleado);
     if (fecha_inicio) url += '&fecha_inicio=' + encodeURIComponent(fecha_inicio);
     if (fecha_fin) url += '&fecha_fin=' + encodeURIComponent(fecha_fin);
     window.location.href = url;
 };
+
+// Filtrado dinámico de empleados por área
+document.getElementById('area').addEventListener('change', function() {
+    const areaId = this.value;
+    const empleadoSelect = document.getElementById('empleado');
+    
+    // Guardar todos los empleados originalmente
+    if (!window.todosEmpleados) {
+        window.todosEmpleados = Array.from(empleadoSelect.options).slice(1);
+    }
+    
+    // Limpiar opciones excepto la primera
+    empleadoSelect.innerHTML = '<option value="">Todos los empleados</option>';
+    
+    if (areaId) {
+        // Obtener empleados del área seleccionada
+        fetch(`?controller=empleados&action=getByArea&area_id=${areaId}`)
+            .then(response => response.json())
+            .then(empleados => {
+                empleados.forEach(empleado => {
+                    const option = document.createElement('option');
+                    option.value = empleado.id_empleado;
+                    option.textContent = `${empleado.nombres} ${empleado.apellidos}`;
+                    empleadoSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar empleados:', error);
+            });
+    } else {
+        // Restaurar todos los empleados
+        window.todosEmpleados.forEach(option => {
+            empleadoSelect.appendChild(option.cloneNode(true));
+        });
+    }
+});
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>
