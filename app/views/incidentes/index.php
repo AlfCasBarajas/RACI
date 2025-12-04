@@ -116,9 +116,13 @@
                 <tr>
                   <th>ID</th>
                   <th>Tipo</th>
-                  <th>Descripción</th>
                   <th>Fecha</th>
                   <th>Lugar</th>
+                  <th>Vinculación</th>
+                  <th>Jornada</th>
+                  <th>Turno/Momento</th>
+                  <th>Descripción</th>
+                  <th>Uso EPP</th>
                   <th>Área</th>
                   <th>Acciones</th>
                 </tr>
@@ -128,9 +132,13 @@
                   <tr>
                     <td><?= htmlspecialchars($inc['id_incidente']) ?></td>
                     <td><?= htmlspecialchars($inc['tipo']) ?></td>
-                    <td><?= htmlspecialchars($inc['descripcion']) ?></td>
                     <td><?= htmlspecialchars($inc['fecha_hora']) ?></td>
                     <td><?= htmlspecialchars($inc['lugar']) ?></td>
+                    <td><?= htmlspecialchars($inc['tipo_vinc_lab'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($inc['jornada_laboral'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($inc['turno_mom_inc'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars(substr($inc['descripcion'], 0, 50)) ?><?= strlen($inc['descripcion']) > 50 ? '...' : '' ?></td>
+                    <td><?= htmlspecialchars(substr($inc['uso_epp'] ?? '', 0, 30)) ?><?= strlen($inc['uso_epp'] ?? '') > 30 ? '...' : '' ?></td>
                     <td><?= htmlspecialchars($inc['nombre_area']) ?></td>
                     <td>
                       <?php if (!$isTrabajador): ?>

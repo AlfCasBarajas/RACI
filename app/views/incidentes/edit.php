@@ -75,6 +75,51 @@
                             </div>
                             
                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipo_vinc_lab" class="form-label fw-semibold">Tipo de Vinculación Laboral</label>
+                                    <select class="form-select" id="tipo_vinc_lab" name="tipo_vinc_lab">
+                                        <option value="">Seleccionar tipo de vinculación...</option>
+                                        <option value="Directo" <?= (isset($incidente['tipo_vinc_lab']) && $incidente['tipo_vinc_lab'] == 'Directo') ? 'selected' : '' ?>>Directo</option>
+                                        <option value="Contratista" <?= (isset($incidente['tipo_vinc_lab']) && $incidente['tipo_vinc_lab'] == 'Contratista') ? 'selected' : '' ?>>Contratista</option>
+                                        <option value="Temporal" <?= (isset($incidente['tipo_vinc_lab']) && $incidente['tipo_vinc_lab'] == 'Temporal') ? 'selected' : '' ?>>Temporal</option>
+                                        <option value="Independiente" <?= (isset($incidente['tipo_vinc_lab']) && $incidente['tipo_vinc_lab'] == 'Independiente') ? 'selected' : '' ?>>Independiente</option>
+                                        <option value="Visitante" <?= (isset($incidente['tipo_vinc_lab']) && $incidente['tipo_vinc_lab'] == 'Visitante') ? 'selected' : '' ?>>Visitante</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="jornada_laboral" class="form-label fw-semibold">Jornada Laboral</label>
+                                    <select class="form-select" id="jornada_laboral" name="jornada_laboral">
+                                        <option value="">Seleccionar jornada...</option>
+                                        <option value="Diurna" <?= (isset($incidente['jornada_laboral']) && $incidente['jornada_laboral'] == 'Diurna') ? 'selected' : '' ?>>Diurna</option>
+                                        <option value="Nocturna" <?= (isset($incidente['jornada_laboral']) && $incidente['jornada_laboral'] == 'Nocturna') ? 'selected' : '' ?>>Nocturna</option>
+                                        <option value="Mixta" <?= (isset($incidente['jornada_laboral']) && $incidente['jornada_laboral'] == 'Mixta') ? 'selected' : '' ?>>Mixta</option>
+                                        <option value="Por turnos" <?= (isset($incidente['jornada_laboral']) && $incidente['jornada_laboral'] == 'Por turnos') ? 'selected' : '' ?>>Por turnos</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="turno_mom_inc" class="form-label fw-semibold">Turno/Momento del Incidente</label>
+                                    <select class="form-select" id="turno_mom_inc" name="turno_mom_inc">
+                                        <option value="">Seleccionar turno/momento...</option>
+                                        <option value="Mañana" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Mañana') ? 'selected' : '' ?>>Mañana</option>
+                                        <option value="Tarde" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Tarde') ? 'selected' : '' ?>>Tarde</option>
+                                        <option value="Noche" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Noche') ? 'selected' : '' ?>>Noche</option>
+                                        <option value="Madrugada" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Madrugada') ? 'selected' : '' ?>>Madrugada</option>
+                                        <option value="Inicio de turno" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Inicio de turno') ? 'selected' : '' ?>>Inicio de turno</option>
+                                        <option value="Mitad de turno" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Mitad de turno') ? 'selected' : '' ?>>Mitad de turno</option>
+                                        <option value="Final de turno" <?= (isset($incidente['turno_mom_inc']) && $incidente['turno_mom_inc'] == 'Final de turno') ? 'selected' : '' ?>>Final de turno</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="uso_epp" class="form-label fw-semibold">Uso de EPP</label>
+                                    <textarea class="form-control" id="uso_epp" name="uso_epp" rows="3" 
+                                              placeholder="Describir el uso de equipos de protección personal..."><?= htmlspecialchars($incidente['uso_epp'] ?? '') ?></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="descripcion" class="form-label fw-semibold">Descripción</label>
                                     <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 

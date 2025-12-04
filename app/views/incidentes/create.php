@@ -69,6 +69,51 @@
                             </div>
                             
                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipo_vinc_lab" class="form-label fw-semibold">Tipo de Vinculación Laboral</label>
+                                    <select class="form-select" id="tipo_vinc_lab" name="tipo_vinc_lab">
+                                        <option value="">Seleccionar tipo de vinculación...</option>
+                                        <option value="Directo">Directo</option>
+                                        <option value="Contratista">Contratista</option>
+                                        <option value="Temporal">Temporal</option>
+                                        <option value="Independiente">Independiente</option>
+                                        <option value="Visitante">Visitante</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="jornada_laboral" class="form-label fw-semibold">Jornada Laboral</label>
+                                    <select class="form-select" id="jornada_laboral" name="jornada_laboral">
+                                        <option value="">Seleccionar jornada...</option>
+                                        <option value="Diurna">Diurna</option>
+                                        <option value="Nocturna">Nocturna</option>
+                                        <option value="Mixta">Mixta</option>
+                                        <option value="Por turnos">Por turnos</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="turno_mom_inc" class="form-label fw-semibold">Turno/Momento del Incidente</label>
+                                    <select class="form-select" id="turno_mom_inc" name="turno_mom_inc">
+                                        <option value="">Seleccionar turno/momento...</option>
+                                        <option value="Mañana">Mañana</option>
+                                        <option value="Tarde">Tarde</option>
+                                        <option value="Noche">Noche</option>
+                                        <option value="Madrugada">Madrugada</option>
+                                        <option value="Inicio de turno">Inicio de turno</option>
+                                        <option value="Mitad de turno">Mitad de turno</option>
+                                        <option value="Final de turno">Final de turno</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="uso_epp" class="form-label fw-semibold">Uso de EPP</label>
+                                    <textarea class="form-control" id="uso_epp" name="uso_epp" rows="3" 
+                                              placeholder="Describir el uso de equipos de protección personal..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="descripcion" class="form-label fw-semibold">Descripción</label>
                                     <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 

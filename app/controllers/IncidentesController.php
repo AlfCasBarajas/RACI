@@ -84,6 +84,10 @@ class IncidentesController extends Controller {
             'descripcion' => $_POST['descripcion'],
             'fecha' => $_POST['fecha'],
             'lugar' => $_POST['lugar'],
+            'tipo_vinc_lab' => $_POST['tipo_vinc_lab'] ?? null,
+            'jornada_laboral' => $_POST['jornada_laboral'] ?? null,
+            'turno_mom_inc' => $_POST['turno_mom_inc'] ?? null,
+            'uso_epp' => $_POST['uso_epp'] ?? null,
             'area_id' => $_POST['area_id']
         ];
         
@@ -133,6 +137,10 @@ class IncidentesController extends Controller {
             'descripcion' => $_POST['descripcion'],
             'fecha' => $_POST['fecha'],
             'lugar' => $_POST['lugar'],
+            'tipo_vinc_lab' => $_POST['tipo_vinc_lab'] ?? null,
+            'jornada_laboral' => $_POST['jornada_laboral'] ?? null,
+            'turno_mom_inc' => $_POST['turno_mom_inc'] ?? null,
+            'uso_epp' => $_POST['uso_epp'] ?? null,
             'area_id' => $_POST['area_id']
         ];
         

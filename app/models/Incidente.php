@@ -109,23 +109,31 @@ class Incidente {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO incidente (tipo, descripcion, fecha_hora, lugar, area_id_area) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO incidente (tipo, descripcion, fecha_hora, lugar, tipo_vinc_lab, jornada_laboral, turno_mom_inc, uso_epp, area_id_area) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
         return $stmt->execute([
             $data['tipo'],
             $data['descripcion'],
             $data['fecha'],
             $data['lugar'],
+            $data['tipo_vinc_lab'],
+            $data['jornada_laboral'],
+            $data['turno_mom_inc'],
+            $data['uso_epp'],
             $data['area_id']
         ]);
     }
     public static function update($id, $data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE incidente SET tipo=?, descripcion=?, fecha_hora=?, lugar=?, area_id_area=? WHERE id_incidente=?');
+        $stmt = $db->prepare('UPDATE incidente SET tipo=?, descripcion=?, fecha_hora=?, lugar=?, tipo_vinc_lab=?, jornada_laboral=?, turno_mom_inc=?, uso_epp=?, area_id_area=? WHERE id_incidente=?');
         return $stmt->execute([
             $data['tipo'],
             $data['descripcion'],
             $data['fecha'],
             $data['lugar'],
+            $data['tipo_vinc_lab'],
+            $data['jornada_laboral'],
+            $data['turno_mom_inc'],
+            $data['uso_epp'],
             $data['area_id'],
             $id
         ]);
