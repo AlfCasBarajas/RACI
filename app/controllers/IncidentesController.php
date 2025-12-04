@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Incidente.php';
 require_once __DIR__ . '/../models/Area.php';
+require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../core/Database.php';
 
@@ -38,11 +39,15 @@ class IncidentesController extends Controller {
         $fecha_fin = isset($_GET['filtro_fecha_fin']) ? $_GET['filtro_fecha_fin'] : '';
         $lugar = isset($_GET['filtro_lugar']) ? trim($_GET['filtro_lugar']) : '';
         $area = isset($_GET['filtro_area']) ? $_GET['filtro_area'] : '';
+        $empleado = isset($_GET['filtro_empleado']) ? $_GET['filtro_empleado'] : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $orden);
+        $incidentes = Incidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $empleado, $orden);
         
         // Obtener todas las áreas para el filtro
         $areas = Area::all();
+        
+        // Obtener todos los empleados para mostrar nombres
+        $empleados = Empleado::all();
         
         // Obtener el rol del usuario actual
         $userRole = $_SESSION['user']['rol'];
@@ -56,8 +61,10 @@ class IncidentesController extends Controller {
             'filtro_fecha_fin' => $fecha_fin,
             'filtro_lugar' => $lugar,
             'filtro_area' => $area,
+            'filtro_empleado' => $empleado,
             'filtro_orden' => $orden,
             'areas' => $areas,
+            'empleados' => $empleados,
             'isCoordinador' => $isCoordinador,
             'isSupervisor' => $isSupervisor,
             'isTrabajador' => $isTrabajador
@@ -67,8 +74,10 @@ class IncidentesController extends Controller {
         $this->onlyLogged();
         $this->checkNotTrabajador();
         $areas = Area::all();
+        $empleados = Empleado::all();
         $this->view('incidentes/create', [
-            'areas' => $areas
+            'areas' => $areas,
+            'empleados' => $empleados
         ]);
     }
     public function store() {
@@ -90,7 +99,8 @@ class IncidentesController extends Controller {
             'jornada_laboral' => $_POST['jornada_laboral'] ?? null,
             'turno_mom_inc' => $_POST['turno_mom_inc'] ?? null,
             'uso_epp' => $_POST['uso_epp'] ?? null,
-            'area_id' => $_POST['area_id']
+            'area_id' => $_POST['area_id'],
+            'empleado_id' => $_POST['empleado_id'] ?? null
         ];
         
         try {
@@ -116,10 +126,12 @@ class IncidentesController extends Controller {
         $id = $_GET['id'];
         $incidente = Incidente::find($id);
         $areas = Area::all();
+        $empleados = Empleado::all();
         
         $this->view('incidentes/edit', [
             'incidente' => $incidente,
             'areas' => $areas,
+            'empleados' => $empleados,
             'area_actual' => $incidente['area_id_area'] ?? null
         ]);
     }
@@ -143,7 +155,8 @@ class IncidentesController extends Controller {
             'jornada_laboral' => $_POST['jornada_laboral'] ?? null,
             'turno_mom_inc' => $_POST['turno_mom_inc'] ?? null,
             'uso_epp' => $_POST['uso_epp'] ?? null,
-            'area_id' => $_POST['area_id']
+            'area_id' => $_POST['area_id'],
+            'empleado_id' => $_POST['empleado_id'] ?? null
         ];
         
         try {

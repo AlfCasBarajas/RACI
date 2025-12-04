@@ -94,6 +94,16 @@
                   <?php endforeach; ?>
                 <?php endif; ?>
               </select>
+              <select class="form-select" name="filtro_empleado" style="max-width: 180px;">
+                <option value="">Todos los empleados</option>
+                <?php if (isset($empleados)): ?>
+                  <?php foreach ($empleados as $empleado): ?>
+                    <option value="<?= $empleado['id_empleado'] ?>" <?= (isset($filtro_empleado) && $filtro_empleado == $empleado['id_empleado']) ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($empleado['nombres'] . ' ' . $empleado['apellidos']) ?>
+                    </option>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </select>
               <select class="form-select" name="filtro_orden" style="max-width: 160px;">
                 <option value="id_asc" <?= (isset($filtro_orden) && $filtro_orden == 'id_asc') ? 'selected' : '' ?>>ID (Asc)</option>
                 <option value="id_desc" <?= (isset($filtro_orden) && $filtro_orden == 'id_desc') ? 'selected' : '' ?>>ID (Desc)</option>
@@ -125,6 +135,7 @@
                   <th>Descripción</th>
                   <th>Uso EPP</th>
                   <th>Área</th>
+                  <th>Empleado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -141,6 +152,7 @@
                     <td><?= htmlspecialchars(substr($inc['descripcion'], 0, 50)) ?><?= strlen($inc['descripcion']) > 50 ? '...' : '' ?></td>
                     <td><?= htmlspecialchars(substr($inc['uso_epp'] ?? '', 0, 30)) ?><?= strlen($inc['uso_epp'] ?? '') > 30 ? '...' : '' ?></td>
                     <td><?= htmlspecialchars($inc['nombre_area']) ?></td>
+                    <td><?= htmlspecialchars($inc['nombre_empleado']) ?></td>
                     <td>
                       <?php if (!$isTrabajador): ?>
                         <a href="?controller=incidentes&action=edit&id=<?= $inc['id_incidente'] ?>" class="btn btn-incidentes btn-sm me-2" title="Editar"><i class="bi bi-pencil me-1"></i>Editar</a>
@@ -160,5 +172,44 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filtroArea = document.querySelector('select[name="filtro_area"]');
+    const filtroEmpleado = document.querySelector('select[name="filtro_empleado"]');
+    const todosEmpleados = Array.from(filtroEmpleado.options).slice(1); // Guardar todos los empleados (sin la primera opción)
+    
+    if (filtroArea && filtroEmpleado) {
+        filtroArea.addEventListener('change', function() {
+            const areaId = this.value;
+            
+            // Limpiar opciones del empleado excepto la primera
+            filtroEmpleado.innerHTML = '<option value="">Todos los empleados</option>';
+            
+            if (areaId) {
+                // Obtener empleados del área seleccionada
+                fetch(`?controller=empleados&action=getByArea&area_id=${areaId}`)
+                    .then(response => response.json())
+                    .then(empleados => {
+                        empleados.forEach(empleado => {
+                            const option = document.createElement('option');
+                            option.value = empleado.id_empleado;
+                            option.textContent = `${empleado.nombres} ${empleado.apellidos}`;
+                            filtroEmpleado.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar empleados:', error);
+                    });
+            } else {
+                // Restaurar todos los empleados si no hay área seleccionada
+                todosEmpleados.forEach(option => {
+                    filtroEmpleado.appendChild(option.cloneNode(true));
+                });
+            }
+        });
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

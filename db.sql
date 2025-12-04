@@ -103,7 +103,9 @@ CREATE TABLE incidente (
     turno_mom_inc VARCHAR(50),
     uso_epp TEXT,
     area_id_area INT,
-    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
+    empleado_id_empleado INT,
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area),
+    FOREIGN KEY (empleado_id_empleado) REFERENCES empleado(id_empleado)
 );
 
 -- Tabla accidente
@@ -127,7 +129,9 @@ CREATE TABLE accidente (
     aten_med_recibida TEXT,
     persona_informo VARCHAR(100),
     area_id_area INT,
-    FOREIGN KEY (area_id_area) REFERENCES area(id_area)
+    empleado_id_empleado INT,
+    FOREIGN KEY (area_id_area) REFERENCES area(id_area),
+    FOREIGN KEY (empleado_id_empleado) REFERENCES empleado(id_empleado)
 );
 
 

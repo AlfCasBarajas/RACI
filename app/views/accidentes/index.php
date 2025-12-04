@@ -104,6 +104,18 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <select class="form-select" name="filtro_empleado">
+                                    <option value="">Todos los empleados</option>
+                                    <?php if (isset($empleados)): ?>
+                                        <?php foreach ($empleados as $empleado): ?>
+                                            <option value="<?= $empleado['id_empleado'] ?>" <?= (isset($filtro_empleado) && $filtro_empleado == $empleado['id_empleado']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($empleado['nombres'] . ' ' . $empleado['apellidos']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <select class="form-select" name="filtro_gravedad">
                                     <option value="">Todas las gravedades</option>
                                     <?php if (isset($gravedades)): ?>
@@ -149,6 +161,7 @@
                                         <div class="col-md-6"><strong>ID:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['id_accidente']) ?></div>
                                         <div class="col-md-6"><strong>Tipo:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['tipo']) ?></div>
                                         <div class="col-md-6"><strong>Área:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['nombre_area']) ?></div>
+                                        <div class="col-md-6"><strong>Empleado:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['nombre_empleado']) ?></div>
                                         <div class="col-md-6"><strong>Descripción:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['descripcion']) ?></div>
                                         <div class="col-md-6"><strong>Clasificación:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['clasificacion']) ?></div>
                                         <div class="col-md-6"><strong>Estado:</strong></div><div class="col-md-6"><?= htmlspecialchars($acc['estado']) ?></div>
@@ -185,5 +198,44 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filtroArea = document.querySelector('select[name="filtro_area"]');
+    const filtroEmpleado = document.querySelector('select[name="filtro_empleado"]');
+    const todosEmpleados = Array.from(filtroEmpleado.options).slice(1); // Guardar todos los empleados (sin la primera opción)
+    
+    if (filtroArea && filtroEmpleado) {
+        filtroArea.addEventListener('change', function() {
+            const areaId = this.value;
+            
+            // Limpiar opciones del empleado excepto la primera
+            filtroEmpleado.innerHTML = '<option value="">Todos los empleados</option>';
+            
+            if (areaId) {
+                // Obtener empleados del área seleccionada
+                fetch(`?controller=empleados&action=getByArea&area_id=${areaId}`)
+                    .then(response => response.json())
+                    .then(empleados => {
+                        empleados.forEach(empleado => {
+                            const option = document.createElement('option');
+                            option.value = empleado.id_empleado;
+                            option.textContent = `${empleado.nombres} ${empleado.apellidos}`;
+                            filtroEmpleado.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar empleados:', error);
+                    });
+            } else {
+                // Restaurar todos los empleados si no hay área seleccionada
+                todosEmpleados.forEach(option => {
+                    filtroEmpleado.appendChild(option.cloneNode(true));
+                });
+            }
+        });
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

@@ -80,6 +80,21 @@
                             
                             <div class="row">
                                 <div class="col-md-12 mb-3">
+                                    <label for="empleado_id" class="form-label fw-semibold">Empleado *</label>
+                                    <select class="form-select" id="empleado_id" name="empleado_id" required>
+                                        <option value="">Seleccionar empleado...</option>
+                                        <?php if (isset($empleados)): ?>
+                                            <?php foreach ($empleados as $empleado): ?>
+                                                <option value="<?= $empleado['id_empleado'] ?>"><?= htmlspecialchars($empleado['nombres'] . ' ' . $empleado['apellidos']) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el empleado involucrado en el accidente</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
                                     <label for="descripcion" class="form-label fw-semibold">Descripción</label>
                                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
                                               placeholder="Descripción detallada del accidente..."></textarea>
@@ -169,7 +184,42 @@
     </div>
 </div>
 
-<?php include __DIR__ . '/../footer.php'; ?>
-  </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const areaSelect = document.getElementById('area_id');
+    const empleadoSelect = document.getElementById('empleado_id');
+    
+    if (areaSelect && empleadoSelect) {
+        areaSelect.addEventListener('change', function() {
+            const areaId = this.value;
+            
+            // Limpiar opciones del empleado
+            empleadoSelect.innerHTML = '<option value="">Seleccionar empleado...</option>';
+            empleadoSelect.disabled = !areaId;
+            
+            if (areaId) {
+                fetch(`?controller=empleados&action=getByArea&area_id=${areaId}`)
+                    .then(response => response.json())
+                    .then(empleados => {
+                        empleados.forEach(empleado => {
+                            const option = document.createElement('option');
+                            option.value = empleado.id_empleado;
+                            option.textContent = `${empleado.nombres} ${empleado.apellidos}`;
+                            empleadoSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar empleados:', error);
+                    });
+            }
+        });
+        
+        // Deshabilitar empleado al cargar si no hay área seleccionada
+        if (!areaSelect.value) {
+            empleadoSelect.disabled = true;
+        }
+    }
+});
+</script>
+
 <?php include __DIR__ . '/../footer.php'; ?>

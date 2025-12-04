@@ -46,6 +46,13 @@ class Empleado {
         return self::getFiltered();
     }
 
+    public static function getByArea($area_id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare('SELECT id_empleado, nombres, apellidos FROM empleado WHERE area_id_area = ? ORDER BY nombres ASC');
+        $stmt->execute([$area_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function find($id) {
         $db = Database::getConnection();
         $stmt = $db->prepare('SELECT * FROM empleado WHERE id_empleado = ?');
@@ -127,7 +134,17 @@ class Empleado {
         $stmt->execute([$id]);
         $inspecciones = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $totalDependencias = $categorias['total'] + $inspecciones['total'];
+        // Verificar dependencias en tabla incidente
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM incidente WHERE empleado_id_empleado = ?');
+        $stmt->execute([$id]);
+        $incidentes = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Verificar dependencias en tabla accidente
+        $stmt = $db->prepare('SELECT COUNT(*) as total FROM accidente WHERE empleado_id_empleado = ?');
+        $stmt->execute([$id]);
+        $accidentes = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $totalDependencias = $categorias['total'] + $inspecciones['total'] + $incidentes['total'] + $accidentes['total'];
         
         if ($totalDependencias > 0) {
             $mensaje = "No se puede eliminar este empleado porque está vinculado a ";
@@ -138,7 +155,13 @@ class Empleado {
             if ($inspecciones['total'] > 0) {
                 $dependencias[] = "{$inspecciones['total']} inspección(es) locativa(s)";
             }
-            $mensaje .= implode(' y ', $dependencias) . ". Reasigne o elimine primero estos registros.";
+            if ($incidentes['total'] > 0) {
+                $dependencias[] = "{$incidentes['total']} incidente(s)";
+            }
+            if ($accidentes['total'] > 0) {
+                $dependencias[] = "{$accidentes['total']} accidente(s)";
+            }
+            $mensaje .= implode(', ', $dependencias) . ". Reasigne o elimine primero estos registros.";
             throw new Exception($mensaje);
         }
         

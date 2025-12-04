@@ -155,4 +155,19 @@ class EmpleadosController extends Controller {
         header('Location: ?controller=empleados&action=index');
         exit;
     }
+
+    public function getByArea() {
+        $this->onlyLogged();
+        
+        if (!isset($_GET['area_id']) || empty($_GET['area_id'])) {
+            echo json_encode([]);
+            return;
+        }
+        
+        $area_id = $_GET['area_id'];
+        $empleados = Empleado::getByArea($area_id);
+        
+        header('Content-Type: application/json');
+        echo json_encode($empleados);
+    }
 }

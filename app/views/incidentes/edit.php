@@ -72,6 +72,21 @@
                                     </select>
                                     <div class="form-text">Seleccione el área donde ocurrió el incidente</div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="empleado_id" class="form-label fw-semibold">Empleado *</label>
+                                    <select class="form-select" id="empleado_id" name="empleado_id" required>
+                                        <option value="">Seleccionar empleado...</option>
+                                        <?php if (isset($empleados)): ?>
+                                            <?php foreach ($empleados as $empleado): ?>
+                                                <option value="<?= $empleado['id_empleado'] ?>" 
+                                                        <?= (isset($incidente['empleado_id_empleado']) && $incidente['empleado_id_empleado'] == $empleado['id_empleado']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($empleado['nombres'] . ' ' . $empleado['apellidos']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">Seleccione el empleado involucrado en el incidente</div>
+                                </div>
                             </div>
                             
                             <div class="row">
@@ -144,5 +159,54 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const areaSelect = document.getElementById('area_id');
+    const empleadoSelect = document.getElementById('empleado_id');
+    const currentEmpleadoId = empleadoSelect.value; // Guardar el empleado actual
+    
+    if (areaSelect && empleadoSelect) {
+        function loadEmpleadosByArea(areaId, selectedEmpleadoId = null) {
+            // Limpiar opciones del empleado
+            empleadoSelect.innerHTML = '<option value="">Seleccionar empleado...</option>';
+            empleadoSelect.disabled = !areaId;
+            
+            if (areaId) {
+                fetch(`?controller=empleados&action=getByArea&area_id=${areaId}`)
+                    .then(response => response.json())
+                    .then(empleados => {
+                        empleados.forEach(empleado => {
+                            const option = document.createElement('option');
+                            option.value = empleado.id_empleado;
+                            option.textContent = `${empleado.nombres} ${empleado.apellidos}`;
+                            
+                            // Mantener la selección actual si existe
+                            if (selectedEmpleadoId && empleado.id_empleado == selectedEmpleadoId) {
+                                option.selected = true;
+                            }
+                            
+                            empleadoSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar empleados:', error);
+                    });
+            }
+        }
+        
+        areaSelect.addEventListener('change', function() {
+            loadEmpleadosByArea(this.value);
+        });
+        
+        // Cargar empleados al inicializar si hay un área seleccionada
+        if (areaSelect.value) {
+            loadEmpleadosByArea(areaSelect.value, currentEmpleadoId);
+        } else {
+            empleadoSelect.disabled = true;
+        }
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

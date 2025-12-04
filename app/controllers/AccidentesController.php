@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Accidente.php';
 require_once __DIR__ . '/../models/Area.php';
+require_once __DIR__ . '/../models/Empleado.php';
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../core/Database.php';
 
@@ -39,15 +40,19 @@ class AccidentesController extends Controller {
         $fecha_fin = isset($_GET['filtro_fecha_fin']) ? $_GET['filtro_fecha_fin'] : '';
         $lugar = isset($_GET['filtro_lugar']) ? trim($_GET['filtro_lugar']) : '';
         $area = isset($_GET['filtro_area']) ? $_GET['filtro_area'] : '';
+        $empleado = isset($_GET['filtro_empleado']) ? $_GET['filtro_empleado'] : '';
         $gravedad = isset($_GET['filtro_gravedad']) ? $_GET['filtro_gravedad'] : '';
         $orden = isset($_GET['filtro_orden']) ? $_GET['filtro_orden'] : 'id_asc';
-        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $gravedad, $orden, $id);
+        $accidentes = Accidente::getFilteredWithArea($tipo, $fecha_inicio, $fecha_fin, $lugar, $area, $empleado, $gravedad, $orden, $id);
         
         // Obtener todas las áreas para el filtro
         $areas = Area::all();
         
         // Obtener todas las gravedades registradas para el filtro
         $gravedades = Accidente::getGravedades();
+        
+        // Obtener todos los empleados para mostrar nombres
+        $empleados = Empleado::all();
         
         // Obtener el rol del usuario actual
         $userRole = $_SESSION['user']['rol'];
@@ -62,10 +67,12 @@ class AccidentesController extends Controller {
             'filtro_fecha_fin' => $fecha_fin,
             'filtro_lugar' => $lugar,
             'filtro_area' => $area,
+            'filtro_empleado' => $empleado,
             'filtro_gravedad' => $gravedad,
             'filtro_orden' => $orden,
             'areas' => $areas,
             'gravedades' => $gravedades,
+            'empleados' => $empleados,
             'isCoordinador' => $isCoordinador,
             'isSupervisor' => $isSupervisor,
             'isTrabajador' => $isTrabajador
@@ -75,8 +82,10 @@ class AccidentesController extends Controller {
         $this->onlyLogged();
         $this->checkNotTrabajador();
         $areas = Area::all();
+        $empleados = Empleado::all();
         $this->view('accidentes/create', [
-            'areas' => $areas
+            'areas' => $areas,
+            'empleados' => $empleados
         ]);
     }
     public function store() {
@@ -107,7 +116,8 @@ class AccidentesController extends Controller {
             'incapacidad_lab' => $_POST['incapacidad_lab'],
             'aten_med_recibida' => $_POST['aten_med_recibida'],
             'persona_informo' => $_POST['persona_informo'],
-            'area_id' => $_POST['area_id']
+            'area_id' => $_POST['area_id'],
+            'empleado_id' => $_POST['empleado_id'] ?? null
         ];
         
         try {
@@ -133,10 +143,12 @@ class AccidentesController extends Controller {
         $id = $_GET['id'];
         $accidente = Accidente::find($id);
         $areas = Area::all();
+        $empleados = Empleado::all();
         
         $this->view('accidentes/edit', [
             'accidente' => $accidente,
             'areas' => $areas,
+            'empleados' => $empleados,
             'area_actual' => $accidente['area_id_area'] ?? null
         ]);
     }
@@ -169,7 +181,8 @@ class AccidentesController extends Controller {
             'incapacidad_lab' => $_POST['incapacidad_lab'],
             'aten_med_recibida' => $_POST['aten_med_recibida'],
             'persona_informo' => $_POST['persona_informo'],
-            'area_id' => $_POST['area_id']
+            'area_id' => $_POST['area_id'],
+            'empleado_id' => $_POST['empleado_id'] ?? null
         ];
         
         try {

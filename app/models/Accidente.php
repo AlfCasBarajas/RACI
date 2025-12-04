@@ -8,12 +8,14 @@ class Accidente {
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
     
-    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $lugar = '', $area = '', $gravedad = '', $orden = 'id_asc', $id = '') {
+    public static function getFilteredWithArea($tipo = '', $fecha_inicio = '', $fecha_fin = '', $lugar = '', $area = '', $empleado = '', $gravedad = '', $orden = 'id_asc', $id = '') {
         $db = Database::getConnection();
         $sql = 'SELECT a.*, 
-                       COALESCE(ar.nombre, "Sin área asignada") as nombre_area
+                       COALESCE(ar.nombre, "Sin área asignada") as nombre_area,
+                       COALESCE(CONCAT(e.nombres, " ", e.apellidos), "Sin empleado asignado") as nombre_empleado
                 FROM accidente a
-                LEFT JOIN area ar ON a.area_id_area = ar.id_area';
+                LEFT JOIN area ar ON a.area_id_area = ar.id_area
+                LEFT JOIN empleado e ON a.empleado_id_empleado = e.id_empleado';
         $where = [];
         $params = [];
         if ($id !== '' && is_numeric($id)) {
@@ -42,6 +44,10 @@ class Accidente {
         if ($area !== '') {
             $where[] = 'a.area_id_area = ?';
             $params[] = $area;
+        }
+        if ($empleado !== '') {
+            $where[] = 'a.empleado_id_empleado = ?';
+            $params[] = $empleado;
         }
         if ($gravedad !== '') {
             $where[] = 'a.gravedad = ?';
@@ -131,16 +137,16 @@ class Accidente {
     }
     public static function create($data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('INSERT INTO accidente (tipo, descripcion, clasificacion, estado, fecha_hora, lugar, tipo_vinc_lab_, jornada_laboral, turno_mom_acc, uso_epp, consecuencias, gravedad, tipo_lesion, parte_cuerpo_afect, incapacidad_lab, aten_med_recibida, persona_informo, area_id_area) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO accidente (tipo, descripcion, clasificacion, estado, fecha_hora, lugar, tipo_vinc_lab_, jornada_laboral, turno_mom_acc, uso_epp, consecuencias, gravedad, tipo_lesion, parte_cuerpo_afect, incapacidad_lab, aten_med_recibida, persona_informo, area_id_area, empleado_id_empleado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         return $stmt->execute([
-            $data['tipo'], $data['descripcion'], $data['clasificacion'], $data['estado'], $data['fecha_hora'], $data['lugar'], $data['tipo_vinc_lab_'], $data['jornada_laboral'], $data['turno_mom_acc'], $data['uso_epp'], $data['consecuencias'], $data['gravedad'], $data['tipo_lesion'], $data['parte_cuerpo_afect'], $data['incapacidad_lab'], $data['aten_med_recibida'], $data['persona_informo'], $data['area_id']
+            $data['tipo'], $data['descripcion'], $data['clasificacion'], $data['estado'], $data['fecha_hora'], $data['lugar'], $data['tipo_vinc_lab_'], $data['jornada_laboral'], $data['turno_mom_acc'], $data['uso_epp'], $data['consecuencias'], $data['gravedad'], $data['tipo_lesion'], $data['parte_cuerpo_afect'], $data['incapacidad_lab'], $data['aten_med_recibida'], $data['persona_informo'], $data['area_id'], $data['empleado_id']
         ]);
     }
     public static function update($id, $data) {
         $db = Database::getConnection();
-        $stmt = $db->prepare('UPDATE accidente SET tipo=?, descripcion=?, clasificacion=?, estado=?, fecha_hora=?, lugar=?, tipo_vinc_lab_=?, jornada_laboral=?, turno_mom_acc=?, uso_epp=?, consecuencias=?, gravedad=?, tipo_lesion=?, parte_cuerpo_afect=?, incapacidad_lab=?, aten_med_recibida=?, persona_informo=?, area_id_area=? WHERE id_accidente=?');
+        $stmt = $db->prepare('UPDATE accidente SET tipo=?, descripcion=?, clasificacion=?, estado=?, fecha_hora=?, lugar=?, tipo_vinc_lab_=?, jornada_laboral=?, turno_mom_acc=?, uso_epp=?, consecuencias=?, gravedad=?, tipo_lesion=?, parte_cuerpo_afect=?, incapacidad_lab=?, aten_med_recibida=?, persona_informo=?, area_id_area=?, empleado_id_empleado=? WHERE id_accidente=?');
         return $stmt->execute([
-            $data['tipo'], $data['descripcion'], $data['clasificacion'], $data['estado'], $data['fecha_hora'], $data['lugar'], $data['tipo_vinc_lab_'], $data['jornada_laboral'], $data['turno_mom_acc'], $data['uso_epp'], $data['consecuencias'], $data['gravedad'], $data['tipo_lesion'], $data['parte_cuerpo_afect'], $data['incapacidad_lab'], $data['aten_med_recibida'], $data['persona_informo'], $data['area_id'], $id
+            $data['tipo'], $data['descripcion'], $data['clasificacion'], $data['estado'], $data['fecha_hora'], $data['lugar'], $data['tipo_vinc_lab_'], $data['jornada_laboral'], $data['turno_mom_acc'], $data['uso_epp'], $data['consecuencias'], $data['gravedad'], $data['tipo_lesion'], $data['parte_cuerpo_afect'], $data['incapacidad_lab'], $data['aten_med_recibida'], $data['persona_informo'], $data['area_id'], $data['empleado_id'], $id
         ]);
     }
     public static function delete($id) {
