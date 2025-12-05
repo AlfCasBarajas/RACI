@@ -21,7 +21,7 @@ $user = $_SESSION['user'];
             <span><?php echo htmlspecialchars($user['usuario']); ?></span>
         </div>
         <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a class="nav-link" href="/RACI/app/views/dashboard.php"><i class="bi bi-house-door"></i>Dashboard</a></li>
+            <li class="nav-item mb-2"><a class="nav-link" href="/RACI/app/views/dashboard.php"><i class="bi bi-house-door"></i>Inicio</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=roles&action=index"><i class="bi bi-person-badge"></i>Roles</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=users&action=index"><i class="bi bi-people"></i>Usuarios</a></li>
             <li class="nav-item mb-2"><a class="nav-link" href="/RACI/?controller=areas&action=index"><i class="bi bi-building"></i>Áreas</a></li>

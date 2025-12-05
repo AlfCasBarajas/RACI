@@ -30,12 +30,12 @@ $user = $_SESSION['user'];
 <html lang="es">
 <head>
                 <meta charset="UTF-8">
-                <title>Dashboard RACI</title>
+                <title>Inicio RACI</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
                 <style>
-                    /* --- Dashboard SST Moderno --- */
+                    /* --- Inicio SST Moderno --- */
                     body {
                         background: #f4f6fb;
                         font-family: 'Inter', Arial, sans-serif;
@@ -387,7 +387,7 @@ $user = $_SESSION['user'];
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Forzar scroll al tope al cargar el dashboard
+    // Forzar scroll al tope al cargar el inicio
     window.addEventListener('load', function() {
         window.scrollTo(0, 0);
     });

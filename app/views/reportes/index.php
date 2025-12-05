@@ -136,7 +136,7 @@ include __DIR__ . '/../header.php';
 
                 <div class="text-center mt-5">
                     <a href="/RACI/app/views/dashboard.php" class="btn btn-dark">
-                        <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Inicio
                     </a>
                 </div>
             </div>

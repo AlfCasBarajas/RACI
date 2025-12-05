@@ -143,7 +143,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/RACI/app/views/dashboard.php">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/RACI/app/views/dashboard.php">Inicio</a></li>
                 <li class="nav-item"><a class="nav-link" href="/RACI/index.php">Cerrar sesión</a></li>
             </ul>
         </div>
