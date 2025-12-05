@@ -158,7 +158,8 @@
                                                 /* ...existing code... */
                                                 .empleados-table-responsive {
                                                     width: 100%;
-                                                    overflow-x: auto;
+                                                    overflow-x: scroll;
+                                                    overflow-y: visible;
                                                 }
                                             </style>
                                 <thead class="table-light">

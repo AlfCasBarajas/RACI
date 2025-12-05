@@ -2287,79 +2287,104 @@ class ReportesController extends Controller {
     private function generateInspeccionesPDFReporte($inspecciones, $filtros = []) {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
         
-        // Crear PDF
-        $pdf = new FPDF();
-        $pdf->AddPage('L'); // Paisaje para más espacio
-        $pdf->SetFont('Arial', 'B', 16);
+        $pdf = new FPDF('P', 'mm', 'A4'); // Orientación vertical para formato detallado
         
-        // Título
-        $pdf->Cell(0, 15, utf8_decode('REPORTE DE INSPECCIONES LOCATIVAS'), 0, 1, 'C');
-        $pdf->Ln(5);
-        
-        // Información del reporte
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 8, utf8_decode('Generado el: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
-        $pdf->Cell(0, 8, utf8_decode('Total de registros: ' . count($inspecciones)), 0, 1, 'R');
-        $pdf->Ln(5);
-        
-        // Mostrar filtros aplicados si existen
-        if (!empty($filtros['fecha_inicio']) || !empty($filtros['fecha_fin']) || !empty($filtros['tipo_inspeccion'])) {
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(0, 8, utf8_decode('Filtros aplicados:'), 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 9);
-            if (!empty($filtros['fecha_inicio'])) $pdf->Cell(0, 6, utf8_decode('- Fecha inicio: ' . $filtros['fecha_inicio']), 0, 1, 'L');
-            if (!empty($filtros['fecha_fin'])) $pdf->Cell(0, 6, utf8_decode('- Fecha fin: ' . $filtros['fecha_fin']), 0, 1, 'L');
-            if (!empty($filtros['tipo_inspeccion'])) $pdf->Cell(0, 6, utf8_decode('- Tipo: ' . $filtros['tipo_inspeccion']), 0, 1, 'L');
+        foreach ($inspecciones as $inspeccion) {
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', 'B', 16);
+            
+            // Título
+            $pdf->Cell(0, 10, utf8_decode('Ficha Detallada de Inspección Locativa'), 0, 1, 'C');
             $pdf->Ln(5);
-        }
-        
-        if (empty($inspecciones)) {
-            $pdf->SetFont('Arial', 'I', 12);
-            $pdf->Cell(0, 20, utf8_decode('No se encontraron inspecciones locativas con los filtros aplicados.'), 0, 1, 'C');
-        } else {
-            // Encabezados de tabla estilo compacto
-            $pdf->SetFont('Arial', 'B', 8);
-            $pdf->SetFillColor(68, 114, 196);
-            $pdf->SetTextColor(255, 255, 255);
             
-            $pdf->Cell(15, 8, 'ID', 1, 0, 'C', true);
-            $pdf->Cell(30, 8, utf8_decode('Tipo'), 1, 0, 'C', true);
-            $pdf->Cell(30, 8, utf8_decode('Fecha'), 1, 0, 'C', true);
-            $pdf->Cell(20, 8, 'Estado', 1, 0, 'C', true);
-            $pdf->Cell(25, 8, utf8_decode('Categoría'), 1, 0, 'C', true);
-            $pdf->Cell(30, 8, 'Empleado', 1, 0, 'C', true);
-            $pdf->Cell(20, 8, utf8_decode('Área'), 1, 0, 'C', true);
-            $pdf->Cell(50, 8, utf8_decode('Descripción'), 1, 1, 'C', true);
+            // ID de la inspección
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 8, utf8_decode('Inspección #' . ($inspeccion['id_insp_loc'] ?? '')), 0, 1, 'C');
+            $pdf->Ln(5);
             
-            // Datos de las inspecciones
-            $pdf->SetFont('Arial', '', 7);
-            $pdf->SetTextColor(0, 0, 0);
-            $fill = false;
+            // Fecha de generación
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->Cell(0, 5, utf8_decode('Generado el: ' . date('d/m/Y H:i')), 0, 1, 'R');
+            $pdf->Ln(10);
             
-            foreach ($inspecciones as $inspeccion) {
-                if ($fill) {
-                    $pdf->SetFillColor(242, 242, 242);
-                } else {
-                    $pdf->SetFillColor(255, 255, 255);
-                }
-                
-                // Truncar textos largos
-                $descripcion = substr($inspeccion['descripcion'] ?? '', 0, 40) . (strlen($inspeccion['descripcion'] ?? '') > 40 ? '...' : '');
-                $empleado = !empty($inspeccion['empleado_nombre']) ? substr($inspeccion['empleado_nombre'], 0, 20) : 'Sin empleado';
-                $area = !empty($inspeccion['area_nombre']) ? substr($inspeccion['area_nombre'], 0, 15) : 'Sin área';
-                $categoria = substr($inspeccion['categoria_nombre'] ?? '', 0, 20);
-                
-                $pdf->Cell(15, 8, $inspeccion['id_insp_loc'] ?? '', 1, 0, 'C', true);
-                $pdf->Cell(30, 8, utf8_decode(substr($inspeccion['tipo_inspeccion'] ?? '', 0, 20)), 1, 0, 'L', true);
-                $pdf->Cell(30, 8, isset($inspeccion['fecha_hora']) ? date('d/m/Y H:i', strtotime($inspeccion['fecha_hora'])) : '', 1, 0, 'C', true);
-                $pdf->Cell(20, 8, utf8_decode(substr($inspeccion['estado_inspeccion'] ?? '', 0, 15)), 1, 0, 'C', true);
-                $pdf->Cell(25, 8, utf8_decode($categoria), 1, 0, 'L', true);
-                $pdf->Cell(30, 8, utf8_decode($empleado), 1, 0, 'L', true);
-                $pdf->Cell(20, 8, utf8_decode($area), 1, 0, 'L', true);
-                $pdf->Cell(50, 8, utf8_decode($descripcion), 1, 1, 'L', true);
-                
-                $fill = !$fill;
-            }
+            // Información básica
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('INFORMACIÓN BÁSICA'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Tipo de Inspección:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['tipo_inspeccion'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Fecha y Hora:'), 0, 0, 'L');
+            $fechaHora = isset($inspeccion['fecha_hora']) ? date('d/m/Y H:i', strtotime($inspeccion['fecha_hora'])) : '';
+            $pdf->Cell(140, 6, utf8_decode($fechaHora), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Estado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['estado_inspeccion'] ?? ''), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Categoría:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['categoria_nombre'] ?? 'Sin categoría'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Empleado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['empleado_nombre'] ?? 'Sin empleado asignado'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Área:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['area_nombre'] ?? 'Sin área asignada'), 0, 1, 'L');
+            $pdf->Ln(5);
+            
+            // Descripción
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('DESCRIPCIÓN DE LA INSPECCIÓN'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $descripcion = $inspeccion['descripcion'] ?? 'Sin descripción';
+            $pdf->MultiCell(0, 6, utf8_decode($descripcion), 1, 'L');
+            $pdf->Ln(5);
+            
+            // Elementos de trabajo
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('ELEMENTOS DE TRABAJO'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $elementosTrabajo = $inspeccion['element_trab'] ?? 'Sin especificar elementos de trabajo';
+            $pdf->MultiCell(0, 6, utf8_decode($elementosTrabajo), 1, 'L');
+            $pdf->Ln(5);
+            
+            // Observaciones
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('OBSERVACIONES'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $observaciones = $inspeccion['observaciones'] ?? 'Sin observaciones adicionales';
+            $pdf->MultiCell(0, 6, utf8_decode($observaciones), 1, 'L');
+            $pdf->Ln(5);
+            
+            // Incidentes, accidentes y riesgos relacionados
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('RELACIONES CON INCIDENTES, ACCIDENTES Y RIESGOS'), 0, 1, 'L');
+            $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+            $pdf->Ln(5);
+            
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(50, 6, utf8_decode('Incidente Relacionado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['incidente_tipo'] ?? 'No aplica'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Accidente Relacionado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['accidente_tipo'] ?? 'No aplica'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Riesgo Identificado:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['riesgo_tipo'] ?? 'No identificado'), 0, 1, 'L');
+            
+            $pdf->Cell(50, 6, utf8_decode('Condición Insegura:'), 0, 0, 'L');
+            $pdf->Cell(140, 6, utf8_decode($inspeccion['condicion_insegura_nombre'] ?? 'No identificada'), 0, 1, 'L');
         }
         
         // Crear directorio si no existe
@@ -2369,7 +2394,7 @@ class ReportesController extends Controller {
         }
         
         // Nombre del archivo
-        $filename = 'reporte_inspecciones_' . date('Y-m-d_H-i-s') . '.pdf';
+        $filename = 'ficha_inspecciones_' . date('Y-m-d_H-i-s') . '.pdf';
         $filepath = $dir . $filename;
         
         // Guardar PDF
